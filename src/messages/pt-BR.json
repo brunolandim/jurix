@@ -1,0 +1,72 @@
+{
+  "common": {
+    "appName": "Jurix",
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Buscar",
+    "noResults": "Nenhum resultado encontrado"
+  },
+  "auth": {
+    "login": "Entrar",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "resetPassword": "Redefinir senha",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirmar senha",
+    "sendResetLink": "Enviar link de recuperação",
+    "backToLogin": "Voltar para o login",
+    "loginError": "E-mail ou senha inválidos",
+    "resetSuccess": "Senha redefinida com sucesso!",
+    "resetLinkSent": "Link de recuperação enviado para seu e-mail",
+    "passwordMismatch": "As senhas não coincidem",
+    "passwordMinLength": "A senha deve ter no mínimo 6 caracteres",
+    "invalidToken": "Token inválido ou expirado",
+    "demoCredentials": "Credenciais de demonstração"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "kanban": {
+    "searchPlaceholder": "Buscar processos...",
+    "lawyers": "Advogados",
+    "clearFilters": "Limpar filtros",
+    "unassigned": "Não atribuído",
+    "columns": {
+      "new": "Novo",
+      "inProgress": "Em Andamento",
+      "waiting": "Aguardando",
+      "completed": "Concluído"
+    },
+    "modal": {
+      "description": "Descrição",
+      "noDescription": "Nenhuma descrição adicionada",
+      "details": "Detalhes",
+      "status": "Status",
+      "changeStatus": "Alterar status",
+      "client": "Cliente",
+      "lawyer": "Responsável",
+      "createdBy": "Criador",
+      "priority": "Prioridade",
+      "createdAt": "Criado em",
+      "updatedAt": "Atualizado em",
+      "close": "Fechar"
+    }
+  },
+  "priority": {
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta",
+    "urgent": "Urgente"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Escuro",
+    "toggle": "Alternar tema"
+  }
+}

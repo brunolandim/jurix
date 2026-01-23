@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { Button, Input, Link, Card, CardBody } from "@/components/ui";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Button, Input, Link, Card, CardBody } from '@/components/ui';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
 
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     if (password !== confirmPassword) {
-      setError("As senhas não coincidem");
+      setError('As senhas não coincidem');
       return;
     }
 
     if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
+      setError('A senha deve ter pelo menos 6 caracteres');
       return;
     }
 
@@ -43,9 +43,7 @@ export default function ResetPasswordPage() {
         <Card className="w-full max-w-md">
           <CardBody className="text-center gap-4">
             <h1 className="text-2xl font-bold">Link inválido</h1>
-            <p className="text-default-500">
-              O link para redefinir senha é inválido ou expirou.
-            </p>
+            <p className="text-default-500">O link para redefinir senha é inválido ou expirou.</p>
             <Link href="/auth/forgot-password">Solicitar novo link</Link>
           </CardBody>
         </Card>
@@ -59,9 +57,7 @@ export default function ResetPasswordPage() {
         <Card className="w-full max-w-md">
           <CardBody className="text-center gap-4">
             <h1 className="text-2xl font-bold">Senha redefinida</h1>
-            <p className="text-default-500">
-              Sua senha foi redefinida com sucesso.
-            </p>
+            <p className="text-default-500">Sua senha foi redefinida com sucesso.</p>
             <Link href="/auth/login">Fazer login</Link>
           </CardBody>
         </Card>
@@ -77,11 +73,7 @@ export default function ResetPasswordPage() {
             <h1 className="text-2xl font-bold">Redefinir senha</h1>
             <p className="text-default-500">Digite sua nova senha.</p>
 
-            {error && (
-              <div className="p-3 bg-danger-50 text-danger rounded-md text-sm">
-                {error}
-              </div>
-            )}
+            {error && <div className="p-3 bg-danger-50 text-danger rounded-md text-sm">{error}</div>}
 
             <Input
               type="password"

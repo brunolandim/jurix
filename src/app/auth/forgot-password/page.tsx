@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Button, Input, Link, Card, CardBody } from "@/components/ui";
-import { useState } from "react";
+import { Button, Input, Link, Card, CardBody } from '@/components/ui';
+import { useState } from 'react';
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -41,9 +41,7 @@ export default function ForgotPasswordPage() {
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <h1 className="text-2xl font-bold">Esqueceu a senha?</h1>
-            <p className="text-default-500">
-              Digite seu email e enviaremos um link para redefinir sua senha.
-            </p>
+            <p className="text-default-500">Digite seu email e enviaremos um link para redefinir sua senha.</p>
 
             <Input
               type="email"

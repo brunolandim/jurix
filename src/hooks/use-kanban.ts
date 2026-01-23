@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   KeyboardSensor,
   PointerSensor,
@@ -9,12 +9,42 @@ import {
   DragStartEvent,
   DragOverEvent,
   DragEndEvent,
-} from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { KanbanColumn, LegalCase } from "@/types";
-import { kanbanService } from "@/services";
+} from '@dnd-kit/core';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { KanbanColumn, LegalCase, Lawyer } from '@/types';
+import { kanbanService, lawyerService } from '@/services';
 
-// Calculate fractional order based on neighbors
+const FILTERS_STORAGE_KEY = 'jurix-kanban-filters';
+
+type StoredFilters = {
+  selectedLawyerIds: string[];
+  showUnassigned: boolean;
+};
+
+function loadFiltersFromStorage(): StoredFilters {
+  if (typeof window === 'undefined') {
+    return { selectedLawyerIds: [], showUnassigned: false };
+  }
+  try {
+    const stored = localStorage.getItem(FILTERS_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        selectedLawyerIds: Array.isArray(parsed.selectedLawyerIds) ? parsed.selectedLawyerIds : [],
+        showUnassigned: Boolean(parsed.showUnassigned),
+      };
+    }
+  } catch {}
+  return { selectedLawyerIds: [], showUnassigned: false };
+}
+
+function saveFiltersToStorage(filters: StoredFilters): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(filters));
+  } catch {}
+}
+
 function calculateNewOrder(cases: LegalCase[], currentIndex: number): number {
   const previous = currentIndex > 0 ? cases[currentIndex - 1] : null;
   const next = currentIndex < cases.length - 1 ? cases[currentIndex + 1] : null;
@@ -32,11 +62,15 @@ export function useKanban() {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCase, setActiveCase] = useState<LegalCase | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLawyerIds, setSelectedLawyerIds] = useState<string[]>(
+    () => loadFiltersFromStorage().selectedLawyerIds ?? []
+  );
+  const [showUnassigned, setShowUnassigned] = useState<boolean>(() => loadFiltersFromStorage().showUnassigned ?? false);
+  const [lawyers, setLawyers] = useState<Lawyer[]>([]);
 
-  // Ref for most recent state (avoids stale closure)
   const columnsRef = useRef<KanbanColumn[]>([]);
 
-  // Sensors for drag-and-drop
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -46,27 +80,26 @@ export function useKanban() {
     })
   );
 
-  // Helper to update state AND ref synchronously
-  const updateColumns = useCallback(
-    (updater: KanbanColumn[] | ((prev: KanbanColumn[]) => KanbanColumn[])) => {
-      setColumns((prev) => {
-        const newValue = typeof updater === "function" ? updater(prev) : updater;
-        columnsRef.current = newValue;
-        return newValue;
-      });
-    },
-    []
-  );
+  const updateColumns = useCallback((updater: KanbanColumn[] | ((prev: KanbanColumn[]) => KanbanColumn[])) => {
+    setColumns((prev) => {
+      const newValue = typeof updater === 'function' ? updater(prev) : updater;
+      columnsRef.current = newValue;
+      return newValue;
+    });
+  }, []);
 
-  // Load columns from backend
   useEffect(() => {
-    kanbanService.getColumns().then((data) => {
-      updateColumns(data);
+    Promise.all([kanbanService.getColumns(), lawyerService.getLawyers()]).then(([columnsData, lawyersData]) => {
+      updateColumns(columnsData);
+      setLawyers(lawyersData);
       setIsLoading(false);
     });
   }, [updateColumns]);
 
-  // Find column containing a case
+  useEffect(() => {
+    saveFiltersToStorage({ selectedLawyerIds, showUnassigned });
+  }, [selectedLawyerIds, showUnassigned]);
+
   const findColumn = useCallback(
     (caseId: string): KanbanColumn | undefined => {
       return columns.find((col) => col.cases.some((c) => c.id === caseId));
@@ -74,7 +107,6 @@ export function useKanban() {
     [columns]
   );
 
-  // Find case by ID
   const findCase = useCallback(
     (caseId: string): LegalCase | undefined => {
       for (const col of columns) {
@@ -86,7 +118,6 @@ export function useKanban() {
     [columns]
   );
 
-  // Handler: drag start
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       const legalCase = findCase(event.active.id as string);
@@ -95,7 +126,6 @@ export function useKanban() {
     [findCase]
   );
 
-  // Handler: drag over another element
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
       const { active, over } = event;
@@ -152,7 +182,6 @@ export function useKanban() {
     [columns, findColumn, updateColumns]
   );
 
-  // Handler: drop element
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
@@ -176,7 +205,6 @@ export function useKanban() {
 
       if (!activeColumn || !overColumn) return;
 
-      // Reorder within same column
       if (activeColumn.id === overColumn.id) {
         const oldIndex = activeColumn.cases.findIndex((c) => c.id === activeId);
         const newIndex = activeColumn.cases.findIndex((c) => c.id === overId);
@@ -201,7 +229,6 @@ export function useKanban() {
         }
       }
 
-      // Send to backend
       const updatedColumn = columnsRef.current.find((c) => c.id === overColumn.id);
       if (!updatedColumn) return;
 
@@ -210,8 +237,7 @@ export function useKanban() {
       if (currentIndex === -1) return;
 
       const previousId = currentIndex > 0 ? cases[currentIndex - 1].id : null;
-      const nextId =
-        currentIndex < cases.length - 1 ? cases[currentIndex + 1].id : null;
+      const nextId = currentIndex < cases.length - 1 ? cases[currentIndex + 1].id : null;
 
       kanbanService.moveCase({
         caseId: activeId,
@@ -223,13 +249,103 @@ export function useKanban() {
     [updateColumns]
   );
 
+  const filteredColumns = useMemo(() => {
+    const search = searchTerm.toLowerCase().trim();
+    const hasLawyerFilter = selectedLawyerIds.length > 0 || showUnassigned;
+
+    return columns.map((col) => ({
+      ...col,
+      cases: col.cases.filter((c) => {
+        const matchesSearch =
+          !search ||
+          c.number.toLowerCase().includes(search) ||
+          c.title.toLowerCase().includes(search) ||
+          c.client.toLowerCase().includes(search) ||
+          (c.lawyer && c.lawyer.name.toLowerCase().includes(search));
+
+        if (!hasLawyerFilter) {
+          return matchesSearch;
+        }
+
+        const matchesSelectedLawyer = c.lawyer && selectedLawyerIds.includes(c.lawyer.id);
+        const matchesUnassigned = showUnassigned && !c.lawyer;
+
+        return matchesSearch && (matchesSelectedLawyer || matchesUnassigned);
+      }),
+    }));
+  }, [columns, searchTerm, selectedLawyerIds, showUnassigned]);
+
+  const toggleLawyer = useCallback((lawyerId: string) => {
+    setSelectedLawyerIds((prev) =>
+      prev.includes(lawyerId) ? prev.filter((id) => id !== lawyerId) : [...prev, lawyerId]
+    );
+  }, []);
+
+  const toggleUnassigned = useCallback(() => {
+    setShowUnassigned((prev) => !prev);
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setSearchTerm('');
+    setSelectedLawyerIds([]);
+    setShowUnassigned(false);
+  }, []);
+
+  const moveCaseToColumn = useCallback(
+    (caseId: string, newColumnId: string) => {
+      const sourceColumn = columns.find((col) => col.cases.some((c) => c.id === caseId));
+      if (!sourceColumn || sourceColumn.id === newColumnId) return;
+
+      const legalCase = sourceColumn.cases.find((c) => c.id === caseId);
+      if (!legalCase) return;
+
+      updateColumns((prev) =>
+        prev.map((col) => {
+          if (col.id === sourceColumn.id) {
+            return { ...col, cases: col.cases.filter((c) => c.id !== caseId) };
+          }
+          if (col.id === newColumnId) {
+            const newOrder = col.cases.length > 0 ? Math.max(...col.cases.map((c) => c.order)) + 1 : 1;
+            return {
+              ...col,
+              cases: [...col.cases, { ...legalCase, columnId: newColumnId, order: newOrder }],
+            };
+          }
+          return col;
+        })
+      );
+
+      // Persist to backend
+      const targetColumn = columns.find((c) => c.id === newColumnId);
+      const lastCase = targetColumn?.cases[targetColumn.cases.length - 1];
+      kanbanService.moveCase({
+        caseId,
+        columnId: newColumnId,
+        previousId: lastCase?.id || null,
+        nextId: null,
+      });
+    },
+    [columns, updateColumns]
+  );
+
   return {
     columns,
+    filteredColumns,
     isLoading,
     activeCase,
     sensors,
     handleDragStart,
     handleDragOver,
     handleDragEnd,
+    moveCaseToColumn,
+    // Filters
+    searchTerm,
+    setSearchTerm,
+    lawyers,
+    selectedLawyerIds,
+    toggleLawyer,
+    showUnassigned,
+    toggleUnassigned,
+    clearFilters,
   };
 }

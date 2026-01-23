@@ -14,7 +14,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  image_url:string;
+  image_url: string;
 };
 
 export type LoginCredentials = {
@@ -30,18 +30,19 @@ export type AuthState = {
 };
 
 // Case Types
-export type CasePriority = "low" | "medium" | "high" | "urgent";
+export type CasePriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export type LegalCase = {
   id: string;
   number: string;
   title: string;
+  description?: string;
   client: string;
   priority: CasePriority;
   columnId: string;
   order: number;
-  assignee?: string;
-  assigneePhoto?: string;
+  lawyer?: { id: string; photo: string; name: string };
+  createdBy?: { id: string; photo: string; name: string };
   createdAt: string;
   updatedAt: string;
 };
@@ -58,4 +59,17 @@ export type Column = {
 // Kanban (frontend - column with its cases)
 export type KanbanColumn = Column & {
   cases: LegalCase[];
+};
+
+// Lawyer
+export type Lawyer = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  photo?: string;
+  oab: string; // Registro OAB
+  specialty?: string;
+  active: boolean;
+  createdAt: string;
 };

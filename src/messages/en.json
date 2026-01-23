@@ -1,0 +1,72 @@
+{
+  "common": {
+    "appName": "Jurix",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "noResults": "No results found"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "sendResetLink": "Send reset link",
+    "backToLogin": "Back to login",
+    "loginError": "Invalid email or password",
+    "resetSuccess": "Password reset successfully!",
+    "resetLinkSent": "Reset link sent to your email",
+    "passwordMismatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "invalidToken": "Invalid or expired token",
+    "demoCredentials": "Demo credentials"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "kanban": {
+    "searchPlaceholder": "Search cases...",
+    "lawyers": "Lawyers",
+    "clearFilters": "Clear filters",
+    "unassigned": "Unassigned",
+    "columns": {
+      "new": "New",
+      "inProgress": "In Progress",
+      "waiting": "Waiting",
+      "completed": "Completed"
+    },
+    "modal": {
+      "description": "Description",
+      "noDescription": "No description added",
+      "details": "Details",
+      "status": "Status",
+      "changeStatus": "Change status",
+      "client": "Client",
+      "lawyer": "Assignee",
+      "createdBy": "Creator",
+      "priority": "Priority",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "close": "Close"
+    }
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  }
+}

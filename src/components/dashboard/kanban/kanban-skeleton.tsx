@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Card, CardBody, Skeleton } from "@/components/ui";
+import { Card, CardBody, Skeleton } from '@/components/ui';
 
 function CardSkeleton() {
   return (

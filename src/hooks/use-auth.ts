@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { AuthState, LoginCredentials } from "@/types";
-import { authService } from "@/services";
+import { useState, useEffect, useCallback } from 'react';
+import { AuthState, LoginCredentials } from '@/types';
+import { authService } from '@/services';
 
 const initialState: AuthState = {
   user: null,
@@ -40,7 +40,7 @@ export function useAuth() {
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: err instanceof Error ? err.message : "Erro ao fazer login",
+        error: err instanceof Error ? err.message : 'Erro ao fazer login',
       }));
     }
   }, []);

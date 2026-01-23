@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button, Input, Link,Form } from "@/components/ui";
-import { LoginCredentials } from "@/types";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { Button, Input, Form } from '@/components/ui';
+import { LoginCredentials } from '@/types';
 
 type LoginFormProps = {
   onSubmit: (credentials: LoginCredentials) => void;
@@ -11,8 +13,9 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const t = useTranslations('auth');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,11 +24,11 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
   return (
     <Form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
-      <h2 className="text-xl font-semibold text-center">Login</h2>
+      <h2 className="text-xl font-semibold text-center">{t('login')}</h2>
 
       <Input
         type="email"
-        label="Email"
+        label={t('email')}
         placeholder="seu@email.com"
         value={email}
         onValueChange={setEmail}
@@ -34,28 +37,24 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
       <Input
         type="password"
-        label="Senha"
+        label={t('password')}
         placeholder="••••••"
         value={password}
         onValueChange={setPassword}
         isRequired
       />
 
-      {error && (
-        <p className="text-danger text-sm text-center">{error}</p>
-      )}
+      {error && <p className="text-danger text-sm text-center">{t('loginError')}</p>}
 
       <Button type="submit" color="primary" isLoading={isLoading} className="w-full">
-        Entrar
+        {t('login')}
       </Button>
 
-      <Link href="/auth/forgot-password" size="sm" className="text-center">
-        Esqueceu a senha?
+      <Link href="/auth/forgot-password" className="text-sm text-center text-primary">
+        {t('forgotPassword')}
       </Link>
 
-      <p className="text-xs text-default-500 text-center">
-        Use: bruno@email.com / 123456
-      </p>
+      <p className="text-xs text-default-500 text-center">{t('demoCredentials')}: bruno@email.com / 123456</p>
     </Form>
   );
 }

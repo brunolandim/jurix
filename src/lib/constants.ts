@@ -1,1 +1,1 @@
-export const APP_NAME = "Jurix";
+export const APP_NAME = 'Jurix';

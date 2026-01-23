@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui";
-import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
+import { Button } from '@/components/ui';
+import { useTheme } from 'next-themes';
+import { useSyncExternalStore } from 'react';
 
 const emptySubscribe = () => () => {};
 
@@ -23,10 +23,10 @@ export function ThemeToggle() {
       isIconOnly
       variant="light"
       size="sm"
-      onPress={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onPress={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       aria-label="Alternar tema"
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {theme === 'dark' ? '☀️' : '🌙'}
     </Button>
   );
 }

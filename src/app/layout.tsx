@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { Providers } from "./providers";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Providers } from './providers';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Jurix",
-  description: "Jurix Application",
+  title: 'Jurix',
+  description: 'Jurix Application',
 };
 
 export default function RootLayout({
