@@ -62,6 +62,7 @@ export function useKanban() {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCase, setActiveCase] = useState<LegalCase | null>(null);
+  const [selectedCase, setSelectedCase] = useState<LegalCase | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLawyerIds, setSelectedLawyerIds] = useState<string[]>(
     () => loadFiltersFromStorage().selectedLawyerIds ?? []
@@ -70,6 +71,7 @@ export function useKanban() {
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
 
   const columnsRef = useRef<KanbanColumn[]>([]);
+  const selectedCaseRef = useRef<LegalCase | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -315,7 +317,6 @@ export function useKanban() {
         })
       );
 
-      // Persist to backend
       const targetColumn = columns.find((c) => c.id === newColumnId);
       const lastCase = targetColumn?.cases[targetColumn.cases.length - 1];
       kanbanService.moveCase({
@@ -328,6 +329,55 @@ export function useKanban() {
     [columns, updateColumns]
   );
 
+  const updateCaseData = useCallback(
+    async (caseId: string, data: Partial<LegalCase>): Promise<boolean> => {
+      const previousColumns = columnsRef.current;
+      const previousSelectedCase = selectedCaseRef.current;
+
+      updateColumns((prev) =>
+        prev.map((col) => ({
+          ...col,
+          cases: col.cases.map((c) => (c.id === caseId ? { ...c, ...data } : c)),
+        }))
+      );
+
+      if (selectedCaseRef.current?.id === caseId) {
+        const updatedCase = { ...selectedCaseRef.current, ...data };
+        setSelectedCase(updatedCase);
+        selectedCaseRef.current = updatedCase;
+      }
+
+      try {
+        const result = await kanbanService.updateCase(caseId, data);
+
+        if (!result) {
+          updateColumns(previousColumns);
+          setSelectedCase(previousSelectedCase);
+          selectedCaseRef.current = previousSelectedCase;
+          return false;
+        }
+
+        return true;
+      } catch {
+        updateColumns(previousColumns);
+        setSelectedCase(previousSelectedCase);
+        selectedCaseRef.current = previousSelectedCase;
+        return false;
+      }
+    },
+    [updateColumns]
+  );
+
+  const selectCase = useCallback((legalCase: LegalCase | null) => {
+    setSelectedCase(legalCase);
+    selectedCaseRef.current = legalCase;
+  }, []);
+
+  const closeCase = useCallback(() => {
+    setSelectedCase(null);
+    selectedCaseRef.current = null;
+  }, []);
+
   return {
     columns,
     filteredColumns,
@@ -338,6 +388,11 @@ export function useKanban() {
     handleDragOver,
     handleDragEnd,
     moveCaseToColumn,
+    updateCaseData,
+    // Selected case
+    selectedCase,
+    selectCase,
+    closeCase,
     // Filters
     searchTerm,
     setSearchTerm,

@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
 import { LegalCase, CasePriority } from '@/types';
+import { getInitials } from '@/lib/utils';
 
 const priorityColors: Record<CasePriority, string> = {
   low: 'bg-gray-500',
@@ -50,9 +51,10 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
           {legalCase.lawyer && (
             <div className="flex gap-2 items-center">
               <Avatar
-                name={legalCase.lawyer.name}
+                name={getInitials(legalCase.lawyer.name)}
                 src={legalCase.lawyer.photo ? legalCase.lawyer.photo : undefined}
-                color="success"
+                color="default"
+                isBordered
                 className="cursor-pointer w-6 h-6 text-sm"
               />
               <span>{legalCase.lawyer.name}</span>

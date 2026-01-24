@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import { useKanban } from '@/hooks';
-import { LegalCase } from '@/types';
 import { KanbanColumn } from './kanban-column';
 import { KanbanCardContent } from './kanban-card';
 import { KanbanSkeleton } from './kanban-skeleton';
@@ -11,8 +9,6 @@ import { KanbanFilters } from './kanban-filters';
 import { CaseDetailModal } from './case-detail-modal';
 
 export function KanbanBoard() {
-  const [selectedCase, setSelectedCase] = useState<LegalCase | null>(null);
-
   const {
     columns,
     filteredColumns,
@@ -23,6 +19,10 @@ export function KanbanBoard() {
     handleDragOver,
     handleDragEnd,
     moveCaseToColumn,
+    updateCaseData,
+    selectedCase,
+    selectCase,
+    closeCase,
     searchTerm,
     setSearchTerm,
     lawyers,
@@ -60,7 +60,7 @@ export function KanbanBoard() {
 
       <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-15rem)]">
         {filteredColumns.map((column) => (
-          <KanbanColumn key={column.id} column={column} onCardClick={setSelectedCase} />
+          <KanbanColumn key={column.id} column={column} onCardClick={selectCase} />
         ))}
       </div>
 
@@ -72,18 +72,21 @@ export function KanbanBoard() {
         ) : null}
       </DragOverlay>
 
-      <CaseDetailModal
-        legalCase={selectedCase}
-        isOpen={!!selectedCase}
-        onClose={() => setSelectedCase(null)}
-        columns={columns}
-        onColumnChange={(caseId, newColumnId) => {
-          moveCaseToColumn(caseId, newColumnId);
-          if (selectedCase) {
-            setSelectedCase({ ...selectedCase, columnId: newColumnId });
-          }
-        }}
-      />
+      {selectedCase && (
+        <CaseDetailModal
+          legalCase={selectedCase}
+          isOpen={!!selectedCase}
+          onClose={closeCase}
+          columns={columns}
+          lawyers={lawyers}
+          onColumnChange={(caseId, newColumnId) => {
+            moveCaseToColumn(caseId, newColumnId);
+            updateCaseData(caseId, { columnId: newColumnId });
+          }}
+          onDescriptionChange={(caseId, newDescription) => updateCaseData(caseId, { description: newDescription })}
+          onLawyerChange={(caseId, newLawyer) => updateCaseData(caseId, { lawyer: newLawyer })}
+        />
+      )}
     </DndContext>
   );
 }

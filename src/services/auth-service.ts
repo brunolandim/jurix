@@ -2,9 +2,9 @@ import { AuthUser, LoginCredentials } from '@/types';
 
 const FAKE_USER: AuthUser = {
   id: 'law-001',
-  name: 'Dr. Bruno Landim',
+  name: 'Bruno Landim',
   email: 'bruno@email.com',
-  image_url: '/img/homemSpider.jpg',
+  photo: '/img/homemSpider.jpg',
 };
 
 const FAKE_PASSWORD = '123456';

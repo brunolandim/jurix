@@ -3,7 +3,7 @@ import { Lawyer } from '@/types';
 const mockLawyers: Lawyer[] = [
   {
     id: 'law-001',
-    name: 'Dr. Bruno Landim',
+    name: 'Bruno Landim',
     email: 'carlos.silva@jurix.com',
     phone: '(11) 99999-1111',
     photo: '/img/homemSpider.jpg',
@@ -14,7 +14,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-002',
-    name: 'Dra. Ana Oliveira',
+    name: 'Ana Oliveira',
     email: 'ana.oliveira@jurix.com',
     phone: '(11) 99999-2222',
     photo: 'https://i.pravatar.cc/150?u=ana',
@@ -25,7 +25,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-003',
-    name: 'Dr. Pedro Santos',
+    name: 'Pedro Santos',
     email: 'pedro.santos@jurix.com',
     phone: '(11) 99999-3333',
     photo: 'https://i.pravatar.cc/150?u=pedro',
@@ -36,7 +36,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-005',
-    name: 'Dr. João Pereira',
+    name: 'João Pereira',
     email: 'joao.pereira@jurix.com',
     photo: 'https://i.pravatar.cc/150?u=joao',
     oab: 'SP 567.890',
@@ -46,7 +46,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-006',
-    name: 'Dra. Fernanda Lima',
+    name: 'Fernanda Lima',
     email: 'fernanda.lima@jurix.com',
     phone: '(11) 99999-5555',
     photo: 'https://i.pravatar.cc/150?u=camila',
@@ -57,7 +57,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-007',
-    name: 'Dr. Ricardo Mendes',
+    name: 'Ricardo Mendes',
     email: 'ricardo.mendes@jurix.com',
     phone: '(11) 99999-6666',
     photo: 'https://i.pravatar.cc/150?u=ricardo',
@@ -68,7 +68,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-008',
-    name: 'Dra. Beatriz Rocha',
+    name: 'Beatriz Rocha',
     email: 'beatriz.rocha@jurix.com',
     phone: '(11) 99999-7777',
     photo: 'https://i.pravatar.cc/150?u=beatriz',
@@ -79,7 +79,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-009',
-    name: 'Dr. Lucas Almeida',
+    name: 'Lucas Almeida',
     email: 'lucas.almeida@jurix.com',
     phone: '(11) 99999-8888',
     oab: 'SP 901.234',
@@ -89,7 +89,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-010',
-    name: 'Dra. Camila Souza',
+    name: 'Camila Souza',
     email: 'camila.souza@jurix.com',
     phone: '(11) 99999-9999',
     photo: 'https://i.pravatar.cc/150?u=camila',
@@ -100,7 +100,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-011',
-    name: 'Dr. Gabriel Ferreira',
+    name: 'Gabriel Ferreira',
     email: 'gabriel.ferreira@jurix.com',
     oab: 'RJ 111.222',
     specialty: 'Direito Internacional',
@@ -109,7 +109,7 @@ const mockLawyers: Lawyer[] = [
   },
   {
     id: 'law-012',
-    name: 'Dra. Juliana Martins',
+    name: 'Juliana Martins',
     email: 'juliana.martins@jurix.com',
     phone: '(11) 98888-1111',
     photo: 'https://i.pravatar.cc/150?u=juliana',

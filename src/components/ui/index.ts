@@ -15,3 +15,4 @@ export { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/d
 export { Popover, PopoverTrigger, PopoverContent } from '@heroui/popover';
 export { AvatarGroup } from '@heroui/avatar';
 export { Listbox, ListboxItem } from '@heroui/listbox';
+export { Textarea } from '@heroui/input';

@@ -35,8 +35,8 @@ Pedidos:
         priority: 'high',
         columnId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         order: 1.0,
-        lawyer: { id: 'law-001', name: 'Dr. Bruno Landim', photo: '/img/homemSpider.jpg' },
-        createdBy: { id: 'law-002', name: 'Ygor da Silva', photo: '' },
+        lawyer: { id: 'law-001', name: 'Bruno Landim', photo: '/img/homemSpider.jpg' },
+        createdBy: { id: 'law-002', name: 'Ana Oliveira', photo: 'https://i.pravatar.cc/150?u=ana' },
         createdAt: '2026-01-10',
         updatedAt: '2026-01-19',
       },
@@ -50,7 +50,7 @@ Pedidos:
         priority: 'urgent',
         columnId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         order: 2.0,
-        createdBy: { id: 'law-001', name: 'Dr. Bruno Landim', photo: '/img/homemSpider.jpg' },
+        createdBy: { id: 'law-003', name: 'Pedro Santos', photo: 'https://i.pravatar.cc/150?u=pedro' },
         createdAt: '2026-01-12',
         updatedAt: '2026-01-18',
       },
@@ -71,7 +71,8 @@ Pedidos:
         priority: 'medium',
         columnId: 'd4e5f6a7-b8c9-0123-def0-234567890123',
         order: 1.0,
-        lawyer: { id: 'law-001', name: 'Dr. Bruno Landim', photo: '/img/homemSpider.jpg' },
+        lawyer: { id: 'law-001', name: 'Bruno Landim', photo: '/img/homemSpider.jpg' },
+        createdBy: { id: 'law-005', name: 'João Pereira', photo: 'https://i.pravatar.cc/150?u=joao' },
         createdAt: '2026-01-05',
         updatedAt: '2026-01-17',
       },
@@ -92,6 +93,7 @@ Pedidos:
         priority: 'low',
         columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
         order: 1.0,
+        createdBy: { id: 'law-006', name: 'Fernanda Lima', photo: 'https://i.pravatar.cc/150?u=camila' },
         createdAt: '2026-01-08',
         updatedAt: '2026-01-15',
       },
@@ -103,6 +105,7 @@ Pedidos:
         priority: 'medium',
         columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
         order: 2.0,
+        createdBy: { id: 'law-007', name: 'Ricardo Mendes', photo: 'https://i.pravatar.cc/150?u=ricardo' },
         createdAt: '2026-01-08',
         updatedAt: '2026-01-15',
       },
@@ -114,6 +117,7 @@ Pedidos:
         priority: 'high',
         columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
         order: 3.0,
+        createdBy: { id: 'law-008', name: 'Beatriz Rocha', photo: 'https://i.pravatar.cc/150?u=beatriz' },
         createdAt: '2026-01-08',
         updatedAt: '2026-01-15',
       },
@@ -248,5 +252,28 @@ export const kanbanService = {
 
     const response = await api.delete(`/kanban/columns/${id}`);
     return response.success;
+  },
+
+  async updateCase(id: string, data: Partial<Omit<LegalCase, 'id'>>): Promise<LegalCase | null> {
+    if (USE_MOCK) {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      for (const col of mockColumns) {
+        const caseIndex = col.cases.findIndex((c) => c.id === id);
+        if (caseIndex !== -1) {
+          const updatedCase = {
+            ...col.cases[caseIndex],
+            ...data,
+            updatedAt: new Date().toISOString().split('T')[0],
+          };
+          col.cases[caseIndex] = updatedCase;
+          return updatedCase;
+        }
+      }
+      return null;
+    }
+
+    const response = await api.patch<LegalCase>(`/kanban/cases/${id}`, data);
+    return response.success ? response.data : null;
   },
 };

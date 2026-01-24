@@ -1,6 +1,7 @@
 'use client';
 
 import { APP_NAME } from '@/lib/constants';
+import { getInitials } from '@/lib/utils';
 import { useAuth } from '@/hooks';
 import { Avatar } from '@/components/ui';
 import { ThemeToggle } from './theme-toggle';
@@ -19,8 +20,8 @@ export function Header() {
         {isAuthenticated && user && (
           <div>
             <Avatar
-              name={user.name}
-              src={user.image_url ? user.image_url : undefined}
+              name={getInitials(user.name)}
+              src={user.photo ? user.photo : undefined}
               size="sm"
               color="primary"
               className="cursor-pointer"

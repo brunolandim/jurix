@@ -55,7 +55,10 @@
       "priority": "Priority",
       "createdAt": "Created at",
       "updatedAt": "Updated at",
-      "close": "Close"
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "selectLawyer": "Select assignee"
     }
   },
   "priority": {

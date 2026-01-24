@@ -14,7 +14,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
+  photo: string;
 };
 
 export type LoginCredentials = {
@@ -42,7 +42,7 @@ export type LegalCase = {
   columnId: string;
   order: number;
   lawyer?: { id: string; photo: string; name: string };
-  createdBy?: { id: string; photo: string; name: string };
+  createdBy: { id: string; photo: string; name: string };
   createdAt: string;
   updatedAt: string;
 };

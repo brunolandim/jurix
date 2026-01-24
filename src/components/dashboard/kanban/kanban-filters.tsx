@@ -2,8 +2,19 @@
 
 import { Search, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Avatar, Input, Tooltip, Button, Checkbox, AvatarGroup, Popover, PopoverTrigger, PopoverContent } from '@/components/ui';
+import {
+  Avatar,
+  Input,
+  Tooltip,
+  Button,
+  Checkbox,
+  AvatarGroup,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui';
 import { Lawyer } from '@/types';
+import { getInitials } from '@/lib/utils';
 
 type KanbanFiltersProps = {
   searchTerm: string;
@@ -64,7 +75,7 @@ export function KanbanFilters({
                         onValueChange={() => onToggleLawyer(lawyer.id)}
                         size="sm"
                       />
-                      <Avatar name={lawyer.name} src={lawyer.photo} size="sm" className="shrink-0" />
+                      <Avatar name={getInitials(lawyer.name)} src={lawyer.photo} size="sm" className="shrink-0" />
                       <span className="text-sm">{lawyer.name}</span>
                     </div>
                   ))}
@@ -91,7 +102,7 @@ export function KanbanFilters({
           {lawyers.map((lawyer) => (
             <Tooltip key={lawyer.id} content={lawyer.name}>
               <Avatar
-                name={lawyer.name}
+                name={getInitials(lawyer.name)}
                 src={lawyer.photo}
                 size="sm"
                 className="cursor-pointer"

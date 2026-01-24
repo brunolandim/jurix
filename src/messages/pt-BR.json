@@ -55,7 +55,10 @@
       "priority": "Prioridade",
       "createdAt": "Criado em",
       "updatedAt": "Atualizado em",
-      "close": "Fechar"
+      "close": "Fechar",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "selectLawyer": "Selecionar responsável"
     }
   },
   "priority": {
