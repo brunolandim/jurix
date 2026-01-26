@@ -32,6 +32,28 @@ export type AuthState = {
 // Case Types
 export type CasePriority = 'low' | 'medium' | 'high' | 'urgent';
 
+// Notification Types
+export type NotificationType = 'hearing' | 'deadline' | 'meeting' | 'task' | 'other';
+
+export type CaseNotification = {
+  id: string;
+  type: NotificationType;
+  message?: string;
+  date: string; // ISO date string - quando a notificação deve aparecer
+  caseId: string;
+  lawyerId?: string; // Advogado responsável (para envio)
+
+  // Controle de leitura (frontend)
+  isRead: boolean; // Se o usuário viu/confirmou
+  readAt?: string; // Quando marcou como lida
+
+  // Controle de envio (backend job)
+  isSent: boolean; // Se o job já enviou (email/SMS)
+  sentAt?: string; // Quando foi enviada
+
+  createdAt: string;
+};
+
 export type LegalCase = {
   id: string;
   number: string;
@@ -43,6 +65,7 @@ export type LegalCase = {
   order: number;
   lawyer?: { id: string; photo: string; name: string };
   createdBy: { id: string; photo: string; name: string };
+  notifications?: CaseNotification[];
   createdAt: string;
   updatedAt: string;
 };
@@ -51,6 +74,8 @@ export type LegalCase = {
 export type Column = {
   id: string;
   title: string;
+  key?: string; // Chave de tradução para colunas padrão (ex: "new")
+  isDefault?: boolean; // Coluna padrão não pode ser deletada
   order: number;
   userId: string;
   createdAt: string;

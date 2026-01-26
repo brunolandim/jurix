@@ -1,14 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
-import { useKanban } from '@/hooks';
+import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useKanban, useAuth } from '@/hooks';
+import { Button } from '@/components/ui';
 import { KanbanColumn } from './kanban-column';
 import { KanbanCardContent } from './kanban-card';
 import { KanbanSkeleton } from './kanban-skeleton';
 import { KanbanFilters } from './kanban-filters';
-import { CaseDetailModal } from './case-detail-modal';
+import { CaseDetailModal, CreateCaseModal } from './modal';
+import { AddColumn } from './add-column';
 
 export function KanbanBoard() {
+  const t = useTranslations('kanban');
+  const { user } = useAuth();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   const {
     columns,
     filteredColumns,
@@ -31,6 +40,12 @@ export function KanbanBoard() {
     showUnassigned,
     toggleUnassigned,
     clearFilters,
+    updateColumnTitle,
+    createColumn,
+    deleteColumn,
+    createCase,
+    addNotification,
+    deleteNotification,
   } = useKanban();
 
   if (isLoading) {
@@ -45,7 +60,7 @@ export function KanbanBoard() {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="mb-4">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <KanbanFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -56,12 +71,32 @@ export function KanbanBoard() {
           showUnassigned={showUnassigned}
           onToggleUnassigned={toggleUnassigned}
         />
+        <Button
+          color="primary"
+          startContent={<Plus size={18} />}
+          onPress={() => setIsCreateModalOpen(true)}
+        >
+          {t('createCase.button')}
+        </Button>
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-15rem)]">
-        {filteredColumns.map((column) => (
-          <KanbanColumn key={column.id} column={column} onCardClick={selectCase} />
-        ))}
+        {filteredColumns.map((column) => {
+          const originalColumn = columns.find((c) => c.id === column.id);
+          const totalCount = originalColumn?.cases.length ?? 0;
+
+          return (
+            <KanbanColumn
+              key={column.id}
+              column={column}
+              totalCount={totalCount}
+              onCardClick={selectCase}
+              onColumnTitleUpdate={updateColumnTitle}
+              onColumnDelete={deleteColumn}
+            />
+          );
+        })}
+        <AddColumn onCreateColumn={createColumn} />
       </div>
 
       <DragOverlay>
@@ -85,6 +120,22 @@ export function KanbanBoard() {
           }}
           onDescriptionChange={(caseId, newDescription) => updateCaseData(caseId, { description: newDescription })}
           onLawyerChange={(caseId, newLawyer) => updateCaseData(caseId, { lawyer: newLawyer })}
+          onAddNotification={addNotification}
+          onDeleteNotification={deleteNotification}
+        />
+      )}
+
+      {user && (
+        <CreateCaseModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          lawyers={lawyers}
+          currentUser={{
+            id: user.id,
+            name: user.name,
+            photo: user.photo,
+          }}
+          onCreateCase={createCase}
         />
       )}
     </DndContext>

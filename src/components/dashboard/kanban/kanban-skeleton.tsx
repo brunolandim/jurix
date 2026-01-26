@@ -43,10 +43,10 @@ function ColumnSkeleton({ cardCount }: { cardCount: number }) {
 export function KanbanSkeleton() {
   return (
     <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-12rem)]">
-      <ColumnSkeleton cardCount={2} />
-      <ColumnSkeleton cardCount={1} />
-      <ColumnSkeleton cardCount={1} />
-      <ColumnSkeleton cardCount={0} />
+      <ColumnSkeleton cardCount={4} />
+      <ColumnSkeleton cardCount={6} />
+      <ColumnSkeleton cardCount={3} />
+      <ColumnSkeleton cardCount={6} />
     </div>
   );
 }

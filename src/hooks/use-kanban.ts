@@ -11,8 +11,8 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { KanbanColumn, LegalCase, Lawyer } from '@/types';
-import { kanbanService, lawyerService } from '@/services';
+import { KanbanColumn, LegalCase, Lawyer, CaseNotification, NotificationType } from '@/types';
+import { kanbanService, lawyerService, CreateCaseParams } from '@/services';
 
 const FILTERS_STORAGE_KEY = 'jurix-kanban-filters';
 
@@ -378,6 +378,205 @@ export function useKanban() {
     selectedCaseRef.current = null;
   }, []);
 
+  const updateColumnTitle = useCallback(
+    async (columnId: string, newTitle: string): Promise<boolean> => {
+      const previousColumns = columnsRef.current;
+
+      updateColumns((prev) =>
+        prev.map((col) => (col.id === columnId ? { ...col, title: newTitle } : col))
+      );
+
+      try {
+        const result = await kanbanService.updateColumn(columnId, newTitle);
+
+        if (!result) {
+          updateColumns(previousColumns);
+          return false;
+        }
+
+        return true;
+      } catch {
+        updateColumns(previousColumns);
+        return false;
+      }
+    },
+    [updateColumns]
+  );
+
+  const createCase = useCallback(
+    async (params: Omit<CreateCaseParams, 'columnId'>): Promise<LegalCase | null> => {
+      const firstColumn = columnsRef.current[0];
+      if (!firstColumn) return null;
+
+      const fullParams: CreateCaseParams = {
+        ...params,
+        columnId: firstColumn.id,
+      };
+
+      try {
+        const newCase = await kanbanService.createCase(fullParams);
+
+        if (newCase) {
+          updateColumns((prev) =>
+            prev.map((col) =>
+              col.id === firstColumn.id ? { ...col, cases: [...col.cases, newCase] } : col
+            )
+          );
+          return newCase;
+        }
+
+        return null;
+      } catch {
+        return null;
+      }
+    },
+    [updateColumns]
+  );
+
+  const createColumn = useCallback(
+    async (title: string): Promise<boolean> => {
+      try {
+        const newColumn = await kanbanService.createColumn(title);
+
+        if (newColumn) {
+          updateColumns((prev) => [...prev, newColumn]);
+          return true;
+        }
+
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [updateColumns]
+  );
+
+  const deleteColumn = useCallback(
+    async (columnId: string): Promise<{ success: boolean; error?: 'default' | 'has_cases' }> => {
+      const column = columnsRef.current.find((c) => c.id === columnId);
+
+      if (!column) {
+        return { success: false };
+      }
+
+      // Não permite deletar coluna padrão
+      if (column.isDefault) {
+        return { success: false, error: 'default' };
+      }
+
+      // Não permite deletar coluna com casos
+      if (column.cases.length > 0) {
+        return { success: false, error: 'has_cases' };
+      }
+
+      const previousColumns = columnsRef.current;
+
+      updateColumns((prev) => prev.filter((c) => c.id !== columnId));
+
+      try {
+        const success = await kanbanService.deleteColumn(columnId);
+
+        if (!success) {
+          updateColumns(previousColumns);
+          return { success: false };
+        }
+
+        return { success: true };
+      } catch {
+        updateColumns(previousColumns);
+        return { success: false };
+      }
+    },
+    [updateColumns]
+  );
+
+  const addNotification = useCallback(
+    async (
+      caseId: string,
+      data: { type: NotificationType; message?: string; date: string }
+    ): Promise<CaseNotification | null> => {
+      try {
+        const newNotification = await kanbanService.addNotification({
+          caseId,
+          ...data,
+        });
+
+        if (newNotification) {
+          updateColumns((prev) =>
+            prev.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? { ...c, notifications: [...(c.notifications || []), newNotification] }
+                  : c
+              ),
+            }))
+          );
+
+          // Atualiza selectedCase se for o mesmo
+          if (selectedCaseRef.current?.id === caseId) {
+            const updatedCase = {
+              ...selectedCaseRef.current,
+              notifications: [...(selectedCaseRef.current.notifications || []), newNotification],
+            };
+            setSelectedCase(updatedCase);
+            selectedCaseRef.current = updatedCase;
+          }
+
+          return newNotification;
+        }
+
+        return null;
+      } catch {
+        return null;
+      }
+    },
+    [updateColumns]
+  );
+
+  const deleteNotification = useCallback(
+    async (caseId: string, notificationId: string): Promise<boolean> => {
+      try {
+        const success = await kanbanService.deleteNotification(caseId, notificationId);
+
+        if (success) {
+          updateColumns((prev) =>
+            prev.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? {
+                      ...c,
+                      notifications: (c.notifications || []).filter((n) => n.id !== notificationId),
+                    }
+                  : c
+              ),
+            }))
+          );
+
+          // Atualiza selectedCase se for o mesmo
+          if (selectedCaseRef.current?.id === caseId) {
+            const updatedCase = {
+              ...selectedCaseRef.current,
+              notifications: (selectedCaseRef.current.notifications || []).filter(
+                (n) => n.id !== notificationId
+              ),
+            };
+            setSelectedCase(updatedCase);
+            selectedCaseRef.current = updatedCase;
+          }
+
+          return true;
+        }
+
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [updateColumns]
+  );
+
   return {
     columns,
     filteredColumns,
@@ -402,5 +601,14 @@ export function useKanban() {
     showUnassigned,
     toggleUnassigned,
     clearFilters,
+    // Column operations
+    updateColumnTitle,
+    createColumn,
+    deleteColumn,
+    // Case operations
+    createCase,
+    // Notification operations
+    addNotification,
+    deleteNotification,
   };
 }

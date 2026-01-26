@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks';
 import { Avatar } from '@/components/ui';
 import { ThemeToggle } from './theme-toggle';
 import { LanguageSelector } from './language-selector';
+import { HeaderNotifications } from './header-notifications';
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -17,6 +18,7 @@ export function Header() {
       <div className="flex items-center gap-2">
         <LanguageSelector />
         <ThemeToggle />
+        {isAuthenticated && <HeaderNotifications />}
         {isAuthenticated && user && (
           <div>
             <Avatar

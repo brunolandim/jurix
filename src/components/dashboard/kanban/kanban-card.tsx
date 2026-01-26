@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { BellRing } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
@@ -30,6 +31,7 @@ type KanbanCardContentProps = {
 
 export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentProps) {
   const t = useTranslations('priority');
+  const tKanban = useTranslations('kanban');
   const { locale } = useLocale();
 
   return (
@@ -60,7 +62,20 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
               <span>{legalCase.lawyer.name}</span>
             </div>
           )}
-          <span className="ml-auto">{new Date(legalCase.updatedAt).toLocaleDateString(locale)}</span>
+          <div className="flex items-center gap-3 ml-auto">
+            {legalCase.notifications && legalCase.notifications.length > 0 && (
+              <Tooltip
+                content={tKanban('card.notifications', { count: legalCase.notifications.length })}
+                placement="top"
+              >
+                <div className="flex items-center gap-1 text-default-500">
+                  <BellRing size={12} />
+                  <span>{legalCase.notifications.length}</span>
+                </div>
+              </Tooltip>
+            )}
+            <span>{new Date(legalCase.updatedAt).toLocaleDateString(locale)}</span>
+          </div>
         </div>
       </CardBody>
     </Card>
@@ -91,7 +106,6 @@ export function KanbanCard({ legalCase, onClick }: KanbanCardProps) {
     const dx = Math.abs(e.clientX - mouseDownPos.current.x);
     const dy = Math.abs(e.clientY - mouseDownPos.current.y);
 
-    // Se o movimento foi menor que 5px, considera como click
     if (dx < 5 && dy < 5 && onClick) {
       onClick(legalCase);
     }

@@ -19,8 +19,9 @@ import {
   Button,
   Textarea,
 } from '@/components/ui';
-import { LegalCase, CasePriority, KanbanColumn, Lawyer } from '@/types';
+import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType } from '@/types';
 import { getInitials } from '@/lib/utils';
+import { CaseNotifications } from '../case-notifications';
 
 const priorityColors: Record<CasePriority, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger'> = {
   low: 'default',
@@ -38,6 +39,11 @@ type CaseDetailModalProps = {
   onColumnChange?: (caseId: string, newColumnId: string) => void;
   onDescriptionChange?: (caseId: string, newDescription: string) => Promise<boolean>;
   onLawyerChange?: (caseId: string, lawyer: LegalCase['lawyer']) => Promise<boolean>;
+  onAddNotification?: (
+    caseId: string,
+    data: { type: NotificationType; message?: string; date: string }
+  ) => Promise<CaseNotification | null>;
+  onDeleteNotification?: (caseId: string, notificationId: string) => Promise<boolean>;
 };
 
 export function CaseDetailModal({
@@ -49,10 +55,15 @@ export function CaseDetailModal({
   onColumnChange,
   onDescriptionChange,
   onLawyerChange,
+  onAddNotification,
+  onDeleteNotification,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
+  const tColumns = useTranslations('kanban.columns');
   const { locale } = useLocale();
+
+  const getColumnTitle = (column: KanbanColumn) => (column.key ? tColumns(column.key) : column.title);
 
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isSavingDescription, setIsSavingDescription] = useState(false);
@@ -148,7 +159,7 @@ export function CaseDetailModal({
             <Dropdown>
               <DropdownTrigger>
                 <Button color="primary" variant="solid" size="sm" endContent={<ChevronDown className="w-4 h-4" />}>
-                  {currentColumn?.title}
+                  {currentColumn ? getColumnTitle(currentColumn) : ''}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -161,59 +172,84 @@ export function CaseDetailModal({
                 }}
               >
                 {columns.map((column) => (
-                  <DropdownItem key={column.id}>{column.title}</DropdownItem>
+                  <DropdownItem key={column.id}>{getColumnTitle(column)}</DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
           </div>
         </ModalHeader>
+
         <ModalBody>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-default-700 mb-3">{tKanban('modal.description')}:</h3>
-              {isEditingDescription ? (
-                <div className="flex flex-col gap-3">
-                  <Textarea
-                    autoFocus
-                    value={editedDescription}
-                    onValueChange={setEditedDescription}
-                    onKeyDown={handleDescriptionKeyDown}
-                    minRows={20}
-                    className="min-h-79.5"
-                    placeholder={tKanban('modal.noDescription')}
-                    classNames={{
-                      input: 'text-sm min-h-79.5 max-h-79.5 leading-relaxed',
-                    }}
-                  />
-                  <div className="flex gap-2 justify-end">
-                    <Button size="sm" variant="flat" isDisabled={isSavingDescription} onPress={handleDescriptionCancel}>
-                      {tKanban('modal.cancel')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="primary"
-                      isDisabled={!hasDescriptionChanged}
-                      isLoading={isSavingDescription}
-                      onPress={handleDescriptionSave}
-                    >
-                      {tKanban('modal.save')}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className="rounded-lg min-h-84 max-h-84 overflow-auto p-3 cursor-pointer hover:bg-default-100 transition-colors border border-transparent hover:border-default-200"
-                  onClick={handleDescriptionClick}
-                >
-                  {legalCase.description ? (
-                    <div className="text-sm whitespace-pre-wrap text-default-700 leading-relaxed">
-                      {legalCase.description}
+          <div className="flex flex-col md:flex-row gap-6 h-full">
+            <div className="flex-1 min-w-0 h-full">
+              <div>
+                <h3 className="text-sm font-semibold text-default-700 mb-3">{tKanban('modal.description')}:</h3>
+                {isEditingDescription ? (
+                  <div className="flex flex-col gap-3">
+                    <Textarea
+                      autoFocus
+                      value={editedDescription}
+                      onValueChange={setEditedDescription}
+                      onKeyDown={handleDescriptionKeyDown}
+                      minRows={20}
+                      placeholder={tKanban('modal.noDescription')}
+                      classNames={{
+                        input: 'text-sm min-h-79.75 max-h-79.75 leading-relaxed',
+                      }}
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        isDisabled={isSavingDescription}
+                        onPress={handleDescriptionCancel}
+                      >
+                        {tKanban('modal.cancel')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="primary"
+                        isDisabled={!hasDescriptionChanged}
+                        isLoading={isSavingDescription}
+                        onPress={handleDescriptionSave}
+                      >
+                        {tKanban('modal.save')}
+                      </Button>
                     </div>
-                  ) : (
-                    <p className="text-default-400 text-sm italic">{tKanban('modal.noDescription')}</p>
-                  )}
-                </div>
-              )}
+                  </div>
+                ) : (
+                  <div
+                    className="rounded-lg min-h-84 max-h-84  overflow-auto p-3 cursor-pointer hover:bg-default-100 transition-colors border border-transparent hover:border-default-200"
+                    onClick={handleDescriptionClick}
+                  >
+                    {legalCase.description ? (
+                      <div className="text-sm whitespace-pre-wrap text-default-700 leading-relaxed">
+                        {legalCase.description}
+                      </div>
+                    ) : (
+                      <p className="text-default-400 text-sm italic">{tKanban('modal.noDescription')}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Notifications */}
+              <CaseNotifications
+                notifications={legalCase.notifications || []}
+                onAdd={async (data) => {
+                  if (onAddNotification) {
+                    const result = await onAddNotification(legalCase.id, data);
+                    return !!result;
+                  }
+                  return false;
+                }}
+                onDelete={async (notificationId) => {
+                  if (onDeleteNotification) {
+                    return await onDeleteNotification(legalCase.id, notificationId);
+                  }
+                  return false;
+                }}
+              />
             </div>
 
             <div className=" w-full md:w-72 min-h-72 shrink-0">

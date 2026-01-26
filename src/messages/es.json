@@ -43,6 +43,9 @@
       "waiting": "En Espera",
       "completed": "Completado"
     },
+    "card": {
+      "notifications": "{count, plural, =1 {# notificación} other {# notificaciones}}"
+    },
     "modal": {
       "description": "Descripción",
       "noDescription": "Sin descripción",
@@ -59,6 +62,29 @@
       "save": "Guardar",
       "cancel": "Cancelar",
       "selectLawyer": "Seleccionar responsable"
+    },
+    "column": {
+      "add": "Agregar Columna",
+      "titlePlaceholder": "Nombre de la columna",
+      "clickToEdit": "Clic para editar",
+      "delete": "Eliminar columna"
+    },
+    "createCase": {
+      "button": "Nuevo Caso",
+      "title": "Crear Nuevo Caso",
+      "caseNumber": "Número del Caso",
+      "caseNumberPlaceholder": "Ej: 0001234-12.2024.8.26.0100",
+      "caseTitle": "Título",
+      "caseTitlePlaceholder": "Ej: Demanda de Indemnización por Daños Morales",
+      "client": "Cliente",
+      "clientPlaceholder": "Nombre del cliente",
+      "priority": "Prioridad",
+      "lawyer": "Abogado Responsable",
+      "selectLawyer": "Seleccionar abogado (opcional)",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe los detalles del caso...",
+      "cancel": "Cancelar",
+      "create": "Crear Caso"
     }
   },
   "priority": {
@@ -67,9 +93,38 @@
     "high": "Alta",
     "urgent": "Urgente"
   },
+  "notification": {
+    "title": "Notificaciones",
+    "add": "Agregar",
+    "noNotifications": "Sin notificaciones",
+    "type": "Tipo",
+    "message": "Mensaje",
+    "messagePlaceholder": "Mensaje opcional...",
+    "date": "Fecha",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "types": {
+      "hearing": "Audiencia",
+      "deadline": "Plazo",
+      "meeting": "Reunión",
+      "task": "Tarea",
+      "other": "Otro"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Notificación",
+      "message": "¿Está seguro de que desea eliminar esta notificación? Esta acción no se puede deshacer."
+    }
+  },
   "theme": {
     "light": "Claro",
     "dark": "Oscuro",
     "toggle": "Cambiar tema"
+  },
+  "headerNotifications": {
+    "title": "Notificaciones",
+    "noNotifications": "Sin notificaciones pendientes",
+    "markAsRead": "Marcar como leída",
+    "markAllAsRead": "Marcar todas"
   }
 }

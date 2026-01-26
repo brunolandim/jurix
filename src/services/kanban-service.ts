@@ -1,279 +1,339 @@
 import { api } from './api';
-import { KanbanColumn, LegalCase } from '@/types';
+import { KanbanColumn, LegalCase, CaseNotification, NotificationType } from '@/types';
 
+// ============ TYPES ============
 export type MoveCaseParams = {
   caseId: string;
   columnId: string;
-  previousId: string | null; // ID of card above (null if first)
-  nextId: string | null; // ID of card below (null if last)
+  previousId: string | null;
+  nextId: string | null;
 };
+
+export type CreateCaseParams = {
+  number: string;
+  title: string;
+  description?: string;
+  client: string;
+  priority: LegalCase['priority'];
+  columnId: string;
+  lawyer?: LegalCase['lawyer'];
+  createdBy: LegalCase['createdBy'];
+};
+
+export type AddNotificationParams = {
+  caseId: string;
+  type: NotificationType;
+  message?: string;
+  date: string;
+};
+
+// ============ MOCK CONFIG ============
+const USE_MOCK = true;
+const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+const MOCK_DELAY = 200;
+
+// Datas para notificações mockadas (algumas no passado para aparecer como pendentes)
+const pastDate1 = new Date(Date.now() - 1000 * 60 * 30).toISOString(); // 30 min atrás
+const pastDate2 = new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(); // 2 horas atrás
+const pastDate3 = new Date(Date.now() - 1000 * 60 * 5).toISOString(); // 5 min atrás
+const pastDate4 = new Date(Date.now() - 1000 * 60 * 15).toISOString(); // 15 min atrás
+const futureDate = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(); // amanhã
 
 const mockColumns: KanbanColumn[] = [
   {
     id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
     title: 'New',
+    key: 'new',
+    isDefault: true,
     order: 0,
-    userId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    userId: MOCK_USER_ID,
     createdAt: '2026-01-01',
     cases: [
       {
-        id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+        id: 'case-001',
         number: '0001234-12.2024.8.26.0100',
-        title: 'Compensation Claim for Moral Damages',
-        description: `Ação de indenização por danos morais movida pelo cliente João Silva contra a empresa XYZ Ltda.
-
-Fatos:
-1. O cliente foi negativado indevidamente nos órgãos de proteção ao crédito
-2. A negativação ocorreu após o pagamento integral da dívida
-3. O cliente sofreu constrangimentos ao tentar realizar compras
-
-Pedidos:
-- Indenização por danos morais no valor de R$ 20.000,00
-- Retirada imediata do nome dos cadastros de inadimplentes
-- Custas processuais e honorários advocatícios`,
+        title: 'Ação de Indenização - João Silva vs Empresa ABC',
+        description: 'Processo de indenização por danos morais decorrentes de acidente de trabalho.',
         client: 'João Silva',
-        priority: 'high',
+        priority: 'high' as const,
         columnId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-        order: 1.0,
+        order: 1,
         lawyer: { id: 'law-001', name: 'Bruno Landim', photo: '/img/homemSpider.jpg' },
-        createdBy: { id: 'law-002', name: 'Ana Oliveira', photo: 'https://i.pravatar.cc/150?u=ana' },
-        createdAt: '2026-01-10',
-        updatedAt: '2026-01-19',
+        createdBy: { id: MOCK_USER_ID, name: 'Admin', photo: '' },
+        notifications: [
+          {
+            id: 'notif-001',
+            type: 'hearing' as const,
+            message: 'Audiência de conciliação na 5ª Vara Cível',
+            date: pastDate1,
+            caseId: 'case-001',
+            lawyerId: 'law-001',
+            isRead: false,
+            isSent: false,
+            createdAt: '2026-01-20T10:00:00Z',
+          },
+          {
+            id: 'notif-002',
+            type: 'deadline' as const,
+            message: 'Prazo para apresentação de contestação',
+            date: pastDate2,
+            caseId: 'case-001',
+            lawyerId: 'law-001',
+            isRead: false,
+            isSent: false,
+            createdAt: '2026-01-19T10:00:00Z',
+          },
+        ],
+        createdAt: '2026-01-15',
+        updatedAt: '2026-01-20',
       },
       {
-        id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
+        id: 'case-002',
         number: '0005678-45.2024.8.26.0100',
-        title: 'Appeal',
-        description:
-          'Recurso de apelação contra sentença desfavorável em primeira instância. Aguardando prazo para contrarrazões.',
+        title: 'Divórcio Consensual - Maria Santos',
+        description: 'Processo de divórcio consensual com partilha de bens.',
         client: 'Maria Santos',
-        priority: 'urgent',
+        priority: 'medium' as const,
         columnId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-        order: 2.0,
-        createdBy: { id: 'law-003', name: 'Pedro Santos', photo: 'https://i.pravatar.cc/150?u=pedro' },
-        createdAt: '2026-01-12',
-        updatedAt: '2026-01-18',
-      },
-    ],
-  },
-  {
-    id: 'd4e5f6a7-b8c9-0123-def0-234567890123',
-    title: 'In Progress',
-    order: 1,
-    userId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
-    createdAt: '2026-01-01',
-    cases: [
-      {
-        id: 'e5f6a7b8-c9d0-1234-ef01-345678901234',
-        number: '0009012-78.2024.8.26.0100',
-        title: 'Extrajudicial Title Execution',
-        client: 'ABC Company Ltd',
-        priority: 'medium',
-        columnId: 'd4e5f6a7-b8c9-0123-def0-234567890123',
-        order: 1.0,
+        order: 2,
         lawyer: { id: 'law-001', name: 'Bruno Landim', photo: '/img/homemSpider.jpg' },
-        createdBy: { id: 'law-005', name: 'João Pereira', photo: 'https://i.pravatar.cc/150?u=joao' },
-        createdAt: '2026-01-05',
-        updatedAt: '2026-01-17',
+        createdBy: { id: MOCK_USER_ID, name: 'Admin', photo: '' },
+        notifications: [
+          {
+            id: 'notif-003',
+            type: 'meeting' as const,
+            message: 'Reunião com cliente para assinatura dos documentos',
+            date: pastDate3,
+            caseId: 'case-002',
+            lawyerId: 'law-001',
+            isRead: false,
+            isSent: false,
+            createdAt: '2026-01-22T08:00:00Z',
+          },
+          {
+            id: 'notif-004',
+            type: 'task' as const,
+            message: 'Preparar petição inicial',
+            date: futureDate,
+            caseId: 'case-002',
+            lawyerId: 'law-001',
+            isRead: false,
+            isSent: false,
+            createdAt: '2026-01-22T08:00:00Z',
+          },
+        ],
+        createdAt: '2026-01-18',
+        updatedAt: '2026-01-22',
       },
     ],
   },
   {
-    id: 'f6a7b8c9-d0e1-2345-f012-456789012345',
-    title: 'Waiting',
-    order: 2,
-    userId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+    title: 'In Progress',
+    key: 'inProgress',
+    isDefault: false,
+    order: 1,
+    userId: MOCK_USER_ID,
     createdAt: '2026-01-01',
     cases: [
       {
-        id: 'a7b8c9d0-e1f2-3456-0123-567890123456',
-        number: '0003456-90.2024.8.26.0100',
-        title: 'Writ of Mandamus',
-        client: 'Pedro Oliveira',
-        priority: 'low',
-        columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
-        order: 1.0,
-        createdBy: { id: 'law-006', name: 'Fernanda Lima', photo: 'https://i.pravatar.cc/150?u=camila' },
-        createdAt: '2026-01-08',
-        updatedAt: '2026-01-15',
-      },
-      {
-        id: 'a7b8c9d0-e1f2-3456-0123-567890123452',
-        number: '0003457-91.2024.8.26.0100',
-        title: 'Labor Lawsuit',
-        client: 'Carlos Mendes',
-        priority: 'medium',
-        columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
-        order: 2.0,
-        createdBy: { id: 'law-007', name: 'Ricardo Mendes', photo: 'https://i.pravatar.cc/150?u=ricardo' },
-        createdAt: '2026-01-08',
-        updatedAt: '2026-01-15',
-      },
-      {
-        id: 'a7b8c9d0-e1f2-3456-0123-567890123453',
-        number: '0003458-92.2024.8.26.0100',
-        title: 'Ordinary Appeal',
-        client: 'Ana Paula Costa',
-        priority: 'high',
-        columnId: 'f6a7b8c9-d0e1-2345-f012-456789012345',
-        order: 3.0,
-        createdBy: { id: 'law-008', name: 'Beatriz Rocha', photo: 'https://i.pravatar.cc/150?u=beatriz' },
-        createdAt: '2026-01-08',
-        updatedAt: '2026-01-15',
+        id: 'case-003',
+        number: '0009876-54.2024.8.26.0100',
+        title: 'Recuperação de Crédito - Banco XYZ',
+        description: 'Ação de cobrança para recuperação de crédito.',
+        client: 'Banco XYZ',
+        priority: 'urgent' as const,
+        columnId: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+        order: 1,
+        lawyer: { id: 'law-001', name: 'Bruno Landim', photo: '/img/homemSpider.jpg' },
+        createdBy: { id: MOCK_USER_ID, name: 'Admin', photo: '' },
+        notifications: [
+          {
+            id: 'notif-005',
+            type: 'task' as const,
+            message: 'Revisar petição inicial do caso',
+            date: pastDate4,
+            caseId: 'case-003',
+            lawyerId: 'law-001',
+            isRead: false,
+            isSent: false,
+            createdAt: '2026-01-25T14:00:00Z',
+          },
+        ],
+        createdAt: '2026-01-10',
+        updatedAt: '2026-01-25',
       },
     ],
   },
   {
-    id: 'b8c9d0e1-f2a3-4567-1234-678901234567',
+    id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
     title: 'Completed',
-    order: 3,
-    userId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    key: 'completed',
+    isDefault: false,
+    order: 2,
+    userId: MOCK_USER_ID,
     createdAt: '2026-01-01',
     cases: [],
   },
 ];
 
-const USE_MOCK = true;
+// ============ HELPERS ============
+const delay = (ms = MOCK_DELAY) => new Promise((r) => setTimeout(r, ms));
+const uuid = () => crypto.randomUUID();
+const today = () => new Date().toISOString().split('T')[0];
+const now = () => new Date().toISOString();
 
-function calculateNewOrder(cases: LegalCase[], previousId: string | null, nextId: string | null): number {
-  const previous = previousId ? cases.find((c) => c.id === previousId) : null;
-  const next = nextId ? cases.find((c) => c.id === nextId) : null;
+const findColumn = (id: string) => mockColumns.find((c) => c.id === id);
+const findColumnIndex = (id: string) => mockColumns.findIndex((c) => c.id === id);
 
-  const previousOrder = previous?.order ?? null;
-  const nextOrder = next?.order ?? null;
-
-  // First card in list
-  if (previousOrder === null && nextOrder === null) {
-    return 1.0;
+const findCaseInColumns = (caseId: string) => {
+  for (const col of mockColumns) {
+    const caseItem = col.cases.find((c) => c.id === caseId);
+    if (caseItem) return { column: col, case: caseItem };
   }
+  return null;
+};
 
-  // Insert at beginning (before first)
-  if (previousOrder === null && nextOrder !== null) {
-    return nextOrder / 2;
+const findCaseWithIndex = (caseId: string) => {
+  for (const col of mockColumns) {
+    const index = col.cases.findIndex((c) => c.id === caseId);
+    if (index !== -1) return { column: col, index, case: col.cases[index] };
   }
+  return null;
+};
 
-  // Insert at end (after last)
-  if (previousOrder !== null && nextOrder === null) {
-    return previousOrder + 1.0;
-  }
+const calculateOrder = (cases: LegalCase[], previousId: string | null, nextId: string | null): number => {
+  const prevOrder = previousId ? cases.find((c) => c.id === previousId)?.order ?? null : null;
+  const nextOrder = nextId ? cases.find((c) => c.id === nextId)?.order ?? null : null;
 
-  // Insert in middle (between two cards)
-  return (previousOrder! + nextOrder!) / 2;
-}
+  if (prevOrder === null && nextOrder === null) return 1.0;
+  if (prevOrder === null) return nextOrder! / 2;
+  if (nextOrder === null) return prevOrder + 1.0;
+  return (prevOrder + nextOrder) / 2;
+};
 
-function sortCasesByOrder(columns: KanbanColumn[]): KanbanColumn[] {
-  return columns.map((col) => ({
-    ...col,
-    cases: [...col.cases].sort((a, b) => a.order - b.order),
-  }));
-}
+const sortByOrder = (columns: KanbanColumn[]) =>
+  columns.map((col) => ({ ...col, cases: [...col.cases].sort((a, b) => a.order - b.order) }));
 
+// ============ SERVICE ============
 export const kanbanService = {
   async getColumns(): Promise<KanbanColumn[]> {
     if (USE_MOCK) {
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return sortCasesByOrder(mockColumns);
+      await delay(500);
+      return sortByOrder(mockColumns);
     }
-
-    const response = await api.get<KanbanColumn[]>('/kanban/columns');
-    return response.success ? sortCasesByOrder(response.data) : [];
+    const res = await api.get<KanbanColumn[]>('/kanban/columns');
+    return res.success ? sortByOrder(res.data) : [];
   },
 
-  async moveCase(params: MoveCaseParams): Promise<LegalCase | null> {
-    const { caseId, columnId, previousId, nextId } = params;
-
+  async moveCase({ caseId, columnId, previousId, nextId }: MoveCaseParams): Promise<LegalCase | null> {
     if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Find the case
-      let legalCase: LegalCase | null = null;
-      for (const col of mockColumns) {
-        const found = col.cases.find((c) => c.id === caseId);
-        if (found) {
-          legalCase = found;
-          break;
-        }
-      }
-      if (!legalCase) return null;
-
-      // Find target column
-      const targetColumn = mockColumns.find((c) => c.id === columnId);
-      if (!targetColumn) return null;
-
-      // Calculate new order based on neighbors
-      const newOrder = calculateNewOrder(targetColumn.cases, previousId, nextId);
-
-      return { ...legalCase, columnId, order: newOrder };
+      await delay();
+      const found = findCaseInColumns(caseId);
+      const target = findColumn(columnId);
+      if (!found || !target) return null;
+      return { ...found.case, columnId, order: calculateOrder(target.cases, previousId, nextId) };
     }
-
-    const response = await api.put<LegalCase>(`/kanban/cases/${caseId}/move`, {
-      columnId,
-      previousId,
-      nextId,
-    });
-    return response.success ? response.data : null;
+    const res = await api.put<LegalCase>(`/kanban/cases/${caseId}/move`, { columnId, previousId, nextId });
+    return res.success ? res.data : null;
   },
 
   async createColumn(title: string): Promise<KanbanColumn | null> {
     if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      const newColumn: KanbanColumn = {
-        id: crypto.randomUUID(),
+      await delay();
+      const col: KanbanColumn = {
+        id: uuid(),
         title,
         order: mockColumns.length,
-        userId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
-        createdAt: new Date().toISOString(),
+        userId: MOCK_USER_ID,
+        createdAt: now(),
         cases: [],
       };
-      return newColumn;
+      mockColumns.push(col);
+      return col;
     }
-
-    const response = await api.post<KanbanColumn>('/kanban/columns', { title });
-    return response.success ? response.data : null;
+    const res = await api.post<KanbanColumn>('/kanban/columns', { title });
+    return res.success ? res.data : null;
   },
 
   async updateColumn(id: string, title: string): Promise<KanbanColumn | null> {
     if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      const column = mockColumns.find((c) => c.id === id);
-      return column ? { ...column, title } : null;
+      await delay();
+      const idx = findColumnIndex(id);
+      if (idx === -1) return null;
+      mockColumns[idx] = { ...mockColumns[idx], title };
+      return mockColumns[idx];
     }
-
-    const response = await api.put<KanbanColumn>(`/kanban/columns/${id}`, { title });
-    return response.success ? response.data : null;
+    const res = await api.put<KanbanColumn>(`/kanban/columns/${id}`, { title });
+    return res.success ? res.data : null;
   },
 
   async deleteColumn(id: string): Promise<boolean> {
     if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await delay();
+      const idx = findColumnIndex(id);
+      if (idx === -1) return false;
+      mockColumns.splice(idx, 1);
       return true;
     }
-
-    const response = await api.delete(`/kanban/columns/${id}`);
-    return response.success;
+    const res = await api.delete(`/kanban/columns/${id}`);
+    return res.success;
   },
 
   async updateCase(id: string, data: Partial<Omit<LegalCase, 'id'>>): Promise<LegalCase | null> {
     if (USE_MOCK) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      for (const col of mockColumns) {
-        const caseIndex = col.cases.findIndex((c) => c.id === id);
-        if (caseIndex !== -1) {
-          const updatedCase = {
-            ...col.cases[caseIndex],
-            ...data,
-            updatedAt: new Date().toISOString().split('T')[0],
-          };
-          col.cases[caseIndex] = updatedCase;
-          return updatedCase;
-        }
-      }
-      return null;
+      await delay();
+      const found = findCaseWithIndex(id);
+      if (!found) return null;
+      const updated = { ...found.case, ...data, updatedAt: today() };
+      found.column.cases[found.index] = updated;
+      return updated;
     }
+    const res = await api.patch<LegalCase>(`/kanban/cases/${id}`, data);
+    return res.success ? res.data : null;
+  },
 
-    const response = await api.patch<LegalCase>(`/kanban/cases/${id}`, data);
-    return response.success ? response.data : null;
+  async createCase(params: CreateCaseParams): Promise<LegalCase | null> {
+    if (USE_MOCK) {
+      await delay();
+      const col = findColumn(params.columnId);
+      if (!col) return null;
+      const maxOrder = col.cases.length > 0 ? Math.max(...col.cases.map((c) => c.order)) : 0;
+      const newCase: LegalCase = {
+        id: uuid(),
+        ...params,
+        order: maxOrder + 1,
+        createdAt: today(),
+        updatedAt: today(),
+      };
+      col.cases.push(newCase);
+      return newCase;
+    }
+    const res = await api.post<LegalCase>('/kanban/cases', params);
+    return res.success ? res.data : null;
+  },
+
+  async addNotification(params: AddNotificationParams): Promise<CaseNotification | null> {
+    if (USE_MOCK) {
+      await delay();
+      return {
+        id: uuid(),
+        ...params,
+        isRead: false,
+        isSent: false,
+        createdAt: now(),
+      };
+    }
+    const res = await api.post<CaseNotification>(`/kanban/cases/${params.caseId}/notifications`, params);
+    return res.success ? res.data : null;
+  },
+
+  async deleteNotification(caseId: string, notificationId: string): Promise<boolean> {
+    if (USE_MOCK) {
+      await delay();
+      return true;
+    }
+    const res = await api.delete(`/kanban/cases/${caseId}/notifications/${notificationId}`);
+    return res.success;
   },
 };
