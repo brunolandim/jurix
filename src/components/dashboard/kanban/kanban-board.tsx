@@ -4,7 +4,24 @@ import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useKanban, useAuth } from '@/hooks';
+import {
+  // Selectors
+  useColumns,
+  useFilteredColumns,
+  useKanbanIsLoading,
+  useActiveCase,
+  useSelectedCase,
+  useLawyers,
+  useSearchTerm,
+  useSelectedLawyerIds,
+  useShowUnassigned,
+  useAuthUser,
+  // Actions
+  useKanbanActions,
+  useFilterActions,
+  // DnD hook (only React-specific logic)
+  useDndKanban,
+} from '@/stores';
 import { Button } from '@/components/ui';
 import { KanbanColumn } from './kanban-column';
 import { KanbanCardContent } from './kanban-card';
@@ -15,38 +32,38 @@ import { AddColumn } from './add-column';
 
 export function KanbanBoard() {
   const t = useTranslations('kanban');
-  const { user } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // State from store
+  const user = useAuthUser();
+  const columns = useColumns();
+  const filteredColumns = useFilteredColumns();
+  const isLoading = useKanbanIsLoading();
+  const activeCase = useActiveCase();
+  const selectedCase = useSelectedCase();
+  const lawyers = useLawyers();
+  const searchTerm = useSearchTerm();
+  const selectedLawyerIds = useSelectedLawyerIds();
+  const showUnassigned = useShowUnassigned();
+
+  // Actions from store
   const {
-    columns,
-    filteredColumns,
-    isLoading,
-    activeCase,
-    sensors,
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd,
-    moveCaseToColumn,
-    updateCaseData,
-    selectedCase,
     selectCase,
     closeCase,
-    searchTerm,
-    setSearchTerm,
-    lawyers,
-    selectedLawyerIds,
-    toggleLawyer,
-    showUnassigned,
-    toggleUnassigned,
-    clearFilters,
-    updateColumnTitle,
-    createColumn,
-    deleteColumn,
+    moveCaseToColumn,
+    updateCaseData,
     createCase,
+    createColumn,
+    updateColumnTitle,
+    deleteColumn,
     addNotification,
     deleteNotification,
-  } = useKanban();
+  } = useKanbanActions();
+
+  const { setSearchTerm, toggleLawyer, toggleUnassigned, clearFilters } = useFilterActions();
+
+  // DnD logic (React hooks that can't be in Zustand)
+  const { sensors, handleDragStart, handleDragOver, handleDragEnd } = useDndKanban();
 
   if (isLoading) {
     return <KanbanSkeleton />;

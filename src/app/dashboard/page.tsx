@@ -1,12 +1,13 @@
 'use client';
 
-import { useAuth } from '@/hooks';
+import { useIsAuthenticated, useAuthIsLoading } from '@/stores';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { KanbanBoard } from '@/components/dashboard/kanban';
 
 export default function Dashboard() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = useIsAuthenticated();
+  const isLoading = useAuthIsLoading();
   const router = useRouter();
 
   useEffect(() => {

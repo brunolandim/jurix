@@ -1,12 +1,13 @@
 'use client';
 
-import { useAuth } from '@/hooks';
+import { useIsAuthenticated, useAuthIsLoading } from '@/stores';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = useIsAuthenticated();
+  const isLoading = useAuthIsLoading();
   const router = useRouter();
   const t = useTranslations('common');
 

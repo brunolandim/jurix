@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BellRing, Check, CheckCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useNotifications, NotificationWithCase } from '@/hooks';
+import {
+  useHeaderNotifications,
+  useHeaderNotificationsIsLoading,
+  useHeaderNotificationsActions,
+  useAuthUser,
+  useNotificationsPolling,
+  type NotificationWithCase,
+} from '@/stores';
 import { Badge, Button, Popover, PopoverTrigger, PopoverContent, Chip, Spinner } from '@/components/ui';
 import { NotificationType } from '@/types';
 
@@ -65,22 +72,37 @@ function NotificationItem({
 
 export function HeaderNotifications() {
   const t = useTranslations('headerNotifications');
-  const { notifications, isLoading, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const user = useAuthUser();
+  const notifications = useHeaderNotifications();
+  const isLoading = useHeaderNotificationsIsLoading();
+  const { markAsRead, markAllAsRead } = useHeaderNotificationsActions();
+
+  // Start polling for notifications
+  useNotificationsPolling();
+
   const [isOpen, setIsOpen] = useState(false);
   const [markingId, setMarkingId] = useState<string | null>(null);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
 
-  const handleMarkAsRead = async (id: string) => {
-    setMarkingId(id);
-    await markAsRead(id);
-    setMarkingId(null);
-  };
+  const lawyerId = user?.id || null;
+  const unreadCount = notifications.length;
 
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAsRead = useCallback(
+    async (id: string) => {
+      if (!lawyerId) return;
+      setMarkingId(id);
+      await markAsRead(id, lawyerId);
+      setMarkingId(null);
+    },
+    [lawyerId, markAsRead]
+  );
+
+  const handleMarkAllAsRead = useCallback(async () => {
+    if (!lawyerId) return;
     setIsMarkingAll(true);
-    await markAllAsRead();
+    await markAllAsRead(lawyerId);
     setIsMarkingAll(false);
-  };
+  }, [lawyerId, markAllAsRead]);
 
   return (
     <Popover isOpen={isOpen} onOpenChange={setIsOpen} placement="bottom-end" offset={10}>

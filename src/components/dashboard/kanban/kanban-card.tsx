@@ -9,6 +9,7 @@ import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
 import { LegalCase, CasePriority } from '@/types';
 import { getInitials } from '@/lib/utils';
+import { useCaseNotificationCount } from '@/stores';
 
 const priorityColors: Record<CasePriority, string> = {
   low: 'bg-gray-500',
@@ -33,6 +34,9 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
   const { locale } = useLocale();
+
+  // Direct subscription to notification count - updates automatically when notifications change
+  const notificationCount = useCaseNotificationCount(legalCase.id);
 
   return (
     <Card
@@ -63,14 +67,14 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
             </div>
           )}
           <div className="flex items-center gap-3 ml-auto">
-            {legalCase.notifications && legalCase.notifications.length > 0 && (
+            {notificationCount > 0 && (
               <Tooltip
-                content={tKanban('card.notifications', { count: legalCase.notifications.length })}
+                content={tKanban('card.notifications', { count: notificationCount })}
                 placement="top"
               >
                 <div className="flex items-center gap-1 text-default-500">
                   <BellRing size={12} />
-                  <span>{legalCase.notifications.length}</span>
+                  <span>{notificationCount}</span>
                 </div>
               </Tooltip>
             )}
