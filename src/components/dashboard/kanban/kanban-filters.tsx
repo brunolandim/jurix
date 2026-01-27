@@ -40,7 +40,7 @@ export function KanbanFilters({
   onToggleUnassigned,
 }: KanbanFiltersProps) {
   const t = useTranslations('kanban');
-  const hasActiveFilters = searchTerm.length > 0 || selectedLawyerIds.length > 0 || showUnassigned;
+  const hasActiveFilters = (searchTerm?.length ?? 0) > 0 || (selectedLawyerIds?.length ?? 0) > 0 || showUnassigned;
 
   return (
     <div className="flex gap-5 items-center">
@@ -53,7 +53,7 @@ export function KanbanFilters({
         startContent={<Search className="w-4 h-4 text-default-400" />}
       />
 
-      {lawyers.length > 0 && (
+      {(lawyers?.length ?? 0) > 0 && (
         <AvatarGroup
           isBordered
           max={MAX_VISIBLE_AVATARS}
@@ -71,7 +71,7 @@ export function KanbanFilters({
                       onClick={() => onToggleLawyer(lawyer.id)}
                     >
                       <Checkbox
-                        isSelected={selectedLawyerIds.includes(lawyer.id)}
+                        isSelected={selectedLawyerIds?.includes(lawyer.id) ?? false}
                         onValueChange={() => onToggleLawyer(lawyer.id)}
                         size="sm"
                       />
@@ -106,7 +106,7 @@ export function KanbanFilters({
                 src={lawyer.photo}
                 size="sm"
                 className="cursor-pointer"
-                color={selectedLawyerIds.includes(lawyer.id) ? 'primary' : 'default'}
+                color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
                 isBordered
                 onClick={() => onToggleLawyer(lawyer.id)}
               />

@@ -84,7 +84,7 @@ export const useFilteredColumns = () => {
   const showUnassigned = useJurixStore((state) => state.filters.showUnassigned);
 
   return useMemo(() => {
-    const search = searchTerm.toLowerCase().trim();
+    const search = (searchTerm ?? '').toLowerCase().trim();
     const hasLawyerFilter = selectedLawyerIds.length > 0 || showUnassigned;
 
     return columns.map((col) => ({
