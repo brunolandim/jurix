@@ -44,7 +44,8 @@
       "completed": "Completed"
     },
     "card": {
-      "notifications": "{count, plural, =1 {# notification} other {# notifications}}"
+      "notifications": "{count, plural, =1 {# notification} other {# notifications}}",
+      "documents": "{count, plural, =1 {# pending document} other {# pending documents}}"
     },
     "modal": {
       "description": "Description",
@@ -126,5 +127,54 @@
     "noNotifications": "No pending notifications",
     "markAsRead": "Mark as read",
     "markAllAsRead": "Mark all"
+  },
+  "document": {
+    "title": "Requested Documents",
+    "add": "Request",
+    "noDocuments": "No documents requested",
+    "selectDocuments": "Select documents",
+    "selectPlaceholder": "Click to select...",
+    "addSelected": "Add",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "markAsReceived": "Mark as received",
+    "markAsPending": "Mark as pending",
+    "status": {
+      "pending": "Pending",
+      "received": "Received"
+    },
+    "options": {
+      "rg": "ID Card",
+      "cpf": "Tax ID (CPF)",
+      "cnh": "Driver's License",
+      "compResidencia": "Proof of Address",
+      "compRenda": "Proof of Income",
+      "certNascimento": "Birth Certificate",
+      "certCasamento": "Marriage Certificate",
+      "certObito": "Death Certificate",
+      "contracheque": "Pay Stub",
+      "cartTrabalho": "Work Permit",
+      "irpf": "Tax Return",
+      "extratoFgts": "FGTS Statement",
+      "extratoBanco": "Bank Statement",
+      "contrato": "Contract",
+      "procuracao": "Power of Attorney",
+      "certNegDebitos": "Debt Clearance Certificate",
+      "certAntecedentes": "Background Check",
+      "laudoMedico": "Medical Report",
+      "boletimOcorrencia": "Police Report",
+      "escritura": "Deed",
+      "matriculaImovel": "Property Registration",
+      "iptu": "Property Tax",
+      "contratoSocial": "Articles of Incorporation",
+      "cnpj": "Company Tax ID",
+      "balanco": "Balance Sheet",
+      "notaFiscal": "Invoice",
+      "outros": "Other"
+    },
+    "deleteConfirm": {
+      "title": "Delete Document",
+      "message": "Are you sure you want to delete this document request? This action cannot be undone."
+    }
   }
 }

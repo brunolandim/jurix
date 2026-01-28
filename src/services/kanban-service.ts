@@ -1,5 +1,5 @@
 import { api } from './api';
-import { KanbanColumn, LegalCase, CaseNotification, NotificationType } from '@/types';
+import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
 
 // ============ TYPES ============
 export type MoveCaseParams = {
@@ -25,6 +25,13 @@ export type AddNotificationParams = {
   type: NotificationType;
   message?: string;
   date: string;
+};
+
+export type AddDocumentParams = {
+  caseId: string;
+  name: string;
+  description?: string;
+  status: DocumentStatus;
 };
 
 // ============ MOCK CONFIG ============
@@ -130,7 +137,6 @@ const mockColumns: KanbanColumn[] = [
   {
     id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
     title: 'In Progress',
-    key: 'inProgress',
     isDefault: false,
     order: 1,
     userId: MOCK_USER_ID,
@@ -168,7 +174,6 @@ const mockColumns: KanbanColumn[] = [
   {
     id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
     title: 'Completed',
-    key: 'completed',
     isDefault: false,
     order: 2,
     userId: MOCK_USER_ID,
@@ -203,8 +208,8 @@ const findCaseWithIndex = (caseId: string) => {
 };
 
 const calculateOrder = (cases: LegalCase[], previousId: string | null, nextId: string | null): number => {
-  const prevOrder = previousId ? cases.find((c) => c.id === previousId)?.order ?? null : null;
-  const nextOrder = nextId ? cases.find((c) => c.id === nextId)?.order ?? null : null;
+  const prevOrder = previousId ? (cases.find((c) => c.id === previousId)?.order ?? null) : null;
+  const nextOrder = nextId ? (cases.find((c) => c.id === nextId)?.order ?? null) : null;
 
   if (prevOrder === null && nextOrder === null) return 1.0;
   if (prevOrder === null) return nextOrder! / 2;
@@ -335,5 +340,43 @@ export const kanbanService = {
     }
     const res = await api.delete(`/kanban/cases/${caseId}/notifications/${notificationId}`);
     return res.success;
+  },
+
+  async addDocument(params: AddDocumentParams): Promise<DocumentRequest | null> {
+    if (USE_MOCK) {
+      await delay();
+      return {
+        id: uuid(),
+        ...params,
+        requestedAt: now(),
+      };
+    }
+    const res = await api.post<DocumentRequest>(`/kanban/cases/${params.caseId}/documents`, params);
+    return res.success ? res.data : null;
+  },
+
+  async deleteDocument(caseId: string, documentId: string): Promise<boolean> {
+    if (USE_MOCK) {
+      await delay();
+      return true;
+    }
+    const res = await api.delete(`/kanban/cases/${caseId}/documents/${documentId}`);
+    return res.success;
+  },
+
+  async updateDocumentStatus(caseId: string, documentId: string, status: DocumentStatus): Promise<DocumentRequest | null> {
+    if (USE_MOCK) {
+      await delay();
+      return {
+        id: documentId,
+        name: '',
+        status,
+        caseId,
+        requestedAt: now(),
+        receivedAt: status === 'received' ? now() : undefined,
+      };
+    }
+    const res = await api.patch<DocumentRequest>(`/kanban/cases/${caseId}/documents/${documentId}`, { status });
+    return res.success ? res.data : null;
   },
 };

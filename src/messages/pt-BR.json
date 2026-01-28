@@ -44,7 +44,8 @@
       "completed": "Concluído"
     },
     "card": {
-      "notifications": "{count, plural, =1 {# notificação} other {# notificações}}"
+      "notifications": "{count, plural, =1 {# notificação} other {# notificações}}",
+      "documents": "{count, plural, =1 {# documento pendente} other {# documentos pendentes}}"
     },
     "modal": {
       "description": "Descrição",
@@ -126,5 +127,54 @@
     "noNotifications": "Nenhuma notificação pendente",
     "markAsRead": "Marcar como lida",
     "markAllAsRead": "Marcar todas"
+  },
+  "document": {
+    "title": "Documentos Solicitados",
+    "add": "Solicitar",
+    "noDocuments": "Nenhum documento solicitado",
+    "selectDocuments": "Selecione os documentos",
+    "selectPlaceholder": "Clique para selecionar...",
+    "addSelected": "Adicionar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "markAsReceived": "Marcar como recebido",
+    "markAsPending": "Marcar como pendente",
+    "status": {
+      "pending": "Pendente",
+      "received": "Recebido"
+    },
+    "options": {
+      "rg": "RG",
+      "cpf": "CPF",
+      "cnh": "CNH",
+      "compResidencia": "Comprovante de Residência",
+      "compRenda": "Comprovante de Renda",
+      "certNascimento": "Certidão de Nascimento",
+      "certCasamento": "Certidão de Casamento",
+      "certObito": "Certidão de Óbito",
+      "contracheque": "Contracheque",
+      "cartTrabalho": "Carteira de Trabalho",
+      "irpf": "Declaração IRPF",
+      "extratoFgts": "Extrato FGTS",
+      "extratoBanco": "Extrato Bancário",
+      "contrato": "Contrato",
+      "procuracao": "Procuração",
+      "certNegDebitos": "Certidão Negativa de Débitos",
+      "certAntecedentes": "Certidão de Antecedentes",
+      "laudoMedico": "Laudo Médico",
+      "boletimOcorrencia": "Boletim de Ocorrência",
+      "escritura": "Escritura",
+      "matriculaImovel": "Matrícula do Imóvel",
+      "iptu": "IPTU",
+      "contratoSocial": "Contrato Social",
+      "cnpj": "CNPJ",
+      "balanco": "Balanço Patrimonial",
+      "notaFiscal": "Nota Fiscal",
+      "outros": "Outros"
+    },
+    "deleteConfirm": {
+      "title": "Excluir Documento",
+      "message": "Tem certeza que deseja excluir esta solicitação de documento? Esta ação não pode ser desfeita."
+    }
   }
 }

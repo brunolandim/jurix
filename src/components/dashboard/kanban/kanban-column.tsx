@@ -34,8 +34,7 @@ export function KanbanColumn({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isDefaultColumn = !!column.isDefault;
-  const hasTranslationKey = !!column.key;
-  const displayTitle = hasTranslationKey ? t(column.key!) : column.title;
+  const displayTitle = column.key ? t(column.key) : column.title;
   const canDelete = !isDefaultColumn && column.cases.length === 0;
 
   const { setNodeRef, isOver } = useDroppable({
@@ -52,7 +51,7 @@ export function KanbanColumn({
   }, [isEditing]);
 
   const handleStartEdit = () => {
-    if (isDefaultColumn || hasTranslationKey) return;
+    if (isDefaultColumn) return;
     setEditTitle(column.title);
     setIsEditing(true);
   };
@@ -144,10 +143,10 @@ export function KanbanColumn({
             <>
               <h3
                 className={`font-semibold transition-colors flex-1 ${
-                  isDefaultColumn || hasTranslationKey ? '' : 'cursor-pointer hover:text-primary'
+                  isDefaultColumn ? '' : 'cursor-pointer hover:text-primary'
                 }`}
                 onClick={handleStartEdit}
-                title={isDefaultColumn || hasTranslationKey ? undefined : tKanban('column.clickToEdit')}
+                title={isDefaultColumn ? undefined : tKanban('column.clickToEdit')}
               >
                 {displayTitle}
               </h3>

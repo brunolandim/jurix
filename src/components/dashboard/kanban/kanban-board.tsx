@@ -58,6 +58,9 @@ export function KanbanBoard() {
     deleteColumn,
     addNotification,
     deleteNotification,
+    addDocument,
+    deleteDocument,
+    updateDocumentStatus,
   } = useKanbanActions();
 
   const { setSearchTerm, toggleLawyer, toggleUnassigned, clearFilters } = useFilterActions();
@@ -139,6 +142,9 @@ export function KanbanBoard() {
           onLawyerChange={(caseId, newLawyer) => updateCaseData(caseId, { lawyer: newLawyer })}
           onAddNotification={addNotification}
           onDeleteNotification={deleteNotification}
+          onAddDocument={addDocument}
+          onDeleteDocument={deleteDocument}
+          onDocumentStatusChange={updateDocumentStatus}
         />
       )}
 

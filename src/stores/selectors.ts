@@ -58,6 +58,20 @@ export const useCaseNotificationCount = (caseId: string) => {
   }, [columns, caseId]);
 };
 
+// Get pending document count for a specific case
+export const useCasePendingDocumentCount = (caseId: string) => {
+  const columns = useJurixStore((state) => state.kanban.columns);
+  return useMemo(() => {
+    for (const col of columns) {
+      const legalCase = col.cases.find((c) => c.id === caseId);
+      if (legalCase) {
+        return legalCase.documentRequests?.filter((d) => d.status === 'pending').length ?? 0;
+      }
+    }
+    return 0;
+  }, [columns, caseId]);
+};
+
 // ============================================
 // Filters Selectors
 // ============================================

@@ -3,13 +3,13 @@
 import { useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { BellRing } from 'lucide-react';
+import { BellRing, FileText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
 import { LegalCase, CasePriority } from '@/types';
 import { getInitials } from '@/lib/utils';
-import { useCaseNotificationCount } from '@/stores';
+import { useCaseNotificationCount, useCasePendingDocumentCount } from '@/stores';
 
 const priorityColors: Record<CasePriority, string> = {
   low: 'bg-gray-500',
@@ -35,8 +35,9 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
   const tKanban = useTranslations('kanban');
   const { locale } = useLocale();
 
-  // Direct subscription to notification count - updates automatically when notifications change
+  // Direct subscription to counts - updates automatically when data changes
   const notificationCount = useCaseNotificationCount(legalCase.id);
+  const pendingDocumentCount = useCasePendingDocumentCount(legalCase.id);
 
   return (
     <Card
@@ -51,7 +52,27 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
         </div>
 
         <h4 className="font-medium text-sm line-clamp-2">{legalCase.title}</h4>
-        <p className="text-xs text-default-500">{legalCase.client}</p>
+        <div className="flex justify-between">
+          <p className="text-xs text-default-500">{legalCase.client}</p>
+          <div className="flex items-center gap-3 ml-auto text-xs">
+            {pendingDocumentCount > 0 && (
+              <Tooltip content={tKanban('card.documents', { count: pendingDocumentCount })} placement="top">
+                <div className="flex items-center gap-1 text-warning-500">
+                  <FileText size={12} />
+                  <span>{pendingDocumentCount}</span>
+                </div>
+              </Tooltip>
+            )}
+            {notificationCount > 0 && (
+              <Tooltip content={tKanban('card.notifications', { count: notificationCount })} placement="top">
+                <div className="flex items-center gap-1 text-default-500">
+                  <BellRing size={12} />
+                  <span>{notificationCount}</span>
+                </div>
+              </Tooltip>
+            )}
+          </div>
+        </div>
 
         <div className="flex items-center justify-between text-xs text-default-400 mt-2">
           {legalCase.lawyer && (
@@ -66,20 +87,7 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
               <span>{legalCase.lawyer.name}</span>
             </div>
           )}
-          <div className="flex items-center gap-3 ml-auto">
-            {notificationCount > 0 && (
-              <Tooltip
-                content={tKanban('card.notifications', { count: notificationCount })}
-                placement="top"
-              >
-                <div className="flex items-center gap-1 text-default-500">
-                  <BellRing size={12} />
-                  <span>{notificationCount}</span>
-                </div>
-              </Tooltip>
-            )}
-            <span>{new Date(legalCase.updatedAt).toLocaleDateString(locale)}</span>
-          </div>
+          <span>{new Date(legalCase.updatedAt).toLocaleDateString(locale)}</span>
         </div>
       </CardBody>
     </Card>

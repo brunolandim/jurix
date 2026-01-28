@@ -19,9 +19,10 @@ import {
   Button,
   Textarea,
 } from '@/components/ui';
-import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType } from '@/types';
+import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
 import { getInitials } from '@/lib/utils';
 import { CaseNotifications } from '../case-notifications';
+import { CaseDocuments } from '../case-documents';
 
 const priorityColors: Record<CasePriority, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger'> = {
   low: 'default',
@@ -44,6 +45,12 @@ type CaseDetailModalProps = {
     data: { type: NotificationType; message?: string; date: string }
   ) => Promise<CaseNotification | null>;
   onDeleteNotification?: (caseId: string, notificationId: string) => Promise<boolean>;
+  onAddDocument?: (
+    caseId: string,
+    data: { name: string; description?: string; status: DocumentStatus }
+  ) => Promise<DocumentRequest | null>;
+  onDeleteDocument?: (caseId: string, documentId: string) => Promise<boolean>;
+  onDocumentStatusChange?: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
 };
 
 export function CaseDetailModal({
@@ -57,6 +64,9 @@ export function CaseDetailModal({
   onLawyerChange,
   onAddNotification,
   onDeleteNotification,
+  onAddDocument,
+  onDeleteDocument,
+  onDocumentStatusChange,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
@@ -246,6 +256,30 @@ export function CaseDetailModal({
                 onDelete={async (notificationId) => {
                   if (onDeleteNotification) {
                     return await onDeleteNotification(legalCase.id, notificationId);
+                  }
+                  return false;
+                }}
+              />
+
+              {/* Documents */}
+              <CaseDocuments
+                documents={legalCase.documentRequests || []}
+                onAdd={async (data) => {
+                  if (onAddDocument) {
+                    const result = await onAddDocument(legalCase.id, data);
+                    return !!result;
+                  }
+                  return false;
+                }}
+                onDelete={async (documentId) => {
+                  if (onDeleteDocument) {
+                    return await onDeleteDocument(legalCase.id, documentId);
+                  }
+                  return false;
+                }}
+                onStatusChange={async (documentId, status) => {
+                  if (onDocumentStatusChange) {
+                    return await onDocumentStatusChange(legalCase.id, documentId, status);
                   }
                   return false;
                 }}

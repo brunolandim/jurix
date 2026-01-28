@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { KanbanColumn, LegalCase, CaseNotification, NotificationType } from '@/types';
+import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
 import { kanbanService, CreateCaseParams } from '@/services';
 
 export interface KanbanSlice {
@@ -51,6 +51,14 @@ export interface KanbanSlice {
       data: { type: NotificationType; message?: string; date: string }
     ) => Promise<CaseNotification | null>;
     deleteNotification: (caseId: string, notificationId: string) => Promise<boolean>;
+
+    // Documents
+    addDocument: (
+      caseId: string,
+      data: { name: string; description?: string; status: DocumentStatus }
+    ) => Promise<DocumentRequest | null>;
+    deleteDocument: (caseId: string, documentId: string) => Promise<boolean>;
+    updateDocumentStatus: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
   };
 }
 
@@ -432,6 +440,145 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
                     ...state.kanban.selectedCase,
                     notifications: (state.kanban.selectedCase.notifications || []).filter(
                       (n) => n.id !== notificationId
+                    ),
+                  }
+                : state.kanban.selectedCase;
+
+            return {
+              kanban: {
+                ...state.kanban,
+                columns: updatedColumns,
+                selectedCase: updatedSelectedCase,
+              },
+            };
+          });
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+
+    addDocument: async (caseId, data) => {
+      try {
+        const newDocument = await kanbanService.addDocument({ caseId, ...data });
+
+        if (newDocument) {
+          set((state) => {
+            const updatedColumns = state.kanban.columns.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? { ...c, documentRequests: [...(c.documentRequests || []), newDocument] }
+                  : c
+              ),
+            }));
+
+            const updatedSelectedCase =
+              state.kanban.selectedCase?.id === caseId
+                ? {
+                    ...state.kanban.selectedCase,
+                    documentRequests: [
+                      ...(state.kanban.selectedCase.documentRequests || []),
+                      newDocument,
+                    ],
+                  }
+                : state.kanban.selectedCase;
+
+            return {
+              kanban: {
+                ...state.kanban,
+                columns: updatedColumns,
+                selectedCase: updatedSelectedCase,
+              },
+            };
+          });
+
+          return newDocument;
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    },
+
+    deleteDocument: async (caseId, documentId) => {
+      try {
+        const success = await kanbanService.deleteDocument(caseId, documentId);
+
+        if (success) {
+          set((state) => {
+            const updatedColumns = state.kanban.columns.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? {
+                      ...c,
+                      documentRequests: (c.documentRequests || []).filter(
+                        (d) => d.id !== documentId
+                      ),
+                    }
+                  : c
+              ),
+            }));
+
+            const updatedSelectedCase =
+              state.kanban.selectedCase?.id === caseId
+                ? {
+                    ...state.kanban.selectedCase,
+                    documentRequests: (state.kanban.selectedCase.documentRequests || []).filter(
+                      (d) => d.id !== documentId
+                    ),
+                  }
+                : state.kanban.selectedCase;
+
+            return {
+              kanban: {
+                ...state.kanban,
+                columns: updatedColumns,
+                selectedCase: updatedSelectedCase,
+              },
+            };
+          });
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+
+    updateDocumentStatus: async (caseId, documentId, status) => {
+      try {
+        const result = await kanbanService.updateDocumentStatus(caseId, documentId, status);
+
+        if (result) {
+          set((state) => {
+            const updatedColumns = state.kanban.columns.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? {
+                      ...c,
+                      documentRequests: (c.documentRequests || []).map((d) =>
+                        d.id === documentId
+                          ? { ...d, status, receivedAt: status === 'received' ? new Date().toISOString() : undefined }
+                          : d
+                      ),
+                    }
+                  : c
+              ),
+            }));
+
+            const updatedSelectedCase =
+              state.kanban.selectedCase?.id === caseId
+                ? {
+                    ...state.kanban.selectedCase,
+                    documentRequests: (state.kanban.selectedCase.documentRequests || []).map((d) =>
+                      d.id === documentId
+                        ? { ...d, status, receivedAt: status === 'received' ? new Date().toISOString() : undefined }
+                        : d
                     ),
                   }
                 : state.kanban.selectedCase;

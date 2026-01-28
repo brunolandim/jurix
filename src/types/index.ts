@@ -35,6 +35,19 @@ export type CasePriority = 'low' | 'medium' | 'high' | 'urgent';
 // Notification Types
 export type NotificationType = 'hearing' | 'deadline' | 'meeting' | 'task' | 'other';
 
+// Document Request Types
+export type DocumentStatus = 'pending' | 'received';
+
+export type DocumentRequest = {
+  id: string;
+  name: string;
+  description?: string;
+  status: DocumentStatus;
+  caseId: string;
+  requestedAt: string;
+  receivedAt?: string;
+};
+
 export type CaseNotification = {
   id: string;
   type: NotificationType;
@@ -66,6 +79,7 @@ export type LegalCase = {
   lawyer?: { id: string; photo: string; name: string };
   createdBy: { id: string; photo: string; name: string };
   notifications?: CaseNotification[];
+  documentRequests?: DocumentRequest[];
   createdAt: string;
   updatedAt: string;
 };

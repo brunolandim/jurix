@@ -44,7 +44,8 @@
       "completed": "Completado"
     },
     "card": {
-      "notifications": "{count, plural, =1 {# notificación} other {# notificaciones}}"
+      "notifications": "{count, plural, =1 {# notificación} other {# notificaciones}}",
+      "documents": "{count, plural, =1 {# documento pendiente} other {# documentos pendientes}}"
     },
     "modal": {
       "description": "Descripción",
@@ -126,5 +127,54 @@
     "noNotifications": "Sin notificaciones pendientes",
     "markAsRead": "Marcar como leída",
     "markAllAsRead": "Marcar todas"
+  },
+  "document": {
+    "title": "Documentos Solicitados",
+    "add": "Solicitar",
+    "noDocuments": "Ningún documento solicitado",
+    "selectDocuments": "Seleccione los documentos",
+    "selectPlaceholder": "Clic para seleccionar...",
+    "addSelected": "Agregar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "markAsReceived": "Marcar como recibido",
+    "markAsPending": "Marcar como pendiente",
+    "status": {
+      "pending": "Pendiente",
+      "received": "Recibido"
+    },
+    "options": {
+      "rg": "Documento de Identidad",
+      "cpf": "CPF",
+      "cnh": "Licencia de Conducir",
+      "compResidencia": "Comprobante de Domicilio",
+      "compRenda": "Comprobante de Ingresos",
+      "certNascimento": "Acta de Nacimiento",
+      "certCasamento": "Acta de Matrimonio",
+      "certObito": "Acta de Defunción",
+      "contracheque": "Recibo de Sueldo",
+      "cartTrabalho": "Carnet de Trabajo",
+      "irpf": "Declaración de Renta",
+      "extratoFgts": "Extracto FGTS",
+      "extratoBanco": "Extracto Bancario",
+      "contrato": "Contrato",
+      "procuracao": "Poder Notarial",
+      "certNegDebitos": "Certificado de No Adeudo",
+      "certAntecedentes": "Certificado de Antecedentes",
+      "laudoMedico": "Informe Médico",
+      "boletimOcorrencia": "Denuncia Policial",
+      "escritura": "Escritura",
+      "matriculaImovel": "Registro de Propiedad",
+      "iptu": "Impuesto Predial",
+      "contratoSocial": "Contrato Social",
+      "cnpj": "CNPJ",
+      "balanco": "Balance General",
+      "notaFiscal": "Factura",
+      "outros": "Otros"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Documento",
+      "message": "¿Está seguro de que desea eliminar esta solicitud de documento? Esta acción no se puede deshacer."
+    }
   }
 }
