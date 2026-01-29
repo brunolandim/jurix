@@ -176,5 +176,37 @@
       "title": "Excluir Documento",
       "message": "Tem certeza que deseja excluir esta solicitação de documento? Esta ação não pode ser desfeita."
     }
+  },
+  "shareLink": {
+    "button": "Compartilhar com Cliente",
+    "title": "Link de Compartilhamento",
+    "description": "Envie este link para o cliente fazer upload dos documentos solicitados.",
+    "copy": "Copiar Link",
+    "copied": "Copiado!",
+    "close": "Fechar",
+    "generating": "Gerando link...",
+    "noPendingDocuments": "Adicione documentos pendentes para compartilhar o link.",
+    "linkReady": "Link pronto para compartilhar"
+  },
+  "publicUpload": {
+    "title": "Envio de Documentos",
+    "subtitle": "Envie os documentos solicitados pelo seu advogado",
+    "loading": "Carregando...",
+    "errorTitle": "Link inválido",
+    "errorDescription": "Este link não existe ou expirou. Entre em contato com seu advogado para obter um novo link.",
+    "successTitle": "Documentos enviados!",
+    "successDescription": "Todos os documentos foram recebidos com sucesso. Você pode fechar esta página.",
+    "caseNumber": "Processo",
+    "caseTitle": "Título",
+    "lawyer": "Advogado",
+    "description": "Descrição",
+    "progress": "Progresso",
+    "documentsTitle": "Documentos Solicitados",
+    "statusReceived": "Recebido",
+    "statusPending": "Pendente",
+    "upload": "Enviar",
+    "uploading": "Enviando...",
+    "uploadError": "Erro ao enviar. Tente novamente.",
+    "infoMessage": "Após o envio de todos os documentos, este link será desativado automaticamente."
   }
 }

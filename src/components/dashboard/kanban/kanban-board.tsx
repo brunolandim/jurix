@@ -61,6 +61,7 @@ export function KanbanBoard() {
     addDocument,
     deleteDocument,
     updateDocumentStatus,
+    generateShareLink,
   } = useKanbanActions();
 
   const { setSearchTerm, toggleLawyer, toggleUnassigned, clearFilters } = useFilterActions();
@@ -145,6 +146,7 @@ export function KanbanBoard() {
           onAddDocument={addDocument}
           onDeleteDocument={deleteDocument}
           onDocumentStatusChange={updateDocumentStatus}
+          onGenerateShareLink={generateShareLink}
         />
       )}
 

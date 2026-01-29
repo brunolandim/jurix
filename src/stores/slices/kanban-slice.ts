@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
-import { kanbanService, CreateCaseParams } from '@/services';
+import { kanbanService, CreateCaseParams, shareableLinkService } from '@/services';
 
 export interface KanbanSlice {
   kanban: {
@@ -59,6 +59,9 @@ export interface KanbanSlice {
     ) => Promise<DocumentRequest | null>;
     deleteDocument: (caseId: string, documentId: string) => Promise<boolean>;
     updateDocumentStatus: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
+
+    // Shareable Links
+    generateShareLink: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
   };
 }
 
@@ -596,6 +599,36 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
         return false;
       } catch {
         return false;
+      }
+    },
+
+    generateShareLink: async (caseId, documentIds) => {
+      try {
+        // Find the case in the columns
+        const columns = get().kanban.columns;
+        let legalCase: LegalCase | null = null;
+
+        for (const col of columns) {
+          const found = col.cases.find((c) => c.id === caseId);
+          if (found) {
+            legalCase = found;
+            break;
+          }
+        }
+
+        if (!legalCase) return null;
+
+        // Create the shareable link
+        const link = await shareableLinkService.createLink({
+          legalCase,
+          documentIds,
+          createdBy: legalCase.createdBy,
+        });
+
+        const url = shareableLinkService.getShareableUrl(link.token);
+        return { url };
+      } catch {
+        return null;
       }
     },
   },

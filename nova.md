@@ -1,0 +1,30 @@
+a minha ideoa era que teria uma tabela de links e nessa tabela teria a informação do processid logo daria pra fazer um join e trazer os dados do processo nesse link  
+ teria o array de documentos solicitados ao enviar todos a tabela documents seria atualizada com os documentos enviados é assim que esta acontecendo atualmente ?
+
+● Não, atualmente não está funcionando assim. O que implementei foi uma versão simplificada que:
+
+1. Copia os dados do processo para dentro do link (caseNumber, caseTitle, etc.)
+2. Copia os documentos para dentro do link
+3. Quando o cliente faz upload, atualiza apenas o status no link, não atualiza os documentos reais do processo  
+
+
+O que você descreveu (correto):
+
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐  
+ │ ShareableLink │ │ LegalCase │ │ DocumentRequest │  
+ ├─────────────────┤ ├─────────────────┤ ├─────────────────┤  
+ │ id │ │ id │ │ id │  
+ │ token │ JOIN │ number │ JOIN │ name │  
+ │ caseId ─────────┼──────►│ title │◄──────┼─ caseId │  
+ │ documentIds[] │ │ description │ │ status │  
+ │ isExpired │ │ lawyer │ │ receivedAt │  
+ │ createdAt │ │ ... │ │ ... │  
+ │ createdBy │ └─────────────────┘ └─────────────────┘  
+ └─────────────────┘
+
+Fluxo correto:
+
+1. Criar link → salva apenas caseId e documentIds[]
+2. Buscar link → faz JOIN para trazer dados do processo + documentos
+3. Upload → atualiza DocumentRequest.status na tabela real
+4. Verifica se todos documentIds do link estão com status: 'received' → expira o link

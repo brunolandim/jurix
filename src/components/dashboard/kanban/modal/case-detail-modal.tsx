@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { ChevronDown, User } from 'lucide-react';
+import { useState, useCallback, useMemo } from 'react';
+import { ChevronDown, User, Share2, Copy, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import {
@@ -9,6 +9,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   Avatar,
   Chip,
   Divider,
@@ -18,6 +19,7 @@ import {
   DropdownItem,
   Button,
   Textarea,
+  Input,
 } from '@/components/ui';
 import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
 import { getInitials } from '@/lib/utils';
@@ -51,6 +53,7 @@ type CaseDetailModalProps = {
   ) => Promise<DocumentRequest | null>;
   onDeleteDocument?: (caseId: string, documentId: string) => Promise<boolean>;
   onDocumentStatusChange?: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
+  onGenerateShareLink?: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
 };
 
 export function CaseDetailModal({
@@ -67,10 +70,12 @@ export function CaseDetailModal({
   onAddDocument,
   onDeleteDocument,
   onDocumentStatusChange,
+  onGenerateShareLink,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
   const tColumns = useTranslations('kanban.columns');
+  const tShare = useTranslations('shareLink');
   const { locale } = useLocale();
 
   const getColumnTitle = (column: KanbanColumn) => (column.key ? tColumns(column.key) : column.title);
@@ -80,6 +85,12 @@ export function CaseDetailModal({
   const [editedDescription, setEditedDescription] = useState('');
   const [originalDescription, setOriginalDescription] = useState('');
   const [isSavingLawyer, setIsSavingLawyer] = useState(false);
+
+  // Share link state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleDescriptionClick = useCallback(() => {
     if (!legalCase) return;
@@ -146,6 +157,56 @@ export function CaseDetailModal({
     },
     [legalCase, lawyers, onLawyerChange]
   );
+
+  // Share link handlers
+  const pendingDocuments = useMemo(
+    () => legalCase?.documentRequests?.filter((d) => d.status === 'pending') || [],
+    [legalCase?.documentRequests]
+  );
+  const hasPendingDocuments = pendingDocuments.length > 0;
+
+  const handleOpenShareModal = useCallback(async () => {
+    if (!legalCase || !onGenerateShareLink || pendingDocuments.length === 0) return;
+
+    setIsShareModalOpen(true);
+    setShareUrl(null);
+    setIsGeneratingLink(true);
+    setIsCopied(false);
+
+    const documentIds = pendingDocuments.map((d) => d.id);
+    const result = await onGenerateShareLink(legalCase.id, documentIds);
+
+    setIsGeneratingLink(false);
+    if (result) {
+      setShareUrl(result.url);
+    }
+  }, [legalCase, onGenerateShareLink, pendingDocuments]);
+
+  const handleCloseShareModal = useCallback(() => {
+    setIsShareModalOpen(false);
+    setShareUrl(null);
+    setIsCopied(false);
+  }, []);
+
+  const handleCopyLink = useCallback(async () => {
+    if (!shareUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  }, [shareUrl]);
 
   if (!legalCase) return null;
 
@@ -403,10 +464,84 @@ export function CaseDetailModal({
                   </div>
                 </div>
               </div>
+
+              {/* Share with Client Button */}
+              {onGenerateShareLink && (
+                <div className="mt-4">
+                  <Button
+                    className="w-full"
+                    color="secondary"
+                    variant="flat"
+                    startContent={<Share2 className="w-4 h-4" />}
+                    isDisabled={!hasPendingDocuments}
+                    onPress={handleOpenShareModal}
+                  >
+                    {tShare('button')}
+                  </Button>
+                  {!hasPendingDocuments && (
+                    <p className="text-xs text-default-400 mt-2 text-center">
+                      {tShare('noPendingDocuments')}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </ModalBody>
       </ModalContent>
+
+      {/* Share Link Modal */}
+      <Modal isOpen={isShareModalOpen} onClose={handleCloseShareModal} size="md">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <h3 className="text-lg font-semibold">{tShare('title')}</h3>
+            <p className="text-sm text-default-500 font-normal">{tShare('description')}</p>
+          </ModalHeader>
+          <ModalBody>
+            {isGeneratingLink ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
+                  <p className="text-sm text-default-500">{tShare('generating')}</p>
+                </div>
+              </div>
+            ) : shareUrl ? (
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={shareUrl}
+                    readOnly
+                    classNames={{
+                      input: 'text-sm font-mono',
+                    }}
+                  />
+                  <Button
+                    color={isCopied ? 'success' : 'primary'}
+                    variant="flat"
+                    isIconOnly
+                    onPress={handleCopyLink}
+                  >
+                    {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {isCopied && (
+                  <p className="text-sm text-success text-center">{tShare('copied')}</p>
+                )}
+                <div className="bg-default-100 rounded-lg p-3">
+                  <p className="text-xs text-default-500">
+                    {tShare('linkReady')}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={handleCloseShareModal}>
+              {tShare('close')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Modal>
   );
 }

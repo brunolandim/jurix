@@ -112,3 +112,26 @@ export type Lawyer = {
   active: boolean;
   createdAt: string;
 };
+
+// Shareable Link for Public Document Upload
+export type ShareableLink = {
+  id: string;
+  token: string;
+  caseId: string;
+  caseNumber: string;
+  caseTitle: string;
+  caseDescription?: string;
+  lawyerName?: string;
+  documentIds: string[];
+  isExpired: boolean;
+  createdAt: string;
+  createdBy: { id: string; name: string };
+};
+
+// Public Document (for client view)
+export type PublicDocument = {
+  id: string;
+  name: string;
+  description?: string;
+  status: DocumentStatus;
+};
