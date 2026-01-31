@@ -61,6 +61,8 @@ export function KanbanBoard() {
     addDocument,
     deleteDocument,
     updateDocumentStatus,
+    approveDocument,
+    rejectDocument,
     generateShareLink,
   } = useKanbanActions();
 
@@ -146,6 +148,8 @@ export function KanbanBoard() {
           onAddDocument={addDocument}
           onDeleteDocument={deleteDocument}
           onDocumentStatusChange={updateDocumentStatus}
+          onApproveDocument={approveDocument}
+          onRejectDocument={rejectDocument}
           onGenerateShareLink={generateShareLink}
         />
       )}

@@ -21,7 +21,7 @@ import {
   Textarea,
   Input,
 } from '@/components/ui';
-import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
+import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType, DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
 import { getInitials } from '@/lib/utils';
 import { CaseNotifications } from '../case-notifications';
 import { CaseDocuments } from '../case-documents';
@@ -53,6 +53,8 @@ type CaseDetailModalProps = {
   ) => Promise<DocumentRequest | null>;
   onDeleteDocument?: (caseId: string, documentId: string) => Promise<boolean>;
   onDocumentStatusChange?: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
+  onApproveDocument?: (caseId: string, documentId: string) => Promise<boolean>;
+  onRejectDocument?: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
   onGenerateShareLink?: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
 };
 
@@ -70,6 +72,8 @@ export function CaseDetailModal({
   onAddDocument,
   onDeleteDocument,
   onDocumentStatusChange,
+  onApproveDocument,
+  onRejectDocument,
   onGenerateShareLink,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
@@ -341,6 +345,18 @@ export function CaseDetailModal({
                 onStatusChange={async (documentId, status) => {
                   if (onDocumentStatusChange) {
                     return await onDocumentStatusChange(legalCase.id, documentId, status);
+                  }
+                  return false;
+                }}
+                onApprove={async (documentId) => {
+                  if (onApproveDocument) {
+                    return await onApproveDocument(legalCase.id, documentId);
+                  }
+                  return false;
+                }}
+                onReject={async (documentId, reason, note) => {
+                  if (onRejectDocument) {
+                    return await onRejectDocument(legalCase.id, documentId, reason, note);
                   }
                   return false;
                 }}

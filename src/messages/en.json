@@ -129,7 +129,7 @@
     "markAllAsRead": "Mark all"
   },
   "document": {
-    "title": "Requested Documents",
+    "title": "Documents",
     "add": "Request",
     "noDocuments": "No documents requested",
     "selectDocuments": "Select documents",
@@ -139,9 +139,35 @@
     "delete": "Delete",
     "markAsReceived": "Mark as received",
     "markAsPending": "Mark as pending",
+    "pendingApproval": "pending approval",
+    "rejected": "rejected",
+    "clickToReview": "Click to review",
+    "viewDocument": "View document",
+    "noPreview": "No preview available",
+    "rejectedDocument": "Rejected Document",
+    "reason": "Reason",
+    "note": "Note",
+    "selectReason": "Select reason",
+    "selectReasonPlaceholder": "Choose a reason...",
+    "rejectionNote": "Note (optional)",
+    "rejectionNotePlaceholder": "Describe the issue...",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmReject": "Confirm Rejection",
+    "back": "Back",
+    "close": "Close",
     "status": {
       "pending": "Pending",
-      "received": "Received"
+      "pending_approval": "Pending Approval",
+      "rejected": "Rejected",
+      "received": "Approved"
+    },
+    "rejectionReasons": {
+      "low_quality": "Low quality",
+      "wrong_document": "Wrong document",
+      "incomplete": "Incomplete document",
+      "illegible": "Illegible",
+      "other": "Other reason"
     },
     "options": {
       "rg": "ID Card",
@@ -176,5 +202,42 @@
       "title": "Delete Document",
       "message": "Are you sure you want to delete this document request? This action cannot be undone."
     }
+  },
+  "shareLink": {
+    "button": "Share with Client",
+    "title": "Share Link",
+    "description": "Send this link to the client to upload the requested documents.",
+    "copy": "Copy Link",
+    "copied": "Copied!",
+    "close": "Close",
+    "generating": "Generating link...",
+    "noPendingDocuments": "Add pending documents to share the link.",
+    "linkReady": "Link ready to share"
+  },
+  "publicUpload": {
+    "title": "Document Upload",
+    "subtitle": "Upload the documents requested by your lawyer",
+    "loading": "Loading...",
+    "errorTitle": "Invalid link",
+    "errorDescription": "This link does not exist or has expired. Contact your lawyer for a new link.",
+    "successTitle": "Documents sent!",
+    "successDescription": "All documents have been received successfully. You can close this page.",
+    "caseNumber": "Case",
+    "caseTitle": "Title",
+    "lawyer": "Lawyer",
+    "description": "Description",
+    "progress": "Progress",
+    "documentsTitle": "Requested Documents",
+    "statusReceived": "Approved",
+    "statusPending": "Pending",
+    "statusPendingApproval": "Pending Approval",
+    "statusRejected": "Rejected",
+    "upload": "Upload",
+    "reupload": "Reupload",
+    "uploading": "Uploading...",
+    "uploadError": "Upload failed. Try again.",
+    "uploadSuccess": "Document sent! Awaiting lawyer approval.",
+    "rejectionReason": "Rejection reason",
+    "infoMessage": "After submission, documents will be reviewed by your lawyer before approval."
   }
 }

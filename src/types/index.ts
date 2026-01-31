@@ -36,7 +36,9 @@ export type CasePriority = 'low' | 'medium' | 'high' | 'urgent';
 export type NotificationType = 'hearing' | 'deadline' | 'meeting' | 'task' | 'other';
 
 // Document Request Types
-export type DocumentStatus = 'pending' | 'received';
+export type DocumentStatus = 'pending' | 'pending_approval' | 'rejected' | 'received';
+
+export type RejectionReason = 'low_quality' | 'wrong_document' | 'incomplete' | 'illegible' | 'other';
 
 export type DocumentRequest = {
   id: string;
@@ -46,6 +48,13 @@ export type DocumentRequest = {
   caseId: string;
   requestedAt: string;
   receivedAt?: string;
+  // Upload fields
+  fileUrl?: string;
+  uploadedAt?: string;
+  // Rejection fields
+  rejectionReason?: RejectionReason;
+  rejectionNote?: string;
+  rejectedAt?: string;
 };
 
 export type CaseNotification = {
@@ -114,14 +123,11 @@ export type Lawyer = {
 };
 
 // Shareable Link for Public Document Upload
+// Only stores references - case and document data are fetched via JOIN
 export type ShareableLink = {
   id: string;
   token: string;
   caseId: string;
-  caseNumber: string;
-  caseTitle: string;
-  caseDescription?: string;
-  lawyerName?: string;
   documentIds: string[];
   isExpired: boolean;
   createdAt: string;
@@ -134,4 +140,6 @@ export type PublicDocument = {
   name: string;
   description?: string;
   status: DocumentStatus;
+  rejectionReason?: RejectionReason;
+  rejectionNote?: string;
 };

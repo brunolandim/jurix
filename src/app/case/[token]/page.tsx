@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { useTranslations } from 'next-intl';
-import { Upload, CheckCircle, FileText, AlertCircle, Clock } from 'lucide-react';
+import { Upload, CheckCircle, FileText, AlertCircle, Clock, AlertTriangle, Eye } from 'lucide-react';
 import { Card, CardBody, CardHeader, Button, Spinner, Chip } from '@/components/ui';
 import { shareableLinkService, PublicLinkData } from '@/services';
-import { PublicDocument } from '@/types';
+import { PublicDocument, DocumentStatus } from '@/types';
 import { cn } from '@/lib/utils';
 
 type PageState = 'loading' | 'error' | 'expired' | 'success' | 'ready';
@@ -19,6 +19,14 @@ type DocumentWithUpload = PublicDocument & {
 export default function PublicUploadPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params);
   const t = useTranslations('publicUpload');
+  const tDoc = useTranslations('document');
+
+  // Traduz o nome do documento se existir na lista de opcoes
+  const getDocLabel = (docName: string) => {
+    // Tenta buscar a traducao, se nao existir retorna o nome original
+    const translated = tDoc.raw(`options.${docName}`);
+    return typeof translated === 'string' ? translated : docName;
+  };
 
   const [pageState, setPageState] = useState<PageState>('loading');
   const [linkData, setLinkData] = useState<PublicLinkData | null>(null);
@@ -65,13 +73,16 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
         const result = await shareableLinkService.uploadDocument(token, documentId, file);
 
         if (result.success) {
+          // Update to pending_approval (not received - lawyer must approve)
           setDocuments((prev) =>
             prev.map((doc) =>
-              doc.id === documentId ? { ...doc, status: 'received', isUploading: false } : doc
+              doc.id === documentId
+                ? { ...doc, status: 'pending_approval' as DocumentStatus, isUploading: false, rejectionReason: undefined, rejectionNote: undefined }
+                : doc
             )
           );
 
-          // Check if all documents are completed
+          // Check if all documents are completed (approved)
           if (result.allCompleted) {
             setPageState('success');
           }
@@ -107,7 +118,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
     [handleFileSelect]
   );
 
-  // Progress calculation
+  // Progress calculation - only count approved documents
   const totalDocuments = documents.length;
   const receivedDocuments = documents.filter((d) => d.status === 'received').length;
   const progressPercent = totalDocuments > 0 ? (receivedDocuments / totalDocuments) * 100 : 0;
@@ -220,65 +231,126 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
           </CardHeader>
           <CardBody className="pt-0">
             <div className="space-y-3">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className={cn(
-                    'flex items-center justify-between p-4 rounded-lg border transition-colors',
-                    doc.status === 'received'
-                      ? 'border-success/30 bg-success/5'
-                      : 'border-default-200 hover:border-default-300'
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    {doc.status === 'received' ? (
-                      <CheckCircle className="w-5 h-5 text-success shrink-0" />
-                    ) : (
-                      <FileText className="w-5 h-5 text-default-400 shrink-0" />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium">{doc.name}</p>
-                      {doc.description && (
-                        <p className="text-xs text-default-400">{doc.description}</p>
-                      )}
-                      {doc.uploadError && (
-                        <p className="text-xs text-danger">{doc.uploadError}</p>
-                      )}
-                    </div>
-                  </div>
+              {documents.map((doc) => {
+                const isRejected = doc.status === 'rejected';
+                const isPendingApproval = doc.status === 'pending_approval';
+                const isReceived = doc.status === 'received';
+                const isPending = doc.status === 'pending';
 
-                  <div className="flex items-center gap-2">
-                    {doc.status === 'received' ? (
-                      <Chip size="sm" color="success" variant="flat">
-                        {t('statusReceived')}
-                      </Chip>
-                    ) : doc.isUploading ? (
-                      <div className="flex items-center gap-2">
-                        <Spinner size="sm" />
-                        <span className="text-sm text-default-500">{t('uploading')}</span>
+                return (
+                  <div
+                    key={doc.id}
+                    className={cn(
+                      'p-4 rounded-lg border transition-colors',
+                      isReceived && 'border-success/30 bg-success/5',
+                      isPendingApproval && 'border-secondary/30 bg-secondary/5',
+                      isRejected && 'border-danger/30 bg-danger/5',
+                      isPending && 'border-default-200 hover:border-default-300'
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {isReceived ? (
+                          <CheckCircle className="w-5 h-5 text-success shrink-0" />
+                        ) : isPendingApproval ? (
+                          <Eye className="w-5 h-5 text-secondary shrink-0" />
+                        ) : isRejected ? (
+                          <AlertTriangle className="w-5 h-5 text-danger shrink-0" />
+                        ) : (
+                          <FileText className="w-5 h-5 text-default-400 shrink-0" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium">{getDocLabel(doc.name)}</p>
+                          {doc.description && (
+                            <p className="text-xs text-default-400">{doc.description}</p>
+                          )}
+                        </div>
                       </div>
-                    ) : (
-                      <label className="cursor-pointer">
-                        <input
-                          type="file"
-                          className="hidden"
-                          onChange={handleInputChange(doc.id)}
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        />
-                        <Button
-                          as="span"
-                          size="sm"
-                          color="primary"
-                          variant="flat"
-                          startContent={<Upload className="w-4 h-4" />}
-                        >
-                          {t('upload')}
-                        </Button>
-                      </label>
+
+                      <div className="flex items-center gap-2">
+                        {isReceived ? (
+                          <Chip size="sm" color="success" variant="flat">
+                            {t('statusReceived')}
+                          </Chip>
+                        ) : isPendingApproval ? (
+                          <Chip size="sm" color="secondary" variant="flat">
+                            {t('statusPendingApproval')}
+                          </Chip>
+                        ) : isRejected ? (
+                          <Chip size="sm" color="danger" variant="flat">
+                            {t('statusRejected')}
+                          </Chip>
+                        ) : doc.isUploading ? (
+                          <div className="flex items-center gap-2">
+                            <Spinner size="sm" />
+                            <span className="text-sm text-default-500">{t('uploading')}</span>
+                          </div>
+                        ) : (
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              className="hidden"
+                              onChange={handleInputChange(doc.id)}
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            />
+                            <Button
+                              as="span"
+                              size="sm"
+                              color="primary"
+                              variant="flat"
+                              startContent={<Upload className="w-4 h-4" />}
+                            >
+                              {t('upload')}
+                            </Button>
+                          </label>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Rejection reason - shown below the document info */}
+                    {isRejected && (doc.rejectionReason || doc.rejectionNote) && (
+                      <div className="mt-3 p-3 rounded-md bg-danger/10 border border-danger/20">
+                        <p className="text-sm font-medium text-danger mb-1">
+                          {t('rejectionReason')}:
+                        </p>
+                        <p className="text-sm text-danger-600">
+                          {doc.rejectionReason && tDoc(`rejectionReasons.${doc.rejectionReason}`)}
+                        </p>
+                        {doc.rejectionNote && (
+                          <p className="text-sm text-danger-500 mt-1 italic">
+                            &quot;{doc.rejectionNote}&quot;
+                          </p>
+                        )}
+                        {/* Reupload button for rejected documents */}
+                        <div className="mt-3">
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              className="hidden"
+                              onChange={handleInputChange(doc.id)}
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            />
+                            <Button
+                              as="span"
+                              size="sm"
+                              color="danger"
+                              variant="flat"
+                              startContent={<Upload className="w-4 h-4" />}
+                            >
+                              {t('reupload')}
+                            </Button>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload error */}
+                    {doc.uploadError && (
+                      <p className="text-xs text-danger mt-2">{doc.uploadError}</p>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Info message */}

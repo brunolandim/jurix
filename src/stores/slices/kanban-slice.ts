@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus } from '@/types';
+import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
 import { kanbanService, CreateCaseParams, shareableLinkService } from '@/services';
 
 export interface KanbanSlice {
@@ -59,6 +59,8 @@ export interface KanbanSlice {
     ) => Promise<DocumentRequest | null>;
     deleteDocument: (caseId: string, documentId: string) => Promise<boolean>;
     updateDocumentStatus: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
+    approveDocument: (caseId: string, documentId: string) => Promise<boolean>;
+    rejectDocument: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
 
     // Shareable Links
     generateShareLink: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
@@ -602,9 +604,121 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
       }
     },
 
+    approveDocument: async (caseId, documentId) => {
+      try {
+        const result = await kanbanService.approveDocument(caseId, documentId);
+
+        if (result) {
+          set((state) => {
+            const updatedColumns = state.kanban.columns.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? {
+                      ...c,
+                      documentRequests: (c.documentRequests || []).map((d) =>
+                        d.id === documentId
+                          ? { ...d, status: 'received' as const, receivedAt: new Date().toISOString() }
+                          : d
+                      ),
+                    }
+                  : c
+              ),
+            }));
+
+            const updatedSelectedCase =
+              state.kanban.selectedCase?.id === caseId
+                ? {
+                    ...state.kanban.selectedCase,
+                    documentRequests: (state.kanban.selectedCase.documentRequests || []).map((d) =>
+                      d.id === documentId
+                        ? { ...d, status: 'received' as const, receivedAt: new Date().toISOString() }
+                        : d
+                    ),
+                  }
+                : state.kanban.selectedCase;
+
+            return {
+              kanban: {
+                ...state.kanban,
+                columns: updatedColumns,
+                selectedCase: updatedSelectedCase,
+              },
+            };
+          });
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+
+    rejectDocument: async (caseId, documentId, reason, note) => {
+      try {
+        const result = await kanbanService.rejectDocument(caseId, documentId, reason, note);
+
+        if (result) {
+          set((state) => {
+            const updatedColumns = state.kanban.columns.map((col) => ({
+              ...col,
+              cases: col.cases.map((c) =>
+                c.id === caseId
+                  ? {
+                      ...c,
+                      documentRequests: (c.documentRequests || []).map((d) =>
+                        d.id === documentId
+                          ? {
+                              ...d,
+                              status: 'rejected' as const,
+                              rejectionReason: reason,
+                              rejectionNote: note,
+                              rejectedAt: new Date().toISOString(),
+                            }
+                          : d
+                      ),
+                    }
+                  : c
+              ),
+            }));
+
+            const updatedSelectedCase =
+              state.kanban.selectedCase?.id === caseId
+                ? {
+                    ...state.kanban.selectedCase,
+                    documentRequests: (state.kanban.selectedCase.documentRequests || []).map((d) =>
+                      d.id === documentId
+                        ? {
+                            ...d,
+                            status: 'rejected' as const,
+                            rejectionReason: reason,
+                            rejectionNote: note,
+                            rejectedAt: new Date().toISOString(),
+                          }
+                        : d
+                    ),
+                  }
+                : state.kanban.selectedCase;
+
+            return {
+              kanban: {
+                ...state.kanban,
+                columns: updatedColumns,
+                selectedCase: updatedSelectedCase,
+              },
+            };
+          });
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+
     generateShareLink: async (caseId, documentIds) => {
       try {
-        // Find the case in the columns
+        // Find the case in the columns to get createdBy
         const columns = get().kanban.columns;
         let legalCase: LegalCase | null = null;
 
@@ -618,9 +732,9 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
 
         if (!legalCase) return null;
 
-        // Create the shareable link
+        // Create the shareable link (only references, no data duplication)
         const link = await shareableLinkService.createLink({
-          legalCase,
+          caseId,
           documentIds,
           createdBy: legalCase.createdBy,
         });

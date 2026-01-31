@@ -12,8 +12,10 @@ import {
 } from '@/components/ui';
 import { DocumentRequest, DocumentStatus } from '@/types';
 
-const statusColors: Record<DocumentStatus, 'warning' | 'success'> = {
+const statusColors: Record<DocumentStatus, 'warning' | 'success' | 'danger' | 'secondary'> = {
   pending: 'warning',
+  pending_approval: 'secondary',
+  rejected: 'danger',
   received: 'success',
 };
 

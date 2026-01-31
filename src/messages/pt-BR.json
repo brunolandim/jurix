@@ -129,7 +129,7 @@
     "markAllAsRead": "Marcar todas"
   },
   "document": {
-    "title": "Documentos Solicitados",
+    "title": "Documentos",
     "add": "Solicitar",
     "noDocuments": "Nenhum documento solicitado",
     "selectDocuments": "Selecione os documentos",
@@ -139,9 +139,35 @@
     "delete": "Excluir",
     "markAsReceived": "Marcar como recebido",
     "markAsPending": "Marcar como pendente",
+    "pendingApproval": "aguardando aprovacao",
+    "rejected": "rejeitados",
+    "clickToReview": "Clique para revisar",
+    "viewDocument": "Visualizar documento",
+    "noPreview": "Nenhuma visualizacao disponivel",
+    "rejectedDocument": "Documento Rejeitado",
+    "reason": "Motivo",
+    "note": "Observacao",
+    "selectReason": "Selecione o motivo",
+    "selectReasonPlaceholder": "Escolha um motivo...",
+    "rejectionNote": "Observacao (opcional)",
+    "rejectionNotePlaceholder": "Descreva o problema...",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "confirmReject": "Confirmar Rejeicao",
+    "back": "Voltar",
+    "close": "Fechar",
     "status": {
       "pending": "Pendente",
-      "received": "Recebido"
+      "pending_approval": "Aguardando Aprovacao",
+      "rejected": "Rejeitado",
+      "received": "Aprovado"
+    },
+    "rejectionReasons": {
+      "low_quality": "Baixa qualidade",
+      "wrong_document": "Documento incorreto",
+      "incomplete": "Documento incompleto",
+      "illegible": "Ilegivel",
+      "other": "Outro motivo"
     },
     "options": {
       "rg": "RG",
@@ -202,11 +228,16 @@
     "description": "Descrição",
     "progress": "Progresso",
     "documentsTitle": "Documentos Solicitados",
-    "statusReceived": "Recebido",
+    "statusReceived": "Aprovado",
     "statusPending": "Pendente",
+    "statusPendingApproval": "Aguardando Aprovacao",
+    "statusRejected": "Rejeitado",
     "upload": "Enviar",
+    "reupload": "Reenviar",
     "uploading": "Enviando...",
     "uploadError": "Erro ao enviar. Tente novamente.",
-    "infoMessage": "Após o envio de todos os documentos, este link será desativado automaticamente."
+    "uploadSuccess": "Documento enviado! Aguardando aprovacao do advogado.",
+    "rejectionReason": "Motivo da rejeicao",
+    "infoMessage": "Apos o envio, os documentos serao analisados pelo advogado antes da aprovacao."
   }
 }

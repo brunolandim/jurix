@@ -1,7 +1,8 @@
-import { ShareableLink, PublicDocument, LegalCase } from '@/types';
+import { ShareableLink, PublicDocument } from '@/types';
+import { api } from './api';
 
 export type CreateShareableLinkParams = {
-  legalCase: LegalCase;
+  caseId: string;
   documentIds: string[];
   createdBy: { id: string; name: string };
 };
@@ -16,96 +17,51 @@ export type PublicLinkData = {
 };
 
 export const shareableLinkService = {
-  /**
-   * Creates a shareable link for a case with specific documents
-   */
   async createLink(params: CreateShareableLinkParams): Promise<ShareableLink> {
-    const { legalCase, documentIds, createdBy } = params;
+    const res = await api.post<ShareableLink>('/share-links', params);
 
-    // Get document details from the case
-    const documents = (legalCase.documentRequests || [])
-      .filter((doc) => documentIds.includes(doc.id))
-      .map((doc) => ({
-        id: doc.id,
-        name: doc.name,
-        description: doc.description,
-      }));
-
-    const response = await fetch('/api/share-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        legalCase,
-        documentIds,
-        documents,
-        createdBy,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || 'Failed to create link');
+    if (!res.success || !res.data) {
+      throw new Error('Failed to create link');
     }
 
-    return result.data;
+    return res.data;
   },
 
-  /**
-   * Gets link data by token (public - no auth required)
-   */
   async getLinkByToken(token: string): Promise<PublicLinkData | null> {
-    const response = await fetch(`/api/share-link/${token}`);
+    const res = await api.get<PublicLinkData>(`/share-links/${token}`);
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error('Failed to get link');
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
+    if (!res.success || !res.data) {
       return null;
     }
 
-    return result.data;
+    return res.data;
   },
 
-  /**
-   * Uploads a document file (public - no auth required)
-   */
   async uploadDocument(
     token: string,
     documentId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     file: File
   ): Promise<{ success: boolean; allCompleted: boolean }> {
-    // In a real implementation, you would upload the file to storage
-    // For now, we just mark it as received
-    const response = await fetch(`/api/share-link/${token}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ documentId }),
-    });
+    const formData = new FormData();
+    formData.append('documentId', documentId);
+    formData.append('file', file);
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       return { success: false, allCompleted: false };
     }
 
     const result = await response.json();
-
-    if (!result.success) {
-      return { success: false, allCompleted: false };
-    }
-
-    return { success: true, allCompleted: result.data.allCompleted };
+    return { success: true, allCompleted: result.allCompleted ?? false };
   },
 
-  /**
-   * Gets the full URL for a shareable link
-   */
   getShareableUrl(token: string): string {
     if (typeof window !== 'undefined') {
       return `${window.location.origin}/case/${token}`;

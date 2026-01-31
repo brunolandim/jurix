@@ -1,38 +1,37 @@
 import { AuthUser, LoginCredentials } from '@/types';
+import { api, setToken, removeToken, getToken } from './api';
 
-const FAKE_USER: AuthUser = {
-  id: 'law-001',
-  name: 'Bruno Landim',
-  email: 'bruno@email.com',
-  photo: '/img/homemSpider.jpg',
+type LoginResponse = {
+  token: string;
+  user: AuthUser;
 };
-
-const FAKE_PASSWORD = '123456';
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthUser> {
-    await delay(800);
+    const res = await api.post<LoginResponse>('/auth', credentials);
 
-    if (credentials.email === FAKE_USER.email && credentials.password === FAKE_PASSWORD) {
-      localStorage.setItem('auth_user', JSON.stringify(FAKE_USER));
-      return FAKE_USER;
+    if (!res.success || !res.data) {
+      throw new Error('Email ou senha inválidos');
     }
 
-    throw new Error('Email ou senha inválidos');
+    setToken(res.data.token);
+    return res.data.user;
   },
 
   async logout(): Promise<void> {
-    await delay(300);
-    localStorage.removeItem('auth_user');
+    removeToken();
   },
 
   async getCurrentUser(): Promise<AuthUser | null> {
-    await delay(200);
-    const stored = localStorage.getItem('auth_user');
-    return stored ? JSON.parse(stored) : null;
+    const token = getToken();
+    if (!token) return null;
+
+    const res = await api.get<AuthUser>('/me');
+    if (!res.success || !res.data) {
+      removeToken();
+      return null;
+    }
+
+    return res.data;
   },
 };

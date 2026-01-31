@@ -129,7 +129,7 @@
     "markAllAsRead": "Marcar todas"
   },
   "document": {
-    "title": "Documentos Solicitados",
+    "title": "Documentos",
     "add": "Solicitar",
     "noDocuments": "Ningún documento solicitado",
     "selectDocuments": "Seleccione los documentos",
@@ -176,5 +176,8 @@
       "title": "Eliminar Documento",
       "message": "¿Está seguro de que desea eliminar esta solicitud de documento? Esta acción no se puede deshacer."
     }
+  },
+  "publicUpload": {
+    "rejectionReason": "Motivo del rechazo"
   }
 }
