@@ -21,9 +21,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
   const t = useTranslations('publicUpload');
   const tDoc = useTranslations('document');
 
-  // Traduz o nome do documento se existir na lista de opcoes
   const getDocLabel = (docName: string) => {
-    // Tenta buscar a traducao, se nao existir retorna o nome original
     const translated = tDoc.raw(`options.${docName}`);
     return typeof translated === 'string' ? translated : docName;
   };
@@ -32,7 +30,6 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
   const [linkData, setLinkData] = useState<PublicLinkData | null>(null);
   const [documents, setDocuments] = useState<DocumentWithUpload[]>([]);
 
-  // Fetch link data on mount
   useEffect(() => {
     async function fetchData() {
       try {
@@ -62,45 +59,42 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
 
   const handleFileSelect = useCallback(
     async (documentId: string, file: File) => {
-      // Update local state to show uploading
       setDocuments((prev) =>
-        prev.map((doc) =>
-          doc.id === documentId ? { ...doc, isUploading: true, uploadError: undefined, file } : doc
-        )
+        prev.map((doc) => (doc.id === documentId ? { ...doc, isUploading: true, uploadError: undefined, file } : doc))
       );
 
       try {
         const result = await shareableLinkService.uploadDocument(token, documentId, file);
 
         if (result.success) {
-          // Update to pending_approval (not received - lawyer must approve)
           setDocuments((prev) =>
             prev.map((doc) =>
               doc.id === documentId
-                ? { ...doc, status: 'pending_approval' as DocumentStatus, isUploading: false, rejectionReason: undefined, rejectionNote: undefined }
+                ? {
+                    ...doc,
+                    status: 'pending_approval' as DocumentStatus,
+                    isUploading: false,
+                    rejectionReason: undefined,
+                    rejectionNote: undefined,
+                  }
                 : doc
             )
           );
 
-          // Check if all documents are completed (approved)
           if (result.allCompleted) {
             setPageState('success');
           }
         } else {
           setDocuments((prev) =>
             prev.map((doc) =>
-              doc.id === documentId
-                ? { ...doc, isUploading: false, uploadError: t('uploadError') }
-                : doc
+              doc.id === documentId ? { ...doc, isUploading: false, uploadError: t('uploadError') } : doc
             )
           );
         }
       } catch {
         setDocuments((prev) =>
           prev.map((doc) =>
-            doc.id === documentId
-              ? { ...doc, isUploading: false, uploadError: t('uploadError') }
-              : doc
+            doc.id === documentId ? { ...doc, isUploading: false, uploadError: t('uploadError') } : doc
           )
         );
       }
@@ -118,12 +112,10 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
     [handleFileSelect]
   );
 
-  // Progress calculation - only count approved documents
   const totalDocuments = documents.length;
   const receivedDocuments = documents.filter((d) => d.status === 'received').length;
   const progressPercent = totalDocuments > 0 ? (receivedDocuments / totalDocuments) * 100 : 0;
 
-  // Loading state
   if (pageState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -135,7 +127,6 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
     );
   }
 
-  // Error state - link not found
   if (pageState === 'error') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -150,7 +141,6 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
     );
   }
 
-  // Expired state - all documents received
   if (pageState === 'expired' || pageState === 'success') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -261,9 +251,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                         )}
                         <div>
                           <p className="text-sm font-medium">{getDocLabel(doc.name)}</p>
-                          {doc.description && (
-                            <p className="text-xs text-default-400">{doc.description}</p>
-                          )}
+                          {doc.description && <p className="text-xs text-default-400">{doc.description}</p>}
                         </div>
                       </div>
 
@@ -310,16 +298,12 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                     {/* Rejection reason - shown below the document info */}
                     {isRejected && (doc.rejectionReason || doc.rejectionNote) && (
                       <div className="mt-3 p-3 rounded-md bg-danger/10 border border-danger/20">
-                        <p className="text-sm font-medium text-danger mb-1">
-                          {t('rejectionReason')}:
-                        </p>
+                        <p className="text-sm font-medium text-danger mb-1">{t('rejectionReason')}:</p>
                         <p className="text-sm text-danger-600">
                           {doc.rejectionReason && tDoc(`rejectionReasons.${doc.rejectionReason}`)}
                         </p>
                         {doc.rejectionNote && (
-                          <p className="text-sm text-danger-500 mt-1 italic">
-                            &quot;{doc.rejectionNote}&quot;
-                          </p>
+                          <p className="text-sm text-danger-500 mt-1 italic">&quot;{doc.rejectionNote}&quot;</p>
                         )}
                         {/* Reupload button for rejected documents */}
                         <div className="mt-3">
@@ -345,9 +329,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                     )}
 
                     {/* Upload error */}
-                    {doc.uploadError && (
-                      <p className="text-xs text-danger mt-2">{doc.uploadError}</p>
-                    )}
+                    {doc.uploadError && <p className="text-xs text-danger mt-2">{doc.uploadError}</p>}
                   </div>
                 );
               })}
