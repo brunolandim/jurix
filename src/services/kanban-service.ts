@@ -16,8 +16,8 @@ export type CreateCaseParams = {
   client: string;
   priority: LegalCase['priority'];
   columnId: string;
-  lawyer?: LegalCase['lawyer'];
-  createdBy: LegalCase['createdBy'];
+  lawyer?: string;
+  createdBy: string;
 };
 
 export type AddNotificationParams = {
@@ -109,12 +109,16 @@ export const kanbanService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async deleteDocument(caseId: string, documentId: string): Promise<boolean> {
+  async deleteDocument(documentId: string): Promise<boolean> {
     const res = await api.delete(`/documents/${documentId}`);
     return res.success;
   },
 
-  async updateDocumentStatus(caseId: string, documentId: string, status: DocumentStatus): Promise<DocumentRequest | null> {
+  async updateDocumentStatus(
+    caseId: string,
+    documentId: string,
+    status: DocumentStatus
+  ): Promise<DocumentRequest | null> {
     const res = await api.put<DocumentRequest>(`/documents/${documentId}`, { status });
     return res.success && res.data ? res.data : null;
   },
@@ -124,7 +128,12 @@ export const kanbanService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async rejectDocument(caseId: string, documentId: string, reason: RejectionReason, note?: string): Promise<DocumentRequest | null> {
+  async rejectDocument(
+    caseId: string,
+    documentId: string,
+    reason: RejectionReason,
+    note?: string
+  ): Promise<DocumentRequest | null> {
     const res = await api.patch<DocumentRequest>(`/documents/${documentId}/reject`, { reason, note });
     return res.success && res.data ? res.data : null;
   },

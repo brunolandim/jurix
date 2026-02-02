@@ -32,10 +32,12 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<ApiR
   });
 
   if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    console.error('API Error:', response.status, errorData);
     return {
       data: null as T,
       success: false,
-      message: `Error: ${response.status}`,
+      message: errorData?.message || `Error: ${response.status}`,
     };
   }
 

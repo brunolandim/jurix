@@ -1,5 +1,13 @@
 import { StateCreator } from 'zustand';
-import { KanbanColumn, LegalCase, CaseNotification, NotificationType, DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
+import {
+  KanbanColumn,
+  LegalCase,
+  CaseNotification,
+  NotificationType,
+  DocumentRequest,
+  DocumentStatus,
+  RejectionReason,
+} from '@/types';
 import { kanbanService, CreateCaseParams, shareableLinkService } from '@/services';
 
 export interface KanbanSlice {
@@ -15,12 +23,7 @@ export interface KanbanSlice {
 
     // Drag and drop
     setActiveCase: (legalCase: LegalCase | null) => void;
-    moveCase: (
-      caseId: string,
-      fromColumnId: string,
-      toColumnId: string,
-      overIndex: number
-    ) => void;
+    moveCase: (caseId: string, fromColumnId: string, toColumnId: string, overIndex: number) => void;
     reorderCase: (columnId: string, oldIndex: number, newIndex: number) => void;
     persistMoveCase: (
       caseId: string,
@@ -41,9 +44,7 @@ export interface KanbanSlice {
     // Column CRUD
     createColumn: (title: string) => Promise<boolean>;
     updateColumnTitle: (columnId: string, newTitle: string) => Promise<boolean>;
-    deleteColumn: (
-      columnId: string
-    ) => Promise<{ success: boolean; error?: 'default' | 'has_cases' }>;
+    deleteColumn: (columnId: string) => Promise<{ success: boolean; error?: 'default' | 'has_cases' }>;
 
     // Notifications
     addNotification: (
@@ -63,7 +64,7 @@ export interface KanbanSlice {
     rejectDocument: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
 
     // Shareable Links
-    generateShareLink: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
+    generateShareLink: (caseId: string, lawyerId: string, documentIds: string[]) => Promise<{ url: string } | null>;
   };
 }
 
@@ -251,9 +252,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
       set((state) => {
         const targetColumn = state.kanban.columns.find((c) => c.id === newColumnId);
         const newOrder =
-          targetColumn && targetColumn.cases.length > 0
-            ? Math.max(...targetColumn.cases.map((c) => c.order)) + 1
-            : 1;
+          targetColumn && targetColumn.cases.length > 0 ? Math.max(...targetColumn.cases.map((c) => c.order)) + 1 : 1;
 
         const newColumns = state.kanban.columns.map((col) => {
           if (col.id === sourceColumn.id) {
@@ -319,9 +318,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
       set((state) => ({
         kanban: {
           ...state.kanban,
-          columns: state.kanban.columns.map((col) =>
-            col.id === columnId ? { ...col, title: newTitle } : col
-          ),
+          columns: state.kanban.columns.map((col) => (col.id === columnId ? { ...col, title: newTitle } : col)),
         },
       }));
 
@@ -385,9 +382,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
             const updatedColumns = state.kanban.columns.map((col) => ({
               ...col,
               cases: col.cases.map((c) =>
-                c.id === caseId
-                  ? { ...c, notifications: [...(c.notifications || []), newNotification] }
-                  : c
+                c.id === caseId ? { ...c, notifications: [...(c.notifications || []), newNotification] } : c
               ),
             }));
 
@@ -395,10 +390,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
               state.kanban.selectedCase?.id === caseId
                 ? {
                     ...state.kanban.selectedCase,
-                    notifications: [
-                      ...(state.kanban.selectedCase.notifications || []),
-                      newNotification,
-                    ],
+                    notifications: [...(state.kanban.selectedCase.notifications || []), newNotification],
                   }
                 : state.kanban.selectedCase;
 
@@ -431,9 +423,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
                 c.id === caseId
                   ? {
                       ...c,
-                      notifications: (c.notifications || []).filter(
-                        (n) => n.id !== notificationId
-                      ),
+                      notifications: (c.notifications || []).filter((n) => n.id !== notificationId),
                     }
                   : c
               ),
@@ -474,9 +464,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
             const updatedColumns = state.kanban.columns.map((col) => ({
               ...col,
               cases: col.cases.map((c) =>
-                c.id === caseId
-                  ? { ...c, documentRequests: [...(c.documentRequests || []), newDocument] }
-                  : c
+                c.id === caseId ? { ...c, documentRequests: [...(c.documentRequests || []), newDocument] } : c
               ),
             }));
 
@@ -484,10 +472,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
               state.kanban.selectedCase?.id === caseId
                 ? {
                     ...state.kanban.selectedCase,
-                    documentRequests: [
-                      ...(state.kanban.selectedCase.documentRequests || []),
-                      newDocument,
-                    ],
+                    documentRequests: [...(state.kanban.selectedCase.documentRequests || []), newDocument],
                   }
                 : state.kanban.selectedCase;
 
@@ -510,7 +495,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
 
     deleteDocument: async (caseId, documentId) => {
       try {
-        const success = await kanbanService.deleteDocument(caseId, documentId);
+        const success = await kanbanService.deleteDocument(documentId);
 
         if (success) {
           set((state) => {
@@ -520,9 +505,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
                 c.id === caseId
                   ? {
                       ...c,
-                      documentRequests: (c.documentRequests || []).filter(
-                        (d) => d.id !== documentId
-                      ),
+                      documentRequests: (c.documentRequests || []).filter((d) => d.id !== documentId),
                     }
                   : c
               ),
@@ -716,7 +699,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
       }
     },
 
-    generateShareLink: async (caseId, documentIds) => {
+    generateShareLink: async (caseId, lawyerId, documentIds) => {
       try {
         // Find the case in the columns to get createdBy
         const columns = get().kanban.columns;
@@ -736,7 +719,7 @@ export const createKanbanSlice: StateCreator<KanbanSlice, [], [], KanbanSlice> =
         const link = await shareableLinkService.createLink({
           caseId,
           documentIds,
-          createdBy: legalCase.createdBy,
+          createdBy: lawyerId,
         });
 
         const url = shareableLinkService.getShareableUrl(link.token);

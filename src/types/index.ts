@@ -15,6 +15,7 @@ export type AuthUser = {
   name: string;
   email: string;
   photo: string;
+  oab: string;
 };
 
 export type LoginCredentials = {
@@ -85,8 +86,8 @@ export type LegalCase = {
   priority: CasePriority;
   columnId: string;
   order: number;
-  lawyer?: { id: string; photo: string; name: string };
-  createdBy: { id: string; photo: string; name: string };
+  assignee?: AuthUser;
+  creator: AuthUser;
   notifications?: CaseNotification[];
   documentRequests?: DocumentRequest[];
   createdAt: string;

@@ -94,11 +94,7 @@ export function KanbanBoard() {
           showUnassigned={showUnassigned}
           onToggleUnassigned={toggleUnassigned}
         />
-        <Button
-          color="primary"
-          startContent={<Plus size={18} />}
-          onPress={() => setIsCreateModalOpen(true)}
-        >
+        <Button color="primary" startContent={<Plus size={18} />} onPress={() => setIsCreateModalOpen(true)}>
           {t('createCase.button')}
         </Button>
       </div>
@@ -142,7 +138,7 @@ export function KanbanBoard() {
             updateCaseData(caseId, { columnId: newColumnId });
           }}
           onDescriptionChange={(caseId, newDescription) => updateCaseData(caseId, { description: newDescription })}
-          onLawyerChange={(caseId, newLawyer) => updateCaseData(caseId, { lawyer: newLawyer })}
+          onLawyerChange={(caseId, newLawyer) => updateCaseData(caseId, { assignee: newLawyer })}
           onAddNotification={addNotification}
           onDeleteNotification={deleteNotification}
           onAddDocument={addDocument}

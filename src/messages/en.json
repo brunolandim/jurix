@@ -26,8 +26,7 @@
     "resetLinkSent": "Reset link sent to your email",
     "passwordMismatch": "Passwords do not match",
     "passwordMinLength": "Password must be at least 6 characters",
-    "invalidToken": "Invalid or expired token",
-    "demoCredentials": "Demo credentials"
+    "invalidToken": "Invalid or expired token"
   },
   "dashboard": {
     "title": "Dashboard"

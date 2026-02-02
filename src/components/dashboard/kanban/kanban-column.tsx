@@ -34,7 +34,7 @@ export function KanbanColumn({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isDefaultColumn = !!column.isDefault;
-  const displayTitle = column.key ? t(column.key) : column.title;
+  const displayTitle = column.isDefault ? t(column.title) : column.title;
   const canDelete = !isDefaultColumn && column.cases.length === 0;
 
   const { setNodeRef, isOver } = useDroppable({

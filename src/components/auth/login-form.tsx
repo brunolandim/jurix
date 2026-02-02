@@ -53,8 +53,6 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
       <Link href="/auth/forgot-password" className="text-sm text-center text-primary">
         {t('forgotPassword')}
       </Link>
-
-      <p className="text-xs text-default-500 text-center">{t('demoCredentials')}: bruno@email.com / 123456</p>
     </Form>
   );
 }

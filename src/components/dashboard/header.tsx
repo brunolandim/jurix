@@ -2,16 +2,14 @@
 
 import { APP_NAME } from '@/lib/constants';
 import { getInitials } from '@/lib/utils';
-import { useAuthUser, useIsAuthenticated } from '@/stores';
+import { useAuth } from '@/stores';
 import { Avatar } from '@/components/ui';
 import { ThemeToggle } from './theme-toggle';
 import { LanguageSelector } from './language-selector';
 import { HeaderNotifications } from './header-notifications';
 
 export function Header() {
-  const user = useAuthUser();
-  const isAuthenticated = useIsAuthenticated();
-
+  const { user, isAuthenticated } = useAuth();
   return (
     <header className="border-b border-divider px-6 py-4 flex items-center justify-between">
       <h1 className="text-xl font-bold">{APP_NAME}</h1>

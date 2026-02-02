@@ -1,24 +1,22 @@
 'use client';
 
 import { LoginForm } from '@/components/auth/login-form';
-import { useIsAuthenticated, useAuthIsLoading, useAuthError, useAuthActions } from '@/stores';
+import { useAuth, useAuthActions } from '@/stores';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
-  const isAuthenticated = useIsAuthenticated();
-  const isLoading = useAuthIsLoading();
-  const error = useAuthError();
+  const { user, isAuthenticated, isLoading, error } = useAuth();
   const { login } = useAuthActions();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!isLoading && isAuthenticated && user) {
       router.push('/dashboard');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, user, router]);
 
-  if (isAuthenticated) {
+  if (isAuthenticated && user) {
     return null;
   }
 

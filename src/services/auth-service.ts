@@ -3,19 +3,19 @@ import { api, setToken, removeToken, getToken } from './api';
 
 type LoginResponse = {
   token: string;
-  user: AuthUser;
+  lawyer: AuthUser;
 };
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthUser> {
-    const res = await api.post<LoginResponse>('/auth', credentials);
+    const res = await api.post<LoginResponse>('/auth/login', credentials);
 
     if (!res.success || !res.data) {
-      throw new Error('Email ou senha inválidos');
+      throw new Error(res.message || 'Email ou senha inválidos');
     }
 
     setToken(res.data.token);
-    return res.data.user;
+    return res.data.lawyer;
   },
 
   async logout(): Promise<void> {

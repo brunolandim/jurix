@@ -4,7 +4,7 @@ import { api } from './api';
 export type CreateShareableLinkParams = {
   caseId: string;
   documentIds: string[];
-  createdBy: { id: string; name: string };
+  createdBy: string;
 };
 
 export type PublicLinkData = {
@@ -46,13 +46,10 @@ export const shareableLinkService = {
     formData.append('documentId', documentId);
     formData.append('file', file);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
 
     if (!response.ok) {
       return { success: false, allCompleted: false };

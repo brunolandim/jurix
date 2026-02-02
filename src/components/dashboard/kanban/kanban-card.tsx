@@ -75,16 +75,16 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
         </div>
 
         <div className="flex items-center justify-between text-xs text-default-400 mt-2">
-          {legalCase.lawyer && (
+          {legalCase.assignee && (
             <div className="flex gap-2 items-center">
               <Avatar
-                name={getInitials(legalCase.lawyer.name)}
-                src={legalCase.lawyer.photo ? legalCase.lawyer.photo : undefined}
+                name={getInitials(legalCase.assignee.name)}
+                src={legalCase.assignee.photo ? legalCase.assignee.photo : undefined}
                 color="default"
                 isBordered
                 className="cursor-pointer w-6 h-6 text-sm"
               />
-              <span>{legalCase.lawyer.name}</span>
+              <span>{legalCase.assignee.name}</span>
             </div>
           )}
           <span>{new Date(legalCase.updatedAt).toLocaleDateString(locale)}</span>

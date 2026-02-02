@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { ChevronDown, User, Share2, Copy, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
+import { useAuthUser } from '@/stores';
 import {
   Modal,
   ModalContent,
@@ -21,7 +22,17 @@ import {
   Textarea,
   Input,
 } from '@/components/ui';
-import { LegalCase, CasePriority, KanbanColumn, Lawyer, CaseNotification, NotificationType, DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
+import {
+  LegalCase,
+  CasePriority,
+  KanbanColumn,
+  Lawyer,
+  CaseNotification,
+  NotificationType,
+  DocumentRequest,
+  DocumentStatus,
+  RejectionReason,
+} from '@/types';
 import { getInitials } from '@/lib/utils';
 import { CaseNotifications } from '../case-notifications';
 import { CaseDocuments } from '../case-documents';
@@ -41,7 +52,7 @@ type CaseDetailModalProps = {
   lawyers: Lawyer[];
   onColumnChange?: (caseId: string, newColumnId: string) => void;
   onDescriptionChange?: (caseId: string, newDescription: string) => Promise<boolean>;
-  onLawyerChange?: (caseId: string, lawyer: LegalCase['lawyer']) => Promise<boolean>;
+  onLawyerChange?: (caseId: string, lawyer: LegalCase['assignee']) => Promise<boolean>;
   onAddNotification?: (
     caseId: string,
     data: { type: NotificationType; message?: string; date: string }
@@ -55,7 +66,7 @@ type CaseDetailModalProps = {
   onDocumentStatusChange?: (caseId: string, documentId: string, status: DocumentStatus) => Promise<boolean>;
   onApproveDocument?: (caseId: string, documentId: string) => Promise<boolean>;
   onRejectDocument?: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
-  onGenerateShareLink?: (caseId: string, documentIds: string[]) => Promise<{ url: string } | null>;
+  onGenerateShareLink?: (caseId: string, lawyerId: string, documentIds: string[]) => Promise<{ url: string } | null>;
 };
 
 export function CaseDetailModal({
@@ -76,6 +87,7 @@ export function CaseDetailModal({
   onRejectDocument,
   onGenerateShareLink,
 }: CaseDetailModalProps) {
+  const user = useAuthUser();
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
   const tColumns = useTranslations('kanban.columns');
@@ -139,12 +151,12 @@ export function CaseDetailModal({
     async (lawyerId: string | null) => {
       if (!legalCase) return;
 
-      const currentLawyerId = legalCase.lawyer?.id ?? null;
+      const currentLawyerId = legalCase.assignee?.id ?? null;
       if (lawyerId === currentLawyerId) return;
 
       setIsSavingLawyer(true);
 
-      let newLawyer: LegalCase['lawyer'] = undefined;
+      let newLawyer: LegalCase['assignee'] = undefined;
       if (lawyerId) {
         const selectedLawyer = lawyers.find((l) => l.id === lawyerId);
         if (selectedLawyer) {
@@ -152,6 +164,8 @@ export function CaseDetailModal({
             id: selectedLawyer.id,
             name: selectedLawyer.name,
             photo: selectedLawyer.photo || '',
+            email: selectedLawyer.email,
+            oab: selectedLawyer.oab,
           };
         }
       }
@@ -170,7 +184,7 @@ export function CaseDetailModal({
   const hasPendingDocuments = pendingDocuments.length > 0;
 
   const handleOpenShareModal = useCallback(async () => {
-    if (!legalCase || !onGenerateShareLink || pendingDocuments.length === 0) return;
+    if (!legalCase || !onGenerateShareLink || !user?.id || pendingDocuments.length === 0) return;
 
     setIsShareModalOpen(true);
     setShareUrl(null);
@@ -178,13 +192,13 @@ export function CaseDetailModal({
     setIsCopied(false);
 
     const documentIds = pendingDocuments.map((d) => d.id);
-    const result = await onGenerateShareLink(legalCase.id, documentIds);
+    const result = await onGenerateShareLink(legalCase.id, user.id, documentIds);
 
     setIsGeneratingLink(false);
     if (result) {
       setShareUrl(result.url);
     }
-  }, [legalCase, onGenerateShareLink, pendingDocuments]);
+  }, [legalCase, onGenerateShareLink, pendingDocuments, user]);
 
   const handleCloseShareModal = useCallback(() => {
     setIsShareModalOpen(false);
@@ -385,15 +399,15 @@ export function CaseDetailModal({
                           className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-50"
                           disabled={isSavingLawyer}
                         >
-                          {legalCase.lawyer ? (
+                          {legalCase.assignee ? (
                             <>
                               <Avatar
-                                name={getInitials(legalCase.lawyer.name)}
-                                src={legalCase.lawyer.photo || undefined}
+                                name={getInitials(legalCase.assignee.name)}
+                                src={legalCase.assignee.photo || undefined}
                                 isBordered
                                 className="w-6 h-6"
                               />
-                              <span className="text-sm">{legalCase.lawyer.name}</span>
+                              <span className="text-sm">{legalCase.assignee.name}</span>
                             </>
                           ) : (
                             <>
@@ -411,7 +425,7 @@ export function CaseDetailModal({
                       </DropdownTrigger>
                       <DropdownMenu
                         aria-label={tKanban('modal.selectLawyer')}
-                        selectedKeys={legalCase.lawyer ? [legalCase.lawyer.id] : []}
+                        selectedKeys={legalCase.assignee ? [legalCase.assignee.id] : []}
                         selectionMode="single"
                         className="max-h-60 overflow-auto"
                         onSelectionChange={(keys) => {
@@ -444,12 +458,12 @@ export function CaseDetailModal({
                     <span className="text-sm text-default-500">{tKanban('modal.createdBy')}</span>
                     <div className="flex items-center gap-2">
                       <Avatar
-                        name={getInitials(legalCase.createdBy.name)}
-                        src={legalCase.createdBy.photo || undefined}
+                        name={getInitials(legalCase.creator.name)}
+                        src={legalCase.creator.photo || undefined}
                         isBordered
                         className="w-6 h-6"
                       />
-                      <span className="text-sm">{legalCase.createdBy.name}</span>
+                      <span className="text-sm">{legalCase.creator.name}</span>
                     </div>
                   </div>
 
@@ -495,9 +509,7 @@ export function CaseDetailModal({
                     {tShare('button')}
                   </Button>
                   {!hasPendingDocuments && (
-                    <p className="text-xs text-default-400 mt-2 text-center">
-                      {tShare('noPendingDocuments')}
-                    </p>
+                    <p className="text-xs text-default-400 mt-2 text-center">{tShare('noPendingDocuments')}</p>
                   )}
                 </div>
               )}
@@ -531,22 +543,13 @@ export function CaseDetailModal({
                       input: 'text-sm font-mono',
                     }}
                   />
-                  <Button
-                    color={isCopied ? 'success' : 'primary'}
-                    variant="flat"
-                    isIconOnly
-                    onPress={handleCopyLink}
-                  >
+                  <Button color={isCopied ? 'success' : 'primary'} variant="flat" isIconOnly onPress={handleCopyLink}>
                     {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </div>
-                {isCopied && (
-                  <p className="text-sm text-success text-center">{tShare('copied')}</p>
-                )}
+                {isCopied && <p className="text-sm text-success text-center">{tShare('copied')}</p>}
                 <div className="bg-default-100 rounded-lg p-3">
-                  <p className="text-xs text-default-500">
-                    {tShare('linkReady')}
-                  </p>
+                  <p className="text-xs text-default-500">{tShare('linkReady')}</p>
                 </div>
               </div>
             ) : null}

@@ -26,8 +26,7 @@
     "resetLinkSent": "Link de recuperação enviado para seu e-mail",
     "passwordMismatch": "As senhas não coincidem",
     "passwordMinLength": "A senha deve ter no mínimo 6 caracteres",
-    "invalidToken": "Token inválido ou expirado",
-    "demoCredentials": "Credenciais de demonstração"
+    "invalidToken": "Token inválido ou expirado"
   },
   "dashboard": {
     "title": "Dashboard"
