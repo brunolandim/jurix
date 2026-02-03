@@ -1,13 +1,13 @@
-import { AuthUser, LoginCredentials } from '@/types';
+import { User, LoginCredentials } from '@/types';
 import { api, setToken, removeToken, getToken } from './api';
 
 type LoginResponse = {
   token: string;
-  lawyer: AuthUser;
+  lawyer: User;
 };
 
 export const authService = {
-  async login(credentials: LoginCredentials): Promise<AuthUser> {
+  async login(credentials: LoginCredentials): Promise<User> {
     const res = await api.post<LoginResponse>('/auth/login', credentials);
 
     if (!res.success || !res.data) {
@@ -22,11 +22,11 @@ export const authService = {
     removeToken();
   },
 
-  async getCurrentUser(): Promise<AuthUser | null> {
+  async getCurrentUser(): Promise<User | null> {
     const token = getToken();
     if (!token) return null;
 
-    const res = await api.get<AuthUser>('/me');
+    const res = await api.get<User>('/me');
     if (!res.success || !res.data) {
       removeToken();
       return null;

@@ -1,16 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { BellRing, Check, CheckCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import {
-  useHeaderNotifications,
-  useHeaderNotificationsIsLoading,
-  useHeaderNotificationsActions,
-  useAuthUser,
-  useNotificationsPolling,
-  type NotificationWithCase,
-} from '@/stores';
+import { useAuth } from '@/contexts';
+import { notificationService, type NotificationWithCase } from '@/services';
 import { Badge, Button, Popover, PopoverTrigger, PopoverContent, Chip, Spinner } from '@/components/ui';
 import { NotificationType } from '@/types';
 
@@ -72,14 +66,10 @@ function NotificationItem({
 
 export function HeaderNotifications() {
   const t = useTranslations('headerNotifications');
-  const user = useAuthUser();
-  const notifications = useHeaderNotifications();
-  const isLoading = useHeaderNotificationsIsLoading();
-  const { markAsRead, markAllAsRead } = useHeaderNotificationsActions();
+  const { user, isAuthenticated } = useAuth();
 
-  // Start polling for notifications
-  useNotificationsPolling();
-
+  const [notifications, setNotifications] = useState<NotificationWithCase[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [markingId, setMarkingId] = useState<string | null>(null);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
@@ -87,22 +77,53 @@ export function HeaderNotifications() {
   const lawyerId = user?.id || null;
   const unreadCount = notifications.length;
 
+  // Buscar notificações
+  const fetchNotifications = useCallback(async () => {
+    if (!lawyerId) {
+      setNotifications([]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await notificationService.getMyNotifications(lawyerId);
+      setNotifications(data);
+    } catch {
+      // Silently fail
+    } finally {
+      setIsLoading(false);
+    }
+  }, [lawyerId]);
+
+  // Fetch on mount only
+  useEffect(() => {
+    if (!isAuthenticated || !lawyerId) return;
+
+    fetchNotifications();
+  }, [isAuthenticated, lawyerId, fetchNotifications]);
+
   const handleMarkAsRead = useCallback(
     async (id: string) => {
       if (!lawyerId) return;
       setMarkingId(id);
-      await markAsRead(id, lawyerId);
+      const success = await notificationService.markAsRead(id, lawyerId);
+      if (success) {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      }
       setMarkingId(null);
     },
-    [lawyerId, markAsRead]
+    [lawyerId]
   );
 
   const handleMarkAllAsRead = useCallback(async () => {
     if (!lawyerId) return;
     setIsMarkingAll(true);
-    await markAllAsRead(lawyerId);
+    const success = await notificationService.markAllAsRead(lawyerId);
+    if (success) {
+      setNotifications([]);
+    }
     setIsMarkingAll(false);
-  }, [lawyerId, markAllAsRead]);
+  }, [lawyerId]);
 
   return (
     <Popover isOpen={isOpen} onOpenChange={setIsOpen} placement="bottom-end" offset={10}>

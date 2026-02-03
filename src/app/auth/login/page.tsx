@@ -1,13 +1,12 @@
 'use client';
 
 import { LoginForm } from '@/components/auth/login-form';
-import { useAuth, useAuthActions } from '@/stores';
+import { useAuth } from '@/contexts';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
-  const { user, isAuthenticated, isLoading, error } = useAuth();
-  const { login } = useAuthActions();
+  const { user, isAuthenticated, isLoading, error, login } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

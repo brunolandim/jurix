@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { ChevronDown, User, Share2, Copy, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
-import { useAuthUser } from '@/stores';
 import {
   Modal,
   ModalContent,
@@ -50,9 +49,10 @@ type CaseDetailModalProps = {
   onClose: () => void;
   columns: KanbanColumn[];
   lawyers: Lawyer[];
+  user: Lawyer | null;
   onColumnChange?: (caseId: string, newColumnId: string) => void;
   onDescriptionChange?: (caseId: string, newDescription: string) => Promise<boolean>;
-  onLawyerChange?: (caseId: string, lawyer: LegalCase['assignee']) => Promise<boolean>;
+  onLawyerChange?: (caseId: string, lawyer: string) => Promise<boolean>;
   onAddNotification?: (
     caseId: string,
     data: { type: NotificationType; message?: string; date: string }
@@ -75,6 +75,7 @@ export function CaseDetailModal({
   onClose,
   columns,
   lawyers,
+  user,
   onColumnChange,
   onDescriptionChange,
   onLawyerChange,
@@ -87,7 +88,6 @@ export function CaseDetailModal({
   onRejectDocument,
   onGenerateShareLink,
 }: CaseDetailModalProps) {
-  const user = useAuthUser();
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
   const tColumns = useTranslations('kanban.columns');
@@ -156,7 +156,7 @@ export function CaseDetailModal({
 
       setIsSavingLawyer(true);
 
-      let newLawyer: LegalCase['assignee'] = undefined;
+      let newLawyer: any;
       if (lawyerId) {
         const selectedLawyer = lawyers.find((l) => l.id === lawyerId);
         if (selectedLawyer) {
@@ -170,7 +170,7 @@ export function CaseDetailModal({
         }
       }
 
-      await onLawyerChange?.(legalCase.id, newLawyer);
+      await onLawyerChange?.(legalCase.id, newLawyer.id);
       setIsSavingLawyer(false);
     },
     [legalCase, lawyers, onLawyerChange]
@@ -178,8 +178,8 @@ export function CaseDetailModal({
 
   // Share link handlers
   const pendingDocuments = useMemo(
-    () => legalCase?.documentRequests?.filter((d) => d.status === 'pending') || [],
-    [legalCase?.documentRequests]
+    () => legalCase?.documents?.filter((d) => d.status === 'pending') || [],
+    [legalCase?.documents]
   );
   const hasPendingDocuments = pendingDocuments.length > 0;
 
@@ -342,7 +342,7 @@ export function CaseDetailModal({
 
               {/* Documents */}
               <CaseDocuments
-                documents={legalCase.documentRequests || []}
+                documents={legalCase.documents || []}
                 onAdd={async (data) => {
                   if (onAddDocument) {
                     const result = await onAddDocument(legalCase.id, data);

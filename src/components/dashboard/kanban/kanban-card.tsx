@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { BellRing, FileText } from 'lucide-react';
@@ -9,7 +9,6 @@ import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
 import { LegalCase, CasePriority } from '@/types';
 import { getInitials } from '@/lib/utils';
-import { useCaseNotificationCount, useCasePendingDocumentCount } from '@/stores';
 
 const priorityColors: Record<CasePriority, string> = {
   low: 'bg-gray-500',
@@ -35,9 +34,12 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
   const tKanban = useTranslations('kanban');
   const { locale } = useLocale();
 
-  // Direct subscription to counts - updates automatically when data changes
-  const notificationCount = useCaseNotificationCount(legalCase.id);
-  const pendingDocumentCount = useCasePendingDocumentCount(legalCase.id);
+  // Calcular contadores diretamente do caso
+  const notificationCount = useMemo(() => legalCase.notifications?.length ?? 0, [legalCase.notifications]);
+  const pendingDocumentCount = useMemo(
+    () => legalCase.documents?.filter((d) => d.status === 'pending').length ?? 0,
+    [legalCase.documents]
+  );
 
   return (
     <Card

@@ -1,13 +1,12 @@
 import { api } from './api';
-import { KanbanColumn, LegalCase, CaseNotification, DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
-
-// ============ TYPES ============
-export type MoveCaseParams = {
-  caseId: string;
-  columnId: string;
-  previousId: string | null;
-  nextId: string | null;
-};
+import {
+  LegalCase,
+  CaseNotification,
+  DocumentRequest,
+  DocumentStatus,
+  RejectionReason,
+  NotificationType,
+} from '@/types';
 
 export type CreateCaseParams = {
   number: string;
@@ -16,13 +15,19 @@ export type CreateCaseParams = {
   client: string;
   priority: LegalCase['priority'];
   columnId: string;
-  lawyer?: string;
+  assignedTo?: string;
   createdBy: string;
+};
+
+export type MoveCaseParams = {
+  caseId: string;
+  columnId: string;
+  order: number;
 };
 
 export type AddNotificationParams = {
   caseId: string;
-  type: CaseNotification['type'];
+  type: NotificationType;
   message?: string;
   date: string;
 };
@@ -34,33 +39,7 @@ export type AddDocumentParams = {
   status: DocumentStatus;
 };
 
-// ============ HELPERS ============
-const sortByOrder = (columns: KanbanColumn[]) =>
-  columns.map((col) => ({ ...col, cases: [...col.cases].sort((a, b) => a.order - b.order) }));
-
-// ============ SERVICE ============
-export const kanbanService = {
-  // ============ COLUMNS ============
-  async getColumns(): Promise<KanbanColumn[]> {
-    const res = await api.get<KanbanColumn[]>('/columns');
-    return res.success && res.data ? sortByOrder(res.data) : [];
-  },
-
-  async createColumn(title: string): Promise<KanbanColumn | null> {
-    const res = await api.post<KanbanColumn>('/columns', { title });
-    return res.success && res.data ? res.data : null;
-  },
-
-  async updateColumn(id: string, title: string): Promise<KanbanColumn | null> {
-    const res = await api.put<KanbanColumn>(`/columns/${id}`, { title });
-    return res.success && res.data ? res.data : null;
-  },
-
-  async deleteColumn(id: string): Promise<boolean> {
-    const res = await api.delete(`/columns/${id}`);
-    return res.success;
-  },
-
+export const legalCaseService = {
   // ============ CASES ============
   async createCase(params: CreateCaseParams): Promise<LegalCase | null> {
     const res = await api.post<LegalCase>('/cases', params);
@@ -72,13 +51,13 @@ export const kanbanService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async moveCase({ caseId, columnId, previousId, nextId }: MoveCaseParams): Promise<LegalCase | null> {
-    const res = await api.patch<LegalCase>(`/cases/${caseId}/move`, { columnId, previousId, nextId });
+  async moveCase({ caseId, columnId, order }: MoveCaseParams): Promise<LegalCase | null> {
+    const res = await api.patch<LegalCase>(`/cases/${caseId}/move`, { columnId, order });
     return res.success && res.data ? res.data : null;
   },
 
-  async assignLawyer(caseId: string, lawyerId: string): Promise<LegalCase | null> {
-    const res = await api.patch<LegalCase>(`/cases/${caseId}/assign`, { lawyerId });
+  async assignLawyer(caseId: string, assignedTo: string): Promise<LegalCase | null> {
+    const res = await api.patch<LegalCase>(`/cases/${caseId}/assign`, { assignedTo });
     return res.success && res.data ? res.data : null;
   },
 
@@ -93,7 +72,7 @@ export const kanbanService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async deleteNotification(caseId: string, notificationId: string): Promise<boolean> {
+  async deleteNotification(notificationId: string): Promise<boolean> {
     const res = await api.delete(`/notifications/${notificationId}`);
     return res.success;
   },
@@ -114,26 +93,17 @@ export const kanbanService = {
     return res.success;
   },
 
-  async updateDocumentStatus(
-    caseId: string,
-    documentId: string,
-    status: DocumentStatus
-  ): Promise<DocumentRequest | null> {
+  async updateDocumentStatus(documentId: string, status: DocumentStatus): Promise<DocumentRequest | null> {
     const res = await api.put<DocumentRequest>(`/documents/${documentId}`, { status });
     return res.success && res.data ? res.data : null;
   },
 
-  async approveDocument(caseId: string, documentId: string): Promise<DocumentRequest | null> {
+  async approveDocument(documentId: string): Promise<DocumentRequest | null> {
     const res = await api.patch<DocumentRequest>(`/documents/${documentId}/approve`);
     return res.success && res.data ? res.data : null;
   },
 
-  async rejectDocument(
-    caseId: string,
-    documentId: string,
-    reason: RejectionReason,
-    note?: string
-  ): Promise<DocumentRequest | null> {
+  async rejectDocument(documentId: string, reason: RejectionReason, note?: string): Promise<DocumentRequest | null> {
     const res = await api.patch<DocumentRequest>(`/documents/${documentId}/reject`, { reason, note });
     return res.success && res.data ? res.data : null;
   },

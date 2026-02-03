@@ -1,9 +1,3 @@
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-};
-
 export type ApiResponse<T> = {
   data: T;
   success: boolean;
@@ -16,6 +10,7 @@ export type AuthUser = {
   email: string;
   photo: string;
   oab: string;
+  organizationId: string;
 };
 
 export type LoginCredentials = {
@@ -24,7 +19,7 @@ export type LoginCredentials = {
 };
 
 export type AuthState = {
-  user: AuthUser | null;
+  user: Lawyer | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -49,10 +44,8 @@ export type DocumentRequest = {
   caseId: string;
   requestedAt: string;
   receivedAt?: string;
-  // Upload fields
   fileUrl?: string;
   uploadedAt?: string;
-  // Rejection fields
   rejectionReason?: RejectionReason;
   rejectionNote?: string;
   rejectedAt?: string;
@@ -62,19 +55,14 @@ export type CaseNotification = {
   id: string;
   type: NotificationType;
   message?: string;
-  date: string; // ISO date string - quando a notificação deve aparecer
+  date: string;
   caseId: string;
-  lawyerId?: string; // Advogado responsável (para envio)
+  lawyerId?: string;
+  isRead: boolean;
+  readAt?: string;
 
-  // Controle de leitura (frontend)
-  isRead: boolean; // Se o usuário viu/confirmou
-  readAt?: string; // Quando marcou como lida
-
-  // Controle de envio (backend job)
-  isSent: boolean; // Se o job já enviou (email/SMS)
-  sentAt?: string; // Quando foi enviada
-
-  createdAt: string;
+  isSent: boolean;
+  sentAt?: string;
 };
 
 export type LegalCase = {
@@ -86,10 +74,12 @@ export type LegalCase = {
   priority: CasePriority;
   columnId: string;
   order: number;
-  assignee?: AuthUser;
-  creator: AuthUser;
+  createdBy: string;
+  assignedTo: string;
+  assignee?: Lawyer;
+  creator: Lawyer;
   notifications?: CaseNotification[];
-  documentRequests?: DocumentRequest[];
+  documents?: DocumentRequest[];
   createdAt: string;
   updatedAt: string;
 };
@@ -120,11 +110,8 @@ export type Lawyer = {
   oab: string; // Registro OAB
   specialty?: string;
   active: boolean;
-  createdAt: string;
 };
 
-// Shareable Link for Public Document Upload
-// Only stores references - case and document data are fetched via JOIN
 export type ShareableLink = {
   id: string;
   token: string;
@@ -132,7 +119,8 @@ export type ShareableLink = {
   documentIds: string[];
   isExpired: boolean;
   createdAt: string;
-  createdBy: { id: string; name: string };
+  createdBy: string;
+  creator: Lawyer;
 };
 
 // Public Document (for client view)

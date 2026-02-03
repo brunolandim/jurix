@@ -34,20 +34,14 @@ type CreateCaseModalProps = {
     description?: string;
     client: string;
     priority: CasePriority;
-    lawyer?: LegalCase['lawyer'];
-    createdBy: LegalCase['createdBy'];
+    assignedTo?: string;
+    createdBy: string;
   }) => Promise<LegalCase | null>;
 };
 
 const priorities: CasePriority[] = ['low', 'medium', 'high', 'urgent'];
 
-export function CreateCaseModal({
-  isOpen,
-  onClose,
-  lawyers,
-  currentUser,
-  onCreateCase,
-}: CreateCaseModalProps) {
+export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreateCase }: CreateCaseModalProps) {
   const t = useTranslations('kanban.createCase');
   const tPriority = useTranslations('priority');
 
@@ -57,7 +51,7 @@ export function CreateCaseModal({
   const [description, setDescription] = useState('');
   const [client, setClient] = useState('');
   const [priority, setPriority] = useState<CasePriority>('medium');
-  const [selectedLawyer, setSelectedLawyer] = useState<LegalCase['lawyer']>(undefined);
+  const [selectedLawyer, setSelectedLawyer] = useState<Lawyer>();
 
   const resetForm = useCallback(() => {
     setNumber('');
@@ -84,12 +78,8 @@ export function CreateCaseModal({
       description: description.trim() || undefined,
       client: client.trim(),
       priority,
-      lawyer: selectedLawyer,
-      createdBy: {
-        id: currentUser.id,
-        name: currentUser.name,
-        photo: currentUser.photo,
-      },
+      assignedTo: selectedLawyer?.id,
+      createdBy: currentUser.id,
     });
 
     setIsSubmitting(false);
@@ -108,11 +98,7 @@ export function CreateCaseModal({
 
       const lawyer = lawyers.find((l) => l.id === lawyerId);
       if (lawyer) {
-        setSelectedLawyer({
-          id: lawyer.id,
-          name: lawyer.name,
-          photo: lawyer.photo || '',
-        });
+        setSelectedLawyer(lawyer);
       }
     },
     [lawyers]
@@ -210,11 +196,7 @@ export function CreateCaseModal({
                     <DropdownItem
                       key={lawyer.id}
                       startContent={
-                        <Avatar
-                          name={getInitials(lawyer.name)}
-                          src={lawyer.photo || undefined}
-                          className="w-6 h-6"
-                        />
+                        <Avatar name={getInitials(lawyer.name)} src={lawyer.photo || undefined} className="w-6 h-6" />
                       }
                     >
                       {lawyer.name}
@@ -238,12 +220,7 @@ export function CreateCaseModal({
           <Button variant="flat" onPress={handleClose} isDisabled={isSubmitting}>
             {t('cancel')}
           </Button>
-          <Button
-            color="primary"
-            onPress={handleSubmit}
-            isLoading={isSubmitting}
-            isDisabled={!isFormValid}
-          >
+          <Button color="primary" onPress={handleSubmit} isLoading={isSubmitting} isDisabled={!isFormValid}>
             {t('create')}
           </Button>
         </ModalFooter>

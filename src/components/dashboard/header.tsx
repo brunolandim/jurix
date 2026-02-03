@@ -2,7 +2,7 @@
 
 import { APP_NAME } from '@/lib/constants';
 import { getInitials } from '@/lib/utils';
-import { useAuth } from '@/stores';
+import { useAuth } from '@/contexts';
 import { Avatar } from '@/components/ui';
 import { ThemeToggle } from './theme-toggle';
 import { LanguageSelector } from './language-selector';
