@@ -152,7 +152,7 @@ export function KanbanBoard() {
           currentUser={{
             id: user.id,
             name: user.name,
-            photo: user.photo,
+            photo: user.photo || '',
           }}
           onCreateCase={createCase}
         />

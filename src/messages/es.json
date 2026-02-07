@@ -31,6 +31,77 @@
   "dashboard": {
     "title": "Panel de control"
   },
+  "sidebar": {
+    "cases": "Casos",
+    "lawyers": "Abogados",
+    "billing": "Facturación",
+    "collapse": "Contraer menú",
+    "expand": "Expandir menú"
+  },
+  "lawyers": {
+    "title": "Abogados",
+    "newLawyer": "Nuevo Abogado",
+    "editLawyer": "Editar Abogado",
+    "name": "Nombre",
+    "namePlaceholder": "Nombre completo",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "email@ejemplo.com",
+    "phone": "Teléfono",
+    "phonePlaceholder": "(00) 00000-0000",
+    "oab": "OAB",
+    "oabPlaceholder": "Ej: SP123456",
+    "specialty": "Especialidad",
+    "specialtyPlaceholder": "Ej: Derecho Civil",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "status": "Estado",
+    "actions": "Acciones",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "noLawyers": "Ningún abogado registrado",
+    "createSuccess": "Abogado creado con éxito",
+    "updateSuccess": "Abogado actualizado con éxito",
+    "error": "Error al procesar operación"
+  },
+  "billing": {
+    "title": "Facturación",
+    "currentPlan": "Plan Actual",
+    "changePlan": "Cambiar Plan",
+    "plans": "Planes Disponibles",
+    "month": "/mes",
+    "popular": "Popular",
+    "current": "Actual",
+    "select": "Seleccionar",
+    "basic": {
+      "name": "Básico",
+      "price": "$9.90",
+      "features": ["Hasta 50 casos", "1 abogado", "Soporte por email"]
+    },
+    "professional": {
+      "name": "Profesional",
+      "price": "$19.90",
+      "features": ["Hasta 200 casos", "5 abogados", "Soporte prioritario", "Informes avanzados"]
+    },
+    "enterprise": {
+      "name": "Empresarial",
+      "price": "$39.90",
+      "features": ["Casos ilimitados", "Abogados ilimitados", "Soporte 24/7", "Informes avanzados", "API de integración"]
+    },
+    "paymentMethod": "Método de Pago",
+    "addCard": "Agregar Tarjeta",
+    "editCard": "Editar Tarjeta",
+    "cardNumber": "Número de Tarjeta",
+    "cardNumberPlaceholder": "0000 0000 0000 0000",
+    "cardName": "Nombre en la Tarjeta",
+    "cardNamePlaceholder": "Como aparece en la tarjeta",
+    "cardExpiry": "Vencimiento",
+    "cardExpiryPlaceholder": "MM/AA",
+    "cardCvv": "CVV",
+    "cardCvvPlaceholder": "000",
+    "saveCard": "Guardar Tarjeta",
+    "cardEndingIn": "Tarjeta terminada en",
+    "noCard": "Ninguna tarjeta registrada"
+  },
   "kanban": {
     "searchPlaceholder": "Buscar casos...",
     "lawyers": "Abogados",

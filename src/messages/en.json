@@ -31,6 +31,77 @@
   "dashboard": {
     "title": "Dashboard"
   },
+  "sidebar": {
+    "cases": "Cases",
+    "lawyers": "Lawyers",
+    "billing": "Billing",
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
+  },
+  "lawyers": {
+    "title": "Lawyers",
+    "newLawyer": "New Lawyer",
+    "editLawyer": "Edit Lawyer",
+    "name": "Name",
+    "namePlaceholder": "Full name",
+    "email": "Email",
+    "emailPlaceholder": "email@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "(00) 00000-0000",
+    "oab": "OAB",
+    "oabPlaceholder": "E.g.: SP123456",
+    "specialty": "Specialty",
+    "specialtyPlaceholder": "E.g.: Civil Law",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status",
+    "actions": "Actions",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "noLawyers": "No lawyers registered",
+    "createSuccess": "Lawyer created successfully",
+    "updateSuccess": "Lawyer updated successfully",
+    "error": "Error processing operation"
+  },
+  "billing": {
+    "title": "Billing",
+    "currentPlan": "Current Plan",
+    "changePlan": "Change Plan",
+    "plans": "Available Plans",
+    "month": "/month",
+    "popular": "Popular",
+    "current": "Current",
+    "select": "Select",
+    "basic": {
+      "name": "Basic",
+      "price": "$9.90",
+      "features": ["Up to 50 cases", "1 lawyer", "Email support"]
+    },
+    "professional": {
+      "name": "Professional",
+      "price": "$19.90",
+      "features": ["Up to 200 cases", "5 lawyers", "Priority support", "Advanced reports"]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "$39.90",
+      "features": ["Unlimited cases", "Unlimited lawyers", "24/7 support", "Advanced reports", "Integration API"]
+    },
+    "paymentMethod": "Payment Method",
+    "addCard": "Add Card",
+    "editCard": "Edit Card",
+    "cardNumber": "Card Number",
+    "cardNumberPlaceholder": "0000 0000 0000 0000",
+    "cardName": "Name on Card",
+    "cardNamePlaceholder": "As it appears on card",
+    "cardExpiry": "Expiry",
+    "cardExpiryPlaceholder": "MM/YY",
+    "cardCvv": "CVV",
+    "cardCvvPlaceholder": "000",
+    "saveCard": "Save Card",
+    "cardEndingIn": "Card ending in",
+    "noCard": "No card registered"
+  },
   "kanban": {
     "searchPlaceholder": "Search cases...",
     "lawyers": "Lawyers",

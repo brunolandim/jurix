@@ -13,6 +13,8 @@ export type AuthUser = {
   organizationId: string;
 };
 
+export type User = Lawyer;
+
 export type LoginCredentials = {
   email: string;
   password: string;
