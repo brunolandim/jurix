@@ -134,3 +134,48 @@ export type PublicDocument = {
   rejectionReason?: RejectionReason;
   rejectionNote?: string;
 };
+
+export type PlanType = 'pro' | 'business' | 'enterprise';
+export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'unpaid';
+
+export type PlanLimits = {
+  lawyers: number | null;
+  activeCases: number | null;
+  documents: number | null;
+  shareLinks: number | null;
+};
+
+export type Plan = {
+  name: string;
+  type: PlanType;
+  price: number;
+  limits: PlanLimits;
+};
+
+export type UsageInfo = {
+  current: number;
+  limit: number | null;
+};
+
+export type SubscriptionInfo = {
+  subscription: {
+    id: string;
+    plan: string;
+    status: SubscriptionStatus;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+    trialEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+    canceledAt: string | null;
+  } | null;
+  plan: PlanType | null;
+  status: SubscriptionStatus | null;
+  usage: {
+    lawyers: UsageInfo;
+    activeCases: UsageInfo;
+    documents: UsageInfo;
+    shareLinks: UsageInfo;
+  };
+  trialEndsAt: string | null;
+  cancelAtPeriodEnd: boolean;
+};
