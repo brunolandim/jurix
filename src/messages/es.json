@@ -28,6 +28,22 @@
     "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
     "invalidToken": "Token inválido o expirado"
   },
+  "profile": {
+    "title": "Mi Perfil",
+    "photo": "Foto",
+    "changePhoto": "Cambiar foto",
+    "removePhoto": "Eliminar foto",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "specialty": "Especialidad",
+    "changePassword": "Cambiar Contraseña",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "saveSuccess": "Perfil actualizado con éxito",
+    "saveError": "Error al actualizar perfil",
+    "uploadError": "Error al subir foto",
+    "passwordMismatch": "Las contraseñas no coinciden"
+  },
   "dashboard": {
     "title": "Panel de control"
   },
@@ -35,6 +51,7 @@
     "cases": "Casos",
     "lawyers": "Abogados",
     "billing": "Facturación",
+    "profile": "Perfil",
     "collapse": "Contraer menú",
     "expand": "Expandir menú"
   },
@@ -61,6 +78,12 @@
     "noLawyers": "Ningún abogado registrado",
     "createSuccess": "Abogado creado con éxito",
     "updateSuccess": "Abogado actualizado con éxito",
+    "role": "Rol",
+    "roles": {
+      "owner": "Propietario",
+      "admin": "Administrador",
+      "lawyer": "Abogado"
+    },
     "error": "Error al procesar operación"
   },
   "billing": {

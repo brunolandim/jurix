@@ -6,3 +6,4 @@ export { lawyerService } from './lawyer-service';
 export { notificationService, type NotificationWithCase } from './notification-service';
 export { shareableLinkService, type CreateShareableLinkParams, type PublicLinkData } from './shareable-link-service';
 export { subscriptionService } from './subscription-service';
+export { profileService } from './profile-service';

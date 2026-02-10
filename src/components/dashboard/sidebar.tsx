@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Scale, Users, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Scale, Users, CreditCard, UserCog, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { APP_NAME } from '@/lib/constants';
 import Link from 'next/link';
@@ -16,6 +16,7 @@ const menuItems = [
   { key: 'cases', href: '/dashboard', icon: Scale },
   { key: 'lawyers', href: '/dashboard/lawyers', icon: Users },
   { key: 'billing', href: '/dashboard/billing', icon: CreditCard },
+  { key: 'profile', href: '/dashboard/profile', icon: UserCog },
 ] as const;
 
 export function Sidebar() {

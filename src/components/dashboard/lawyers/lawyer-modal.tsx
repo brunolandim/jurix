@@ -11,6 +11,8 @@ import {
   ModalFooter,
   Input,
   Button,
+  Select,
+  SelectItem,
 } from '@/components/ui';
 import { lawyerService } from '@/services/lawyer-service';
 import { handleApiError } from '@/lib/handle-api-error';
@@ -34,7 +36,10 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
     phone: '',
     oab: '',
     specialty: '',
+    role: 'lawyer' as string,
   });
+
+  const roleOptions = ['owner', 'admin', 'lawyer'] as const;
 
   useEffect(() => {
     if (lawyer) {
@@ -44,9 +49,10 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
         phone: lawyer.phone || '',
         oab: lawyer.oab,
         specialty: lawyer.specialty || '',
+        role: lawyer.role || 'lawyer',
       });
     } else {
-      setForm({ name: '', email: '', phone: '', oab: '', specialty: '' });
+      setForm({ name: '', email: '', phone: '', oab: '', specialty: '', role: 'lawyer' });
     }
   }, [lawyer, isOpen]);
 
@@ -110,6 +116,18 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
             value={form.specialty}
             onValueChange={(v) => setForm((f) => ({ ...f, specialty: v }))}
           />
+          <Select
+            label={t('role')}
+            selectedKeys={[form.role]}
+            onSelectionChange={(keys) => {
+              const value = Array.from(keys)[0] as string;
+              if (value) setForm((f) => ({ ...f, role: value }));
+            }}
+          >
+            {roleOptions.map((role) => (
+              <SelectItem key={role}>{t(`roles.${role}`)}</SelectItem>
+            ))}
+          </Select>
         </ModalBody>
         <ModalFooter>
           <Button variant="flat" onPress={onClose}>

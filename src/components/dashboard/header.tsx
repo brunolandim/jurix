@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { getInitials } from '@/lib/utils';
 import { useAuth } from '@/contexts';
 import { Avatar } from '@/components/ui';
@@ -16,7 +17,7 @@ export function Header() {
         <ThemeToggle />
         {isAuthenticated && <HeaderNotifications />}
         {isAuthenticated && user && (
-          <div>
+          <Link href="/dashboard/profile">
             <Avatar
               name={getInitials(user.name)}
               src={user.photo ? user.photo : undefined}
@@ -25,7 +26,7 @@ export function Header() {
               className="cursor-pointer"
               isBordered
             />
-          </div>
+          </Link>
         )}
       </div>
     </header>

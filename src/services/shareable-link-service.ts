@@ -1,5 +1,6 @@
 import { ShareableLink, PublicDocument } from '@/types';
 import { api } from './api';
+import { uploadWithPresignedUrl } from '@/lib/upload';
 
 export type CreateShareableLinkParams = {
   caseId: string;
@@ -14,6 +15,12 @@ export type PublicLinkData = {
   lawyerName?: string;
   documents: PublicDocument[];
   isExpired: boolean;
+};
+
+type PresignedUrlResponse = {
+  uploadUrl: string;
+  fileUrl: string;
+  documentId: string;
 };
 
 export const shareableLinkService = {
@@ -45,21 +52,46 @@ export const shareableLinkService = {
     documentId: string,
     file: File
   ): Promise<{ success: boolean; allCompleted: boolean }> {
-    const formData = new FormData();
-    formData.append('documentId', documentId);
-    formData.append('file', file);
+    try {
+      // 1. Get presigned URL
+      const fileUrl = await uploadWithPresignedUrl(file, async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload-url`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            documentId,
+            contentType: file.type,
+            fileName: file.name,
+          }),
+        });
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload`, {
-      method: 'POST',
-      body: formData,
-    });
+        if (!response.ok) {
+          throw new Error('Failed to get presigned URL');
+        }
 
-    if (!response.ok) {
+        return response.json();
+      });
+
+      // 2. Confirm upload
+      const confirmResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/share-links/${token}/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentId,
+          fileUrl,
+        }),
+      });
+
+      if (!confirmResponse.ok) {
+        return { success: false, allCompleted: false };
+      }
+
+      const result = await confirmResponse.json();
+      return { success: true, allCompleted: result.allCompleted ?? false };
+    } catch (error) {
+      console.error('Upload error:', error);
       return { success: false, allCompleted: false };
     }
-
-    const result = await response.json();
-    return { success: true, allCompleted: result.allCompleted ?? false };
   },
 
   getShareableUrl(token: string): string {

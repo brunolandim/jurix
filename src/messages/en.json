@@ -28,6 +28,22 @@
     "passwordMinLength": "Password must be at least 6 characters",
     "invalidToken": "Invalid or expired token"
   },
+  "profile": {
+    "title": "My Profile",
+    "photo": "Photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "name": "Name",
+    "phone": "Phone",
+    "specialty": "Specialty",
+    "changePassword": "Change Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "saveSuccess": "Profile updated successfully",
+    "saveError": "Failed to update profile",
+    "uploadError": "Failed to upload photo",
+    "passwordMismatch": "Passwords do not match"
+  },
   "dashboard": {
     "title": "Dashboard"
   },
@@ -35,6 +51,7 @@
     "cases": "Cases",
     "lawyers": "Lawyers",
     "billing": "Billing",
+    "profile": "Profile",
     "collapse": "Collapse menu",
     "expand": "Expand menu"
   },
@@ -61,6 +78,12 @@
     "noLawyers": "No lawyers registered",
     "createSuccess": "Lawyer created successfully",
     "updateSuccess": "Lawyer updated successfully",
+    "role": "Role",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "lawyer": "Lawyer"
+    },
     "error": "Error processing operation"
   },
   "billing": {

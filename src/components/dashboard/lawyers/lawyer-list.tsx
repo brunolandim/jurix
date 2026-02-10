@@ -95,6 +95,9 @@ export function LawyerList() {
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <Chip size="sm" variant="flat">{lawyer.oab}</Chip>
+                    {lawyer.role && (
+                      <Chip size="sm" variant="flat" color="primary">{t(`roles.${lawyer.role}`)}</Chip>
+                    )}
                     {lawyer.specialty && (
                       <Chip size="sm" variant="flat" color="secondary">{lawyer.specialty}</Chip>
                     )}
