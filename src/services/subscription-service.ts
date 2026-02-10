@@ -12,9 +12,8 @@ export const subscriptionService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async createCheckout(plan: string): Promise<string | null> {
-    const res = await api.post<{ url: string }>('/subscriptions/checkout', { plan });
-    return res.success && res.data ? res.data.url : null;
+  async createCheckout(plan: string) {
+    return api.post<{ url: string | null; upgraded?: boolean }>('/subscriptions/checkout', { plan });
   },
 
   async createPortal(): Promise<string | null> {

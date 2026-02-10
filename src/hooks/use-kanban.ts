@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { KanbanColumn, LegalCase, Lawyer, NotificationType, DocumentStatus, RejectionReason } from '@/types';
 import { columnService, legalCaseService, lawyerService, shareableLinkService } from '@/services';
+import { handleApiError } from '@/lib/handle-api-error';
 
 function calculateNewOrder(cases: LegalCase[], currentIndex: number): number {
   const previous = currentIndex > 0 ? cases[currentIndex - 1] : null;
@@ -18,6 +20,7 @@ function calculateNewOrder(cases: LegalCase[], currentIndex: number): number {
 }
 
 export function useKanban(isAuthenticated: boolean) {
+  const t = useTranslations();
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -116,26 +119,29 @@ export function useKanban(isAuthenticated: boolean) {
       const firstColumn = columns[0];
       if (!firstColumn) return null;
 
-      const newCase = await legalCaseService.createCase({
-        number: params.number,
-        title: params.title,
-        description: params.description,
-        client: params.client,
-        priority: params.priority,
-        columnId: firstColumn.id,
-        assignedTo: params.assignedTo,
-        createdBy: params.createdBy,
-      });
+      try {
+        const newCase = await legalCaseService.createCase({
+          number: params.number,
+          title: params.title,
+          description: params.description,
+          client: params.client,
+          priority: params.priority,
+          columnId: firstColumn.id,
+          assignedTo: params.assignedTo,
+          createdBy: params.createdBy,
+        });
 
-      if (newCase) {
         setColumns((prev) =>
           prev.map((col) => (col.id === firstColumn.id ? { ...col, cases: [...col.cases, newCase] } : col))
         );
-      }
 
-      return newCase;
+        return newCase;
+      } catch (error) {
+        handleApiError(error, t);
+        return null;
+      }
     },
-    [columns]
+    [columns, t]
   );
 
   const updateCaseData = useCallback(async (caseId: string, data: Partial<LegalCase>) => {
@@ -317,9 +323,9 @@ export function useKanban(isAuthenticated: boolean) {
   // Documentos
   const addDocument = useCallback(
     async (caseId: string, data: { name: string; description?: string; status: DocumentStatus }) => {
-      const newDocument = await legalCaseService.addDocument({ caseId, ...data });
+      try {
+        const newDocument = await legalCaseService.addDocument({ caseId, ...data });
 
-      if (newDocument) {
         setColumns((prev) =>
           prev.map((col) => ({
             ...col,
@@ -332,11 +338,14 @@ export function useKanban(isAuthenticated: boolean) {
         setSelectedCase((prev) =>
           prev?.id === caseId ? { ...prev, documents: [...(prev.documents || []), newDocument] } : prev
         );
-      }
 
-      return newDocument;
+        return newDocument;
+      } catch (error) {
+        handleApiError(error, t);
+        return null;
+      }
     },
-    []
+    [t]
   );
 
   const deleteDocument = useCallback(async (caseId: string, documentId: string) => {
@@ -465,10 +474,11 @@ export function useKanban(isAuthenticated: boolean) {
 
       const url = shareableLinkService.getShareableUrl(link.token);
       return { url };
-    } catch {
+    } catch (error) {
+      handleApiError(error, t);
       return null;
     }
-  }, []);
+  }, [t]);
 
   // DnD handlers
   const moveCase = useCallback((caseId: string, fromColumnId: string, toColumnId: string, overIndex: number) => {

@@ -33,11 +33,12 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<ApiR
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
-    console.error('API Error:', response.status, errorData);
     return {
       data: null as T,
       success: false,
-      message: errorData?.message || `Error: ${response.status}`,
+      message: errorData?.error?.message || errorData?.message || `Error: ${response.status}`,
+      status: response.status,
+      code: errorData?.error?.code,
     };
   }
 

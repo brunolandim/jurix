@@ -21,7 +21,10 @@ export const lawyerService = {
   async createLawyer(lawyer: Omit<Lawyer, 'id' | 'createdAt'>): Promise<Lawyer> {
     const res = await api.post<Lawyer>('/lawyers', lawyer);
     if (!res.success || !res.data) {
-      throw new Error('Failed to create lawyer');
+      const error = new Error(res.message || 'Failed to create lawyer');
+      (error as any).code = res.code;
+      (error as any).status = res.status;
+      throw error;
     }
     return res.data;
   },

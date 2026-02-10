@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle } from 'lucide-react';
 import {
   Button,
@@ -20,6 +22,7 @@ import {
 } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { subscriptionService } from '@/services/subscription-service';
+import { useSubscription } from '@/contexts/subscription-context';
 import type { Plan, SubscriptionInfo } from '@/types';
 
 const planIcons = {
@@ -77,6 +80,8 @@ function UsageBar({ current, limit, label }: { current: number; limit: number | 
 export function BillingPage() {
   const t = useTranslations('billing');
   const tc = useTranslations('common');
+  const searchParams = useSearchParams();
+  const { isOwner, refresh: refreshSubscription } = useSubscription();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [info, setInfo] = useState<SubscriptionInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,22 +97,51 @@ export function BillingPage() {
       setPlans(plansData);
       setInfo(infoData);
     } catch {
-      console.error('Failed to load billing data');
+      toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
+  // Handle Stripe checkout redirect
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
+    if (success === 'true') {
+      toast.success(t('checkoutSuccess'));
+      refreshSubscription();
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (canceled === 'true') {
+      toast.info(t('checkoutCanceled'));
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [searchParams, t, refreshSubscription]);
+
   const handleCheckout = async (planType: string) => {
     setActionLoading(planType);
     try {
-      const url = await subscriptionService.createCheckout(planType);
-      if (url) {
-        window.location.href = url;
+      const res = await subscriptionService.createCheckout(planType);
+      if (!res.success) {
+        const details = (res as { data: { error?: { details?: { code?: string; plan?: string } } } }).data?.error?.details;
+        if (details?.code === 'PLAN_LIMITS_EXCEEDED') {
+          toast.error(t('downgradeLimitsExceeded', { plan: details.plan ?? '' }));
+        } else {
+          toast.error(res.message || t('loadError'));
+        }
+        return;
+      }
+      if (res.data?.upgraded) {
+        toast.success(t('upgradeSuccess'));
+        await loadData();
+        refreshSubscription();
+      } else if (res.data?.url) {
+        window.location.href = res.data.url;
       }
     } finally {
       setActionLoading(null);
@@ -131,9 +165,13 @@ export function BillingPage() {
     try {
       const success = await subscriptionService.cancel();
       if (success) {
+        toast.success(t('cancelSuccess'));
         setShowCancelModal(false);
         await loadData();
+        refreshSubscription();
       }
+    } catch {
+      toast.error(t('loadError'));
     } finally {
       setActionLoading(null);
     }
@@ -144,8 +182,12 @@ export function BillingPage() {
     try {
       const success = await subscriptionService.reactivate();
       if (success) {
+        toast.success(t('reactivateSuccess'));
         await loadData();
+        refreshSubscription();
       }
+    } catch {
+      toast.error(t('loadError'));
     } finally {
       setActionLoading(null);
     }
@@ -175,21 +217,23 @@ export function BillingPage() {
               <div className="flex items-center gap-3">
                 <Chip
                   color={
-                    status === 'active' ? 'success' :
-                    status === 'trialing' ? 'primary' :
-                    status === 'past_due' ? 'warning' : 'danger'
+                    status === 'active'
+                      ? 'success'
+                      : status === 'trialing'
+                        ? 'primary'
+                        : status === 'past_due'
+                          ? 'warning'
+                          : 'danger'
                   }
                   variant="flat"
                   size="lg"
                 >
                   {t(`status.${status}`)}
                 </Chip>
-                {currentPlan && (
-                  <span className="text-lg font-semibold capitalize">{currentPlan}</span>
-                )}
+                {currentPlan && <span className="text-lg font-semibold capitalize">{currentPlan}</span>}
               </div>
               <div className="flex gap-2">
-                {hasActiveSubscription && (
+                {hasActiveSubscription && isOwner && (
                   <Button
                     variant="flat"
                     startContent={<CreditCard size={16} />}
@@ -227,36 +271,42 @@ export function BillingPage() {
                 <div>
                   <h3 className="text-sm font-semibold mb-3">{t('usage')}</h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <UsageBar current={info.usage.lawyers.current} limit={info.usage.lawyers.limit} label={t('lawyers')} />
-                    <UsageBar current={info.usage.activeCases.current} limit={info.usage.activeCases.limit} label={t('activeCases')} />
-                    <UsageBar current={info.usage.documents.current} limit={info.usage.documents.limit} label={t('documents')} />
-                    <UsageBar current={info.usage.shareLinks.current} limit={info.usage.shareLinks.limit} label={t('shareLinks')} />
+                    <UsageBar
+                      current={info.usage.lawyers.current}
+                      limit={info.usage.lawyers.limit}
+                      label={t('lawyers')}
+                    />
+                    <UsageBar
+                      current={info.usage.activeCases.current}
+                      limit={info.usage.activeCases.limit}
+                      label={t('activeCases')}
+                    />
+                    <UsageBar
+                      current={info.usage.documents.current}
+                      limit={info.usage.documents.limit}
+                      label={t('documents')}
+                    />
+                    <UsageBar
+                      current={info.usage.shareLinks.current}
+                      limit={info.usage.shareLinks.limit}
+                      label={t('shareLinks')}
+                    />
                   </div>
                 </div>
               </>
             )}
 
-            {/* Cancel / Reactivate */}
-            {hasActiveSubscription && !info.cancelAtPeriodEnd && (
+            {/* Cancel / Reactivate (owner only) */}
+            {isOwner && hasActiveSubscription && !info.cancelAtPeriodEnd && (
               <div className="flex justify-end">
-                <Button
-                  variant="light"
-                  color="danger"
-                  size="sm"
-                  onPress={() => setShowCancelModal(true)}
-                >
+                <Button variant="light" color="danger" size="sm" onPress={() => setShowCancelModal(true)}>
                   {t('cancelSubscription')}
                 </Button>
               </div>
             )}
-            {info.cancelAtPeriodEnd && (
+            {isOwner && info.cancelAtPeriodEnd && (
               <div className="flex justify-end">
-                <Button
-                  color="primary"
-                  size="sm"
-                  onPress={handleReactivate}
-                  isLoading={actionLoading === 'reactivate'}
-                >
+                <Button color="primary" size="sm" onPress={handleReactivate} isLoading={actionLoading === 'reactivate'}>
                   {t('reactivate')}
                 </Button>
               </div>
@@ -290,13 +340,7 @@ export function BillingPage() {
             const limits = plan.limits;
 
             return (
-              <Card
-                key={plan.type}
-                className={cn(
-                  'relative',
-                  isCurrent && 'border-2 border-primary'
-                )}
-              >
+              <Card key={plan.type} className={cn('relative', isCurrent && 'border-2 border-primary')}>
                 {isPopular && (
                   <div className="absolute top-3 right-3">
                     <Chip color="warning" size="sm" variant="flat">
@@ -318,19 +362,35 @@ export function BillingPage() {
                   <ul className="space-y-2">
                     <li className="flex items-center gap-2 text-sm">
                       <Check size={16} className="text-success shrink-0" />
-                      <span>{limits.lawyers !== null ? `${limits.lawyers} ${t('lawyers')}` : `${t('lawyers')} ${t('unlimited').toLowerCase()}`}</span>
+                      <span>
+                        {limits.lawyers !== null
+                          ? `${limits.lawyers} ${t('lawyers')}`
+                          : `${t('lawyers')} ${t('unlimited').toLowerCase()}`}
+                      </span>
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <Check size={16} className="text-success shrink-0" />
-                      <span>{limits.activeCases !== null ? `${limits.activeCases} ${t('activeCases')}` : `${t('activeCases')} ${t('unlimited').toLowerCase()}`}</span>
+                      <span>
+                        {limits.activeCases !== null
+                          ? `${limits.activeCases} ${t('activeCases')}`
+                          : `${t('activeCases')} ${t('unlimited').toLowerCase()}`}
+                      </span>
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <Check size={16} className="text-success shrink-0" />
-                      <span>{limits.documents !== null ? `${limits.documents} ${t('documents')}` : `${t('documents')} ${t('unlimited').toLowerCase()}`}</span>
+                      <span>
+                        {limits.documents !== null
+                          ? `${limits.documents} ${t('documents')}`
+                          : `${t('documents')} ${t('unlimited').toLowerCase()}`}
+                      </span>
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <Check size={16} className="text-success shrink-0" />
-                      <span>{limits.shareLinks !== null ? `${limits.shareLinks} ${t('shareLinks')}` : `${t('shareLinks')} ${t('unlimited').toLowerCase()}`}</span>
+                      <span>
+                        {limits.shareLinks !== null
+                          ? `${limits.shareLinks} ${t('shareLinks')}`
+                          : `${t('shareLinks')} ${t('unlimited').toLowerCase()}`}
+                      </span>
                     </li>
                   </ul>
                 </CardBody>
@@ -347,7 +407,11 @@ export function BillingPage() {
                       onPress={() => handleCheckout(plan.type)}
                       isLoading={actionLoading === plan.type}
                     >
-                      {hasActiveSubscription ? t('upgrade') : t('subscribe')}
+                      {!hasActiveSubscription
+                        ? t('subscribe')
+                        : plan.price > (plans.find((p) => p.type === currentPlan)?.price ?? 0)
+                          ? t('upgrade')
+                          : t('downgrade')}
                     </Button>
                   )}
                 </CardFooter>
@@ -355,9 +419,7 @@ export function BillingPage() {
             );
           })}
         </div>
-        {!hasActiveSubscription && (
-          <p className="text-center text-sm text-foreground/50 mt-4">{t('trialInfo')}</p>
-        )}
+        {!hasActiveSubscription && <p className="text-center text-sm text-foreground/50 mt-4">{t('trialInfo')}</p>}
       </div>
 
       {/* Cancel Confirmation Modal */}
@@ -371,11 +433,7 @@ export function BillingPage() {
             <Button variant="flat" onPress={() => setShowCancelModal(false)}>
               {tc('cancel')}
             </Button>
-            <Button
-              color="danger"
-              onPress={handleCancel}
-              isLoading={actionLoading === 'cancel'}
-            >
+            <Button color="danger" onPress={handleCancel} isLoading={actionLoading === 'cancel'}>
               {t('confirmCancelBtn')}
             </Button>
           </ModalFooter>

@@ -98,7 +98,21 @@
     "noSubscription": "Você ainda não possui uma assinatura",
     "noSubscriptionDesc": "Escolha um plano para começar a usar o Jurix com todas as funcionalidades.",
     "trialInfo": "Todos os planos incluem 14 dias de teste grátis",
-    "loadError": "Erro ao carregar informações"
+    "loadError": "Erro ao carregar informações",
+    "checkoutSuccess": "Assinatura realizada com sucesso!",
+    "checkoutCanceled": "Checkout cancelado. Você pode tentar novamente quando quiser.",
+    "cancelSuccess": "Assinatura cancelada com sucesso",
+    "reactivateSuccess": "Assinatura reativada com sucesso",
+    "upgradeSuccess": "Plano atualizado com sucesso!",
+    "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar."
+  },
+  "errors": {
+    "planLimitReached": "Limite do plano atingido",
+    "subscriptionRequired": "Assinatura ativa necessária para esta ação",
+    "readOnlyMode": "Pagamento pendente. Somente leitura ativado.",
+    "upgradeCta": "Ver planos",
+    "subscribeCta": "Assinar",
+    "generic": "Ocorreu um erro. Tente novamente."
   },
   "kanban": {
     "searchPlaceholder": "Buscar processos...",

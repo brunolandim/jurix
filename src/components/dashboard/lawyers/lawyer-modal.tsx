@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import {
   Modal,
   ModalContent,
@@ -12,6 +13,7 @@ import {
   Button,
 } from '@/components/ui';
 import { lawyerService } from '@/services/lawyer-service';
+import { handleApiError } from '@/lib/handle-api-error';
 import type { Lawyer } from '@/types';
 
 type LawyerModalProps = {
@@ -23,6 +25,7 @@ type LawyerModalProps = {
 
 export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalProps) {
   const t = useTranslations('lawyers');
+  const te = useTranslations();
   const tc = useTranslations('common');
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -52,13 +55,15 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
     try {
       if (lawyer) {
         await lawyerService.updateLawyer(lawyer.id, form);
+        toast.success(t('updateSuccess'));
       } else {
         await lawyerService.createLawyer({ ...form, active: true });
+        toast.success(t('createSuccess'));
       }
       onSuccess();
       onClose();
-    } catch {
-      // error handled silently
+    } catch (error) {
+      handleApiError(error, te);
     } finally {
       setLoading(false);
     }

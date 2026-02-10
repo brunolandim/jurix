@@ -2,6 +2,8 @@ export type ApiResponse<T> = {
   data: T;
   success: boolean;
   message?: string;
+  status?: number;
+  code?: string;
 };
 
 export type AuthUser = {
@@ -112,6 +114,7 @@ export type Lawyer = {
   oab: string; // Registro OAB
   specialty?: string;
   active: boolean;
+  role?: 'owner' | 'admin' | 'lawyer';
 };
 
 export type ShareableLink = {

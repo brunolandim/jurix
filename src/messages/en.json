@@ -98,7 +98,21 @@
     "noSubscription": "You don't have a subscription yet",
     "noSubscriptionDesc": "Choose a plan to start using Jurix with all features.",
     "trialInfo": "All plans include a 14-day free trial",
-    "loadError": "Failed to load information"
+    "loadError": "Failed to load information",
+    "checkoutSuccess": "Subscription created successfully!",
+    "checkoutCanceled": "Checkout canceled. You can try again anytime.",
+    "cancelSuccess": "Subscription canceled successfully",
+    "reactivateSuccess": "Subscription reactivated successfully",
+    "upgradeSuccess": "Plan upgraded successfully!",
+    "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing."
+  },
+  "errors": {
+    "planLimitReached": "Plan limit reached",
+    "subscriptionRequired": "Active subscription required for this action",
+    "readOnlyMode": "Payment pending. Read-only mode enabled.",
+    "upgradeCta": "View plans",
+    "subscribeCta": "Subscribe",
+    "generic": "An error occurred. Please try again."
   },
   "kanban": {
     "searchPlaceholder": "Search cases...",

@@ -1,0 +1,160 @@
+ Plan to implement                                                                                                                                                                            │
+│                                                                                                                                                                                              │
+│ Plano: Completar Features de Billing/Subscription no Frontend Jurix                                                                                                                          │
+│                                                                                                                                                                                              │
+│ Contexto                                                                                                                                                                                     │
+│                                                                                                                                                                                              │
+│ O backend de billing está 100% implementado (Stripe, webhooks, plan enforcement). O frontend tem a base (API services, billing page, tipos), mas falta: tratamento de erros de limite, toast │
+│  notifications, role-based access, estado global de subscription e redirect pós-checkout.                                                                                                    │
+│                                                                                                                                                                                              │
+│ Arquivos a Criar (2)                                                                                                                                                                         │
+│                                                                                                                                                                                              │
+│ - src/contexts/subscription-context.tsx — contexto global de subscription                                                                                                                    │
+│ - src/lib/handle-api-error.ts — utility para tratar erros de billing                                                                                                                         │
+│                                                                                                                                                                                              │
+│ Arquivos a Modificar (10)                                                                                                                                                                    │
+│                                                                                                                                                                                              │
+│ - src/types/index.ts — adicionar status/code em ApiResponse, role em Lawyer                                                                                                                  │
+│ - src/services/api.ts — capturar status code e error code do backend                                                                                                                         │
+│ - src/services/lawyer-service.ts — throw com code/status em createLawyer                                                                                                                     │
+│ - src/services/legal-case-service.ts — throw com code/status em createCase e addDocument                                                                                                     │
+│ - src/services/shareable-link-service.ts — throw com code/status em createLink                                                                                                               │
+│ - src/services/index.ts — exportar subscriptionService                                                                                                                                       │
+│ - src/contexts/index.ts — exportar SubscriptionProvider/useSubscription                                                                                                                      │
+│ - src/app/providers.tsx — adicionar Toaster (sonner) + SubscriptionProvider                                                                                                                  │
+│ - src/components/dashboard/billing/billing-page.tsx — role check, redirect handling, toasts                                                                                                  │
+│ - src/components/dashboard/lawyers/lawyer-modal.tsx — tratar erros com toast                                                                                                                 │
+│ - src/hooks/use-kanban.ts — tratar erros em createCase, addDocument, generateShareLink                                                                                                       │
+│ - src/messages/pt-BR.json — novas traduções de erro                                                                                                                                          │
+│ - src/messages/en.json — novas traduções de erro                                                                                                                                             │
+│ - src/messages/es.json — novas traduções de erro                                                                                                                                             │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 1: Fundação — API errors + Toast                                                                                                                                                        │
+│                                                                                                                                                                                              │
+│ 1.1 src/types/index.ts                                                                                                                                                                       │
+│                                                                                                                                                                                              │
+│ - Adicionar a ApiResponse<T>: status?: number e code?: string                                                                                                                                │
+│ - Adicionar a Lawyer: role?: 'owner' | 'admin' | 'lawyer'                                                                                                                                    │
+│                                                                                                                                                                                              │
+│ 1.2 src/services/api.ts                                                                                                                                                                      │
+│                                                                                                                                                                                              │
+│ Backend retorna erros como { error: { code, message, details } }. Atualizar request():                                                                                                       │
+│ if (!response.ok) {                                                                                                                                                                          │
+│   const errorData = await response.json().catch(() => null);                                                                                                                                 │
+│   return {                                                                                                                                                                                   │
+│     data: null as T,                                                                                                                                                                         │
+│     success: false,                                                                                                                                                                          │
+│     message: errorData?.error?.message || errorData?.message || `Error: ${response.status}`,                                                                                                 │
+│     status: response.status,                                                                                                                                                                 │
+│     code: errorData?.error?.code,                                                                                                                                                            │
+│   };                                                                                                                                                                                         │
+│ }                                                                                                                                                                                            │
+│                                                                                                                                                                                              │
+│ 1.3 Instalar sonner                                                                                                                                                                          │
+│                                                                                                                                                                                              │
+│ npm install sonner                                                                                                                                                                           │
+│                                                                                                                                                                                              │
+│ 1.4 src/app/providers.tsx                                                                                                                                                                    │
+│                                                                                                                                                                                              │
+│ Adicionar <Toaster /> de sonner + wrapping com <SubscriptionProvider>:                                                                                                                       │
+│ I18nProvider > NextThemesProvider > HeroUIProvider > AuthProvider > SubscriptionProvider > children + Toaster                                                                                │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 2: Subscription Context                                                                                                                                                                 │
+│                                                                                                                                                                                              │
+│ 2.1 src/contexts/subscription-context.tsx (NOVO)                                                                                                                                             │
+│                                                                                                                                                                                              │
+│ - Fetch subscriptionService.getSubscription() quando isAuthenticated                                                                                                                         │
+│ - Expor: subscription, isLoading, isOwner (user.role === 'owner'), canWrite (status active/trialing), refresh(), canCreateResource(type)                                                     │
+│ - canCreateResource verifica se usage[type].current < usage[type].limit (ou unlimited se null)                                                                                               │
+│                                                                                                                                                                                              │
+│ 2.2 src/contexts/index.ts                                                                                                                                                                    │
+│                                                                                                                                                                                              │
+│ - Exportar SubscriptionProvider, useSubscription                                                                                                                                             │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 3: Error handling nos services                                                                                                                                                          │
+│                                                                                                                                                                                              │
+│ 3.1 src/lib/handle-api-error.ts (NOVO)                                                                                                                                                       │
+│                                                                                                                                                                                              │
+│ Utility reutilizável:                                                                                                                                                                        │
+│ export function handleApiError(error: any, t: (key: string, params?: Record<string, string>) => string) {                                                                                    │
+│   if (error.code === 'PLAN_LIMIT_REACHED') {                                                                                                                                                 │
+│     toast.error(t('errors.planLimitReached'), { action: { label: t('errors.upgradeCta'), onClick: () => goto billing } });                                                                   │
+│   } else if (error.code === 'SUBSCRIPTION_REQUIRED') {                                                                                                                                       │
+│     toast.error(t('errors.subscriptionRequired'), { action: { label: t('errors.subscribeCta'), onClick: () => goto billing } });                                                             │
+│   } else if (error.code === 'READ_ONLY_MODE') {                                                                                                                                              │
+│     toast.error(t('errors.readOnlyMode'));                                                                                                                                                   │
+│   } else {                                                                                                                                                                                   │
+│     toast.error(error.message || t('errors.generic'));                                                                                                                                       │
+│   }                                                                                                                                                                                          │
+│ }                                                                                                                                                                                            │
+│                                                                                                                                                                                              │
+│ 3.2 Services — throw com code/status                                                                                                                                                         │
+│                                                                                                                                                                                              │
+│ Em lawyer-service.ts, legal-case-service.ts, shareable-link-service.ts:                                                                                                                      │
+│ - Nos métodos de criação (createLawyer, createCase, addDocument, createLink), quando !res.success, criar Error com propriedades code e status do response e fazer throw                      │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 4: Traduções                                                                                                                                                                            │
+│                                                                                                                                                                                              │
+│ 4.1 src/messages/pt-BR.json                                                                                                                                                                  │
+│                                                                                                                                                                                              │
+│ Adicionar seção errors:                                                                                                                                                                      │
+│ "errors": {                                                                                                                                                                                  │
+│   "planLimitReached": "Limite do plano atingido",                                                                                                                                            │
+│   "subscriptionRequired": "Assinatura ativa necessária para esta ação",                                                                                                                      │
+│   "readOnlyMode": "Pagamento pendente. Somente leitura ativado.",                                                                                                                            │
+│   "upgradeCta": "Ver planos",                                                                                                                                                                │
+│   "subscribeCta": "Assinar",                                                                                                                                                                 │
+│   "generic": "Ocorreu um erro. Tente novamente."                                                                                                                                             │
+│ }                                                                                                                                                                                            │
+│ E em billing: "checkoutSuccess", "checkoutCanceled"                                                                                                                                          │
+│                                                                                                                                                                                              │
+│ 4.2 Mesmas chaves em en.json e es.json                                                                                                                                                       │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 5: Atualizar componentes                                                                                                                                                                │
+│                                                                                                                                                                                              │
+│ 5.1 src/components/dashboard/billing/billing-page.tsx                                                                                                                                        │
+│                                                                                                                                                                                              │
+│ - Import useSubscription para obter isOwner e refresh                                                                                                                                        │
+│ - Ler searchParams (?success=true, ?canceled=true) para mostrar toast pós-checkout                                                                                                           │
+│ - Botões de cancel/reactivate/portal: só renderizar se isOwner                                                                                                                               │
+│ - Toasts de sucesso/erro nas ações (cancel, reactivate)                                                                                                                                      │
+│                                                                                                                                                                                              │
+│ 5.2 src/components/dashboard/lawyers/lawyer-modal.tsx                                                                                                                                        │
+│                                                                                                                                                                                              │
+│ - Import toast de sonner e handleApiError                                                                                                                                                    │
+│ - No catch do handleSubmit: chamar handleApiError(error, t)                                                                                                                                  │
+│ - No sucesso: toast.success(t('createSuccess')) / toast.success(t('updateSuccess'))                                                                                                          │
+│                                                                                                                                                                                              │
+│ 5.3 src/hooks/use-kanban.ts                                                                                                                                                                  │
+│                                                                                                                                                                                              │
+│ - Import toast de sonner e handleApiError                                                                                                                                                    │
+│ - createCase: wrap em try/catch, chamar handleApiError no catch                                                                                                                              │
+│ - addDocument: wrap em try/catch, chamar handleApiError no catch                                                                                                                             │
+│ - generateShareLink: já tem try/catch, adicionar handleApiError no catch                                                                                                                     │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Fase 6: Exportar subscription service                                                                                                                                                        │
+│                                                                                                                                                                                              │
+│ 6.1 src/services/index.ts                                                                                                                                                                    │
+│                                                                                                                                                                                              │
+│ Adicionar export do subscriptionService                                                                                                                                                      │
+│                                                                                                                                                                                              │
+│ ---                                                                                                                                                                                          │
+│ Verificação                                                                                                                                                                                  │
+│                                                                                                                                                                                              │
+│ 1. npm run build — compila sem erros                                                                                                                                                         │
+│ 2. Criar lawyer no limite → toast de erro com link para billing                                                                                                                              │
+│ 3. Criar caso no limite → toast de erro com link para billing                                                                                                                                │
+│ 4. Adicionar documento no limite → toast de erro com link para billing                                                                                                                       │
+│ 5. Gerar share link no limite → toast de erro com link para billing                                                                                                                          │
+│ 6. Billing page como non-owner → botões de cancel/reactivate/portal ocultos                                                                                                                  │
+│ 7. Billing page como owner → todos os botões visíveis                                                                                                                                        │
+│ 8. Retorno do Stripe Checkout com ?success=true → toast de sucesso                                                                                                                           │
+│ 9. Retorno do Stripe Checkout com ?canceled=true → toast informativo                                                                                                                         │
+│ 10. Cancelar/reativar subscription → toast de sucesso                                                                                                                                        │
+╰─────────────────────────────────────────────────────────

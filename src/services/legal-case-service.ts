@@ -41,9 +41,15 @@ export type AddDocumentParams = {
 
 export const legalCaseService = {
   // ============ CASES ============
-  async createCase(params: CreateCaseParams): Promise<LegalCase | null> {
+  async createCase(params: CreateCaseParams): Promise<LegalCase> {
     const res = await api.post<LegalCase>('/cases', params);
-    return res.success && res.data ? res.data : null;
+    if (!res.success || !res.data) {
+      const error = new Error(res.message || 'Failed to create case');
+      (error as any).code = res.code;
+      (error as any).status = res.status;
+      throw error;
+    }
+    return res.data;
   },
 
   async updateCase(id: string, data: Partial<Omit<LegalCase, 'id'>>): Promise<LegalCase | null> {
@@ -83,9 +89,15 @@ export const legalCaseService = {
     return res.success && res.data ? res.data : [];
   },
 
-  async addDocument(params: AddDocumentParams): Promise<DocumentRequest | null> {
+  async addDocument(params: AddDocumentParams): Promise<DocumentRequest> {
     const res = await api.post<DocumentRequest>('/documents', params);
-    return res.success && res.data ? res.data : null;
+    if (!res.success || !res.data) {
+      const error = new Error(res.message || 'Failed to add document');
+      (error as any).code = res.code;
+      (error as any).status = res.status;
+      throw error;
+    }
+    return res.data;
   },
 
   async deleteDocument(documentId: string): Promise<boolean> {

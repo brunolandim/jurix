@@ -21,7 +21,10 @@ export const shareableLinkService = {
     const res = await api.post<ShareableLink>('/share-links', params);
 
     if (!res.success || !res.data) {
-      throw new Error('Failed to create link');
+      const error = new Error(res.message || 'Failed to create link');
+      (error as any).code = res.code;
+      (error as any).status = res.status;
+      throw error;
     }
 
     return res.data;
