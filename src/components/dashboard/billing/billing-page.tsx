@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle } from 'lucide-react';
+import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle, Mail, MessageCircle } from 'lucide-react';
 import {
   Button,
   Card,
@@ -394,6 +394,16 @@ export function BillingPage() {
                           : `${t('shareLinks')} ${t('unlimited').toLowerCase()}`}
                       </span>
                     </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <Mail size={16} className="text-success shrink-0" />
+                      <span>{t('emailNotifications')}</span>
+                    </li>
+                    {plan.features?.whatsappNotifications && (
+                      <li className="flex items-center gap-2 text-sm">
+                        <MessageCircle size={16} className="text-success shrink-0" />
+                        <span>{t('whatsappNotifications')}</span>
+                      </li>
+                    )}
                   </ul>
                 </CardBody>
                 <CardFooter>

@@ -130,7 +130,9 @@
     "reactivateSuccess": "Suscripción reactivada con éxito",
     "upgradeSuccess": "Plan actualizado con éxito!",
     "downgradeLimitsExceeded": "No es posible cambiar al plan {plan}. Reduzca el uso antes de cambiar.",
-    "ownerOnly": "Solo el propietario de la organización puede gestionar la suscripción"
+    "ownerOnly": "Solo el propietario de la organización puede gestionar la suscripción",
+    "emailNotifications": "Notificaciones por correo electrónico",
+    "whatsappNotifications": "Notificaciones por WhatsApp"
   },
   "errors": {
     "planLimitReached": "Límite del plan alcanzado",
@@ -190,6 +192,8 @@
       "caseTitlePlaceholder": "Ej: Demanda de Indemnización por Daños Morales",
       "client": "Cliente",
       "clientPlaceholder": "Nombre del cliente",
+      "clientPhone": "Teléfono del Cliente",
+      "clientPhonePlaceholder": "612 34 56 78",
       "priority": "Prioridad",
       "lawyer": "Abogado Responsable",
       "selectLawyer": "Seleccionar abogado (opcional)",

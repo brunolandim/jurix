@@ -130,7 +130,9 @@
     "reactivateSuccess": "Subscription reactivated successfully",
     "upgradeSuccess": "Plan upgraded successfully!",
     "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing.",
-    "ownerOnly": "Only the organization owner can manage the subscription"
+    "ownerOnly": "Only the organization owner can manage the subscription",
+    "emailNotifications": "Email notifications",
+    "whatsappNotifications": "WhatsApp notifications"
   },
   "errors": {
     "planLimitReached": "Plan limit reached",
@@ -190,6 +192,8 @@
       "caseTitlePlaceholder": "E.g.: Moral Damages Compensation Lawsuit",
       "client": "Client",
       "clientPlaceholder": "Client name",
+      "clientPhone": "Client Phone",
+      "clientPhonePlaceholder": "(555) 123-4567",
       "priority": "Priority",
       "lawyer": "Assigned Lawyer",
       "selectLawyer": "Select lawyer (optional)",

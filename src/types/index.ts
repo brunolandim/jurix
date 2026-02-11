@@ -75,6 +75,7 @@ export type LegalCase = {
   title: string;
   description?: string;
   client: string;
+  clientPhone?: string;
   priority: CasePriority;
   columnId: string;
   order: number;
@@ -149,11 +150,17 @@ export type PlanLimits = {
   shareLinks: number | null;
 };
 
+export type PlanFeatures = {
+  emailNotifications: boolean;
+  whatsappNotifications: boolean;
+};
+
 export type Plan = {
   name: string;
   type: PlanType;
   price: number;
   limits: PlanLimits;
+  features?: PlanFeatures;
 };
 
 export type UsageInfo = {

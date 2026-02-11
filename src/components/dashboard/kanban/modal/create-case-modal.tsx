@@ -19,6 +19,7 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  PhoneInput,
 } from '@/components/ui';
 import { CasePriority, Lawyer, LegalCase } from '@/types';
 import { getInitials } from '@/lib/utils';
@@ -50,6 +51,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [client, setClient] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [priority, setPriority] = useState<CasePriority>('medium');
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer>();
 
@@ -58,6 +60,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
     setTitle('');
     setDescription('');
     setClient('');
+    setClientPhone('');
     setPriority('medium');
     setSelectedLawyer(undefined);
   }, []);
@@ -77,6 +80,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
       title: title.trim(),
       description: description.trim() || undefined,
       client: client.trim(),
+      clientPhone: clientPhone.trim() || undefined,
       priority,
       assignedTo: selectedLawyer?.id,
       createdBy: currentUser.id,
@@ -138,6 +142,13 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
               value={client}
               onValueChange={setClient}
               isRequired
+              isDisabled={isSubmitting}
+            />
+
+            <PhoneInput
+              label={t('clientPhone')}
+              value={clientPhone}
+              onChange={setClientPhone}
               isDisabled={isSubmitting}
             />
 

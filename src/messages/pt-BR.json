@@ -130,7 +130,9 @@
     "reactivateSuccess": "Assinatura reativada com sucesso",
     "upgradeSuccess": "Plano atualizado com sucesso!",
     "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar.",
-    "ownerOnly": "Apenas o proprietário da organização pode gerenciar a assinatura"
+    "ownerOnly": "Apenas o proprietário da organização pode gerenciar a assinatura",
+    "emailNotifications": "Notificações por e-mail",
+    "whatsappNotifications": "Notificações via WhatsApp"
   },
   "errors": {
     "planLimitReached": "Limite do plano atingido",
@@ -190,6 +192,8 @@
       "caseTitlePlaceholder": "Ex: Ação de Indenização por Danos Morais",
       "client": "Cliente",
       "clientPlaceholder": "Nome do cliente",
+      "clientPhone": "Telefone do Cliente",
+      "clientPhonePlaceholder": "(11) 99999-9999",
       "priority": "Prioridade",
       "lawyer": "Advogado Responsável",
       "selectLawyer": "Selecionar advogado (opcional)",
