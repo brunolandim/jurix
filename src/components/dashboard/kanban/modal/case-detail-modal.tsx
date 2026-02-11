@@ -177,28 +177,28 @@ export function CaseDetailModal({
   );
 
   // Share link handlers
-  const pendingDocuments = useMemo(
-    () => legalCase?.documents?.filter((d) => d.status === 'pending') || [],
+  const shareableDocuments = useMemo(
+    () => legalCase?.documents?.filter((d) => d.status === 'pending' || d.status === 'rejected') || [],
     [legalCase?.documents]
   );
-  const hasPendingDocuments = pendingDocuments.length > 0;
+  const hasShareableDocuments = shareableDocuments.length > 0;
 
   const handleOpenShareModal = useCallback(async () => {
-    if (!legalCase || !onGenerateShareLink || !user?.id || pendingDocuments.length === 0) return;
+    if (!legalCase || !onGenerateShareLink || !user?.id || shareableDocuments.length === 0) return;
 
     setIsShareModalOpen(true);
     setShareUrl(null);
     setIsGeneratingLink(true);
     setIsCopied(false);
 
-    const documentIds = pendingDocuments.map((d) => d.id);
+    const documentIds = shareableDocuments.map((d) => d.id);
     const result = await onGenerateShareLink(legalCase.id, user.id, documentIds);
 
     setIsGeneratingLink(false);
     if (result) {
       setShareUrl(result.url);
     }
-  }, [legalCase, onGenerateShareLink, pendingDocuments, user]);
+  }, [legalCase, onGenerateShareLink, shareableDocuments, user]);
 
   const handleCloseShareModal = useCallback(() => {
     setIsShareModalOpen(false);
@@ -406,6 +406,7 @@ export function CaseDetailModal({
                                 src={legalCase.assignee.photo || undefined}
                                 isBordered
                                 className="w-6 h-6"
+                                style={!legalCase.assignee.photo ? { backgroundColor: legalCase.assignee.avatarColor ?? '#3b82f6' } : undefined}
                               />
                               <span className="text-sm">{legalCase.assignee.name}</span>
                             </>
@@ -441,6 +442,7 @@ export function CaseDetailModal({
                                 name={getInitials(lawyer.name)}
                                 src={lawyer.photo || undefined}
                                 className="w-6 h-6"
+                                style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined}
                               />
                             }
                           >
@@ -462,6 +464,7 @@ export function CaseDetailModal({
                         src={legalCase.creator.photo || undefined}
                         isBordered
                         className="w-6 h-6"
+                        style={!legalCase.creator.photo ? { backgroundColor: legalCase.creator.avatarColor ?? '#3b82f6' } : undefined}
                       />
                       <span className="text-sm">{legalCase.creator.name}</span>
                     </div>
@@ -503,12 +506,12 @@ export function CaseDetailModal({
                     color="secondary"
                     variant="flat"
                     startContent={<Share2 className="w-4 h-4" />}
-                    isDisabled={!hasPendingDocuments}
+                    isDisabled={!hasShareableDocuments}
                     onPress={handleOpenShareModal}
                   >
                     {tShare('button')}
                   </Button>
-                  {!hasPendingDocuments && (
+                  {!hasShareableDocuments && (
                     <p className="text-xs text-default-400 mt-2 text-center">{tShare('noPendingDocuments')}</p>
                   )}
                 </div>

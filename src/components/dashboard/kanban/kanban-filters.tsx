@@ -75,7 +75,7 @@ export function KanbanFilters({
                         onValueChange={() => onToggleLawyer(lawyer.id)}
                         size="sm"
                       />
-                      <Avatar name={getInitials(lawyer.name)} src={lawyer.photo} size="sm" className="shrink-0" />
+                      <Avatar name={getInitials(lawyer.name)} src={lawyer.photo} size="sm" className="shrink-0" style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined} />
                       <span className="text-sm">{lawyer.name}</span>
                     </div>
                   ))}
@@ -109,6 +109,7 @@ export function KanbanFilters({
                 color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
                 isBordered
                 onClick={() => onToggleLawyer(lawyer.id)}
+                style={!lawyer.photo && !selectedLawyerIds?.includes(lawyer.id) ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined}
               />
             </Tooltip>
           ))}

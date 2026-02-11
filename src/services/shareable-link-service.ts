@@ -86,6 +86,10 @@ export const shareableLinkService = {
         return { success: false, allCompleted: false };
       }
 
+      if (confirmResponse.status === 204) {
+        return { success: true, allCompleted: false };
+      }
+
       const result = await confirmResponse.json();
       return { success: true, allCompleted: result.allCompleted ?? false };
     } catch (error) {

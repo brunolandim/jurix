@@ -171,6 +171,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
                           name={getInitials(selectedLawyer.name)}
                           src={selectedLawyer.photo || undefined}
                           className="w-6 h-6"
+                          style={!selectedLawyer.photo ? { backgroundColor: selectedLawyer.avatarColor ?? '#3b82f6' } : undefined}
                         />
                         <span>{selectedLawyer.name}</span>
                       </div>
@@ -196,7 +197,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
                     <DropdownItem
                       key={lawyer.id}
                       startContent={
-                        <Avatar name={getInitials(lawyer.name)} src={lawyer.photo || undefined} className="w-6 h-6" />
+                        <Avatar name={getInitials(lawyer.name)} src={lawyer.photo || undefined} className="w-6 h-6" style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined} />
                       }
                     >
                       {lawyer.name}

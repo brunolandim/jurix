@@ -42,6 +42,10 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<ApiR
     };
   }
 
+  if (response.status === 204) {
+    return { data: null as T, success: true };
+  }
+
   const data = await response.json();
   return { data, success: true };
 }

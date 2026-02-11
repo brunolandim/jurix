@@ -11,6 +11,7 @@ interface SubscriptionContextType {
   subscription: SubscriptionInfo | null;
   isLoading: boolean;
   isOwner: boolean;
+  isAdmin: boolean;
   canWrite: boolean;
   refresh: () => Promise<void>;
   canCreateResource: (type: ResourceType) => boolean;
@@ -24,6 +25,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const isOwner = user?.role === 'owner';
+  const isAdmin = user?.role === 'admin' || isOwner;
   const canWrite =
     subscription?.status === 'active' ||
     subscription?.status === 'trialing';
@@ -57,7 +59,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   return (
     <SubscriptionContext.Provider
-      value={{ subscription, isLoading, isOwner, canWrite, refresh, canCreateResource }}
+      value={{ subscription, isLoading, isOwner, isAdmin, canWrite, refresh, canCreateResource }}
     >
       {children}
     </SubscriptionContext.Provider>

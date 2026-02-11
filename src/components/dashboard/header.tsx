@@ -22,9 +22,9 @@ export function Header() {
               name={getInitials(user.name)}
               src={user.photo ? user.photo : undefined}
               size="sm"
-              color="primary"
               className="cursor-pointer"
               isBordered
+              style={!user.photo ? { backgroundColor: user.avatarColor ?? '#3b82f6' } : undefined}
             />
           </Link>
         )}

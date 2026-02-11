@@ -42,7 +42,8 @@
     "saveSuccess": "Perfil atualizado com sucesso",
     "saveError": "Erro ao atualizar perfil",
     "uploadError": "Erro ao enviar foto",
-    "passwordMismatch": "As senhas não coincidem"
+    "passwordMismatch": "As senhas não coincidem",
+    "avatarColor": "Cor do avatar"
   },
   "dashboard": {
     "title": "Dashboard"
@@ -50,10 +51,11 @@
   "sidebar": {
     "cases": "Processos",
     "lawyers": "Advogados",
-    "billing": "Billing",
+    "billing": "Assinatura",
     "profile": "Perfil",
     "collapse": "Recolher menu",
-    "expand": "Expandir menu"
+    "expand": "Expandir menu",
+    "logout": "Sair"
   },
   "lawyers": {
     "title": "Advogados",
@@ -127,7 +129,8 @@
     "cancelSuccess": "Assinatura cancelada com sucesso",
     "reactivateSuccess": "Assinatura reativada com sucesso",
     "upgradeSuccess": "Plano atualizado com sucesso!",
-    "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar."
+    "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar.",
+    "ownerOnly": "Apenas o proprietário da organização pode gerenciar a assinatura"
   },
   "errors": {
     "planLimitReached": "Limite do plano atingido",
@@ -150,7 +153,10 @@
     },
     "card": {
       "notifications": "{count, plural, =1 {# notificação} other {# notificações}}",
-      "documents": "{count, plural, =1 {# documento pendente} other {# documentos pendentes}}"
+      "documents": "{count, plural, =1 {# documento pendente} other {# documentos pendentes}}",
+      "documentsPendingApproval": "{count, plural, =1 {# documento aguardando análise} other {# documentos aguardando análise}}",
+      "documentsReceived": "{count, plural, =1 {# documento aprovado} other {# documentos aprovados}}",
+      "documentsRejected": "{count, plural, =1 {# documento rejeitado} other {# documentos rejeitados}}"
     },
     "modal": {
       "description": "Descrição",

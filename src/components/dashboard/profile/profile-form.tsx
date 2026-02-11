@@ -3,11 +3,22 @@
 import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Camera } from 'lucide-react';
+import { Camera, Check } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { profileService } from '@/services';
 import { Avatar, Button, Input, Divider } from '@/components/ui';
 import { getInitials } from '@/lib/utils';
+
+const AVATAR_COLORS = [
+  '#3b82f6',
+  '#ef4444',
+  '#22c55e',
+  '#f59e0b',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#f97316',
+];
 
 export function ProfileForm() {
   const t = useTranslations('profile');
@@ -20,6 +31,7 @@ export function ProfileForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [avatarColor, setAvatarColor] = useState(user?.avatarColor ?? '#3b82f6');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -65,6 +77,7 @@ export function ProfileForm() {
         name,
         phone: phone || undefined,
         specialty: specialty || undefined,
+        avatarColor,
       };
 
       if (photoUrl) {
@@ -99,8 +112,8 @@ export function ProfileForm() {
             name={getInitials(name || user.name)}
             src={currentPhoto}
             className="w-24 h-24 text-2xl"
-            color="primary"
             isBordered
+            style={!currentPhoto ? { backgroundColor: avatarColor } : undefined}
           />
           <button
             type="button"
@@ -113,7 +126,7 @@ export function ProfileForm() {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="text-sm text-primary hover:underline"
+          className="text-sm cursor-pointer text-primary hover:underline"
         >
           {t('changePhoto')}
         </button>
@@ -124,6 +137,25 @@ export function ProfileForm() {
           className="hidden"
           onChange={handlePhotoSelect}
         />
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-sm text-default-500">{t('avatarColor')}</span>
+          <div className="flex gap-2">
+            {AVATAR_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setAvatarColor(color)}
+                className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-110 ring-offset-2 ring-offset-background"
+                style={{
+                  backgroundColor: color,
+                  boxShadow: avatarColor === color ? `0 0 0 2px var(--color-background), 0 0 0 4px ${color}` : undefined,
+                }}
+              >
+                {avatarColor === color && <Check size={16} className="text-white" />}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <Input

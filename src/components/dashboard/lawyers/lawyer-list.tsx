@@ -75,8 +75,8 @@ export function LawyerList() {
                   name={getInitials(lawyer.name)}
                   src={lawyer.photo || undefined}
                   size="lg"
-                  color="primary"
                   isBordered
+                  style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">

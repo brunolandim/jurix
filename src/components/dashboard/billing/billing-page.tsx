@@ -131,6 +131,8 @@ export function BillingPage() {
         const details = (res as { data: { error?: { details?: { code?: string; plan?: string } } } }).data?.error?.details;
         if (details?.code === 'PLAN_LIMITS_EXCEEDED') {
           toast.error(t('downgradeLimitsExceeded', { plan: details.plan ?? '' }));
+        } else if (res.code === 'FORBIDDEN') {
+          toast.error(t('ownerOnly'));
         } else {
           toast.error(res.message || t('loadError'));
         }
@@ -406,6 +408,7 @@ export function BillingPage() {
                       variant={isPopular ? 'solid' : 'bordered'}
                       onPress={() => handleCheckout(plan.type)}
                       isLoading={actionLoading === plan.type}
+                      isDisabled={!isOwner}
                     >
                       {!hasActiveSubscription
                         ? t('subscribe')
@@ -419,7 +422,8 @@ export function BillingPage() {
             );
           })}
         </div>
-        {!hasActiveSubscription && <p className="text-center text-sm text-foreground/50 mt-4">{t('trialInfo')}</p>}
+        {!hasActiveSubscription && isOwner && <p className="text-center text-sm text-foreground/50 mt-4">{t('trialInfo')}</p>}
+        {!isOwner && <p className="text-center text-sm text-foreground/50 mt-4">{t('ownerOnly')}</p>}
       </div>
 
       {/* Cancel Confirmation Modal */}

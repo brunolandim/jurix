@@ -3,7 +3,7 @@
 import { useRef, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { BellRing, FileText } from 'lucide-react';
+import { BellRing, FileText, FileCheck, FileX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import { Avatar, Card, CardBody, Tooltip } from '@/components/ui';
@@ -40,6 +40,18 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
     () => legalCase.documents?.filter((d) => d.status === 'pending').length ?? 0,
     [legalCase.documents]
   );
+  const pendingApprovalCount = useMemo(
+    () => legalCase.documents?.filter((d) => d.status === 'pending_approval').length ?? 0,
+    [legalCase.documents]
+  );
+  const receivedDocumentCount = useMemo(
+    () => legalCase.documents?.filter((d) => d.status === 'received').length ?? 0,
+    [legalCase.documents]
+  );
+  const rejectedDocumentCount = useMemo(
+    () => legalCase.documents?.filter((d) => d.status === 'rejected').length ?? 0,
+    [legalCase.documents]
+  );
 
   return (
     <Card
@@ -65,6 +77,30 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
                 </div>
               </Tooltip>
             )}
+            {pendingApprovalCount > 0 && (
+              <Tooltip content={tKanban('card.documentsPendingApproval', { count: pendingApprovalCount })} placement="top">
+                <div className="flex items-center gap-1 text-secondary-500">
+                  <FileText size={12} />
+                  <span>{pendingApprovalCount}</span>
+                </div>
+              </Tooltip>
+            )}
+            {receivedDocumentCount > 0 && (
+              <Tooltip content={tKanban('card.documentsReceived', { count: receivedDocumentCount })} placement="top">
+                <div className="flex items-center gap-1 text-success-500">
+                  <FileCheck size={12} />
+                  <span>{receivedDocumentCount}</span>
+                </div>
+              </Tooltip>
+            )}
+            {rejectedDocumentCount > 0 && (
+              <Tooltip content={tKanban('card.documentsRejected', { count: rejectedDocumentCount })} placement="top">
+                <div className="flex items-center gap-1 text-danger-500">
+                  <FileX size={12} />
+                  <span>{rejectedDocumentCount}</span>
+                </div>
+              </Tooltip>
+            )}
             {notificationCount > 0 && (
               <Tooltip content={tKanban('card.notifications', { count: notificationCount })} placement="top">
                 <div className="flex items-center gap-1 text-default-500">
@@ -82,9 +118,9 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
               <Avatar
                 name={getInitials(legalCase.assignee.name)}
                 src={legalCase.assignee.photo ? legalCase.assignee.photo : undefined}
-                color="default"
                 isBordered
                 className="cursor-pointer w-6 h-6 text-sm"
+                style={!legalCase.assignee.photo ? { backgroundColor: legalCase.assignee.avatarColor ?? '#3b82f6' } : undefined}
               />
               <span>{legalCase.assignee.name}</span>
             </div>

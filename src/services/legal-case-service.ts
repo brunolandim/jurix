@@ -110,13 +110,13 @@ export const legalCaseService = {
     return res.success && res.data ? res.data : null;
   },
 
-  async approveDocument(documentId: string): Promise<DocumentRequest | null> {
-    const res = await api.patch<DocumentRequest>(`/documents/${documentId}/approve`);
+  async approveDocument(documentId: string, caseId: string): Promise<DocumentRequest | null> {
+    const res = await api.patch<DocumentRequest>(`/documents/${documentId}/approve?caseId=${caseId}`);
     return res.success && res.data ? res.data : null;
   },
 
-  async rejectDocument(documentId: string, reason: RejectionReason, note?: string): Promise<DocumentRequest | null> {
-    const res = await api.patch<DocumentRequest>(`/documents/${documentId}/reject`, { reason, note });
+  async rejectDocument(documentId: string, caseId: string, reason: RejectionReason, note?: string): Promise<DocumentRequest | null> {
+    const res = await api.patch<DocumentRequest>(`/documents/${documentId}/reject?caseId=${caseId}`, { rejectionReason: reason, rejectionNote: note });
     return res.success && res.data ? res.data : null;
   },
 };

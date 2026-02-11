@@ -42,7 +42,8 @@
     "saveSuccess": "Profile updated successfully",
     "saveError": "Failed to update profile",
     "uploadError": "Failed to upload photo",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "avatarColor": "Avatar color"
   },
   "dashboard": {
     "title": "Dashboard"
@@ -53,7 +54,8 @@
     "billing": "Billing",
     "profile": "Profile",
     "collapse": "Collapse menu",
-    "expand": "Expand menu"
+    "expand": "Expand menu",
+    "logout": "Logout"
   },
   "lawyers": {
     "title": "Lawyers",
@@ -127,7 +129,8 @@
     "cancelSuccess": "Subscription canceled successfully",
     "reactivateSuccess": "Subscription reactivated successfully",
     "upgradeSuccess": "Plan upgraded successfully!",
-    "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing."
+    "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing.",
+    "ownerOnly": "Only the organization owner can manage the subscription"
   },
   "errors": {
     "planLimitReached": "Plan limit reached",
@@ -150,7 +153,10 @@
     },
     "card": {
       "notifications": "{count, plural, =1 {# notification} other {# notifications}}",
-      "documents": "{count, plural, =1 {# pending document} other {# pending documents}}"
+      "documents": "{count, plural, =1 {# pending document} other {# pending documents}}",
+      "documentsPendingApproval": "{count, plural, =1 {# document awaiting review} other {# documents awaiting review}}",
+      "documentsReceived": "{count, plural, =1 {# approved document} other {# approved documents}}",
+      "documentsRejected": "{count, plural, =1 {# rejected document} other {# rejected documents}}"
     },
     "modal": {
       "description": "Description",

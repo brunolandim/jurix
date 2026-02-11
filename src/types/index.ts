@@ -115,6 +115,7 @@ export type Lawyer = {
   specialty?: string;
   active: boolean;
   role?: 'owner' | 'admin' | 'lawyer';
+  avatarColor?: string;
 };
 
 export type ShareableLink = {

@@ -4,19 +4,21 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Scale, Users, CreditCard, UserCog, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Scale, Users, CreditCard, UserCog, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { APP_NAME } from '@/lib/constants';
 import Link from 'next/link';
 import { Tooltip } from '@/components/ui';
+import { useAuth } from '@/contexts';
+import { useSubscription } from '@/contexts';
 
 const SIDEBAR_COLLAPSED_KEY = 'jurix-sidebar-collapsed';
 
 const menuItems = [
-  { key: 'cases', href: '/dashboard', icon: Scale },
-  { key: 'lawyers', href: '/dashboard/lawyers', icon: Users },
-  { key: 'billing', href: '/dashboard/billing', icon: CreditCard },
-  { key: 'profile', href: '/dashboard/profile', icon: UserCog },
+  { key: 'cases', href: '/dashboard', icon: Scale, minRole: 'lawyer' },
+  { key: 'lawyers', href: '/dashboard/lawyers', icon: Users, minRole: 'admin' },
+  { key: 'billing', href: '/dashboard/billing', icon: CreditCard, minRole: 'admin' },
+  { key: 'profile', href: '/dashboard/profile', icon: UserCog, minRole: 'lawyer' },
 ] as const;
 
 export function Sidebar() {
@@ -24,6 +26,14 @@ export function Sidebar() {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const t = useTranslations('sidebar');
+  const { logout } = useAuth();
+  const { isOwner, isAdmin } = useSubscription();
+
+  const visibleItems = menuItems.filter((item) => {
+    if (item.minRole === 'owner') return isOwner;
+    if (item.minRole === 'admin') return isAdmin;
+    return true;
+  });
 
   useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
@@ -77,7 +87,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 py-4 flex flex-col gap-1 px-2">
-        {menuItems.map((item) => {
+        {visibleItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
           const label = t(item.key);
@@ -114,6 +124,34 @@ export function Sidebar() {
           return linkContent;
         })}
       </nav>
+
+      <div className="border-t border-divider px-2 py-4">
+        {collapsed ? (
+          <Tooltip content={t('logout')} placement="right">
+            <button
+              onClick={logout}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium text-danger hover:bg-danger/10 w-full"
+            >
+              <LogOut size={20} className="shrink-0" />
+            </button>
+          </Tooltip>
+        ) : (
+          <button
+            onClick={logout}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium text-danger hover:bg-danger/10 w-full"
+          >
+            <LogOut size={20} className="shrink-0" />
+            <motion.span
+              initial={false}
+              animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
+              transition={{ duration: 0.15 }}
+              className="overflow-hidden whitespace-nowrap"
+            >
+              {t('logout')}
+            </motion.span>
+          </button>
+        )}
+      </div>
     </motion.aside>
   );
 }

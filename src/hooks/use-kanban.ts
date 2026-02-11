@@ -401,7 +401,7 @@ export function useKanban(isAuthenticated: boolean) {
   }, []);
 
   const approveDocument = useCallback(async (caseId: string, documentId: string) => {
-    const result = await legalCaseService.approveDocument(documentId);
+    const result = await legalCaseService.approveDocument(documentId, caseId);
 
     if (result) {
       const updateDoc = (d: { id: string }) =>
@@ -427,7 +427,7 @@ export function useKanban(isAuthenticated: boolean) {
 
   const rejectDocument = useCallback(
     async (caseId: string, documentId: string, reason: RejectionReason, note?: string) => {
-      const result = await legalCaseService.rejectDocument(documentId, reason, note);
+      const result = await legalCaseService.rejectDocument(documentId, caseId, reason, note);
 
       if (result) {
         const updateDoc = (d: { id: string }) =>

@@ -42,7 +42,8 @@
     "saveSuccess": "Perfil actualizado con éxito",
     "saveError": "Error al actualizar perfil",
     "uploadError": "Error al subir foto",
-    "passwordMismatch": "Las contraseñas no coinciden"
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "avatarColor": "Color del avatar"
   },
   "dashboard": {
     "title": "Panel de control"
@@ -53,7 +54,8 @@
     "billing": "Facturación",
     "profile": "Perfil",
     "collapse": "Contraer menú",
-    "expand": "Expandir menú"
+    "expand": "Expandir menú",
+    "logout": "Cerrar sesión"
   },
   "lawyers": {
     "title": "Abogados",
@@ -127,7 +129,8 @@
     "cancelSuccess": "Suscripción cancelada con éxito",
     "reactivateSuccess": "Suscripción reactivada con éxito",
     "upgradeSuccess": "Plan actualizado con éxito!",
-    "downgradeLimitsExceeded": "No es posible cambiar al plan {plan}. Reduzca el uso antes de cambiar."
+    "downgradeLimitsExceeded": "No es posible cambiar al plan {plan}. Reduzca el uso antes de cambiar.",
+    "ownerOnly": "Solo el propietario de la organización puede gestionar la suscripción"
   },
   "errors": {
     "planLimitReached": "Límite del plan alcanzado",
@@ -150,7 +153,10 @@
     },
     "card": {
       "notifications": "{count, plural, =1 {# notificación} other {# notificaciones}}",
-      "documents": "{count, plural, =1 {# documento pendiente} other {# documentos pendientes}}"
+      "documents": "{count, plural, =1 {# documento pendiente} other {# documentos pendientes}}",
+      "documentsPendingApproval": "{count, plural, =1 {# documento en revisión} other {# documentos en revisión}}",
+      "documentsReceived": "{count, plural, =1 {# documento aprobado} other {# documentos aprobados}}",
+      "documentsRejected": "{count, plural, =1 {# documento rechazado} other {# documentos rechazados}}"
     },
     "modal": {
       "description": "Descripción",
