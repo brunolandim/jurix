@@ -37,7 +37,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
     phone: '',
     oab: '',
     specialty: '',
-    role: 'lawyer' as string,
+    role: 'lawyer' as 'lawyer' | 'owner' | 'admin',
   });
 
   const roleOptions = ['owner', 'admin', 'lawyer'] as const;
@@ -64,7 +64,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
         await lawyerService.updateLawyer(lawyer.id, form);
         toast.success(t('updateSuccess'));
       } else {
-        await lawyerService.createLawyer({ ...form, active: true });
+        await lawyerService.createLawyer({ ...form, active: true, avatarColor: 'default' });
         toast.success(t('createSuccess'));
       }
       onSuccess();
@@ -98,11 +98,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
             onValueChange={(v) => setForm((f) => ({ ...f, email: v }))}
             isRequired
           />
-          <PhoneInput
-            label={t('phone')}
-            value={form.phone}
-            onChange={(v) => setForm((f) => ({ ...f, phone: v }))}
-          />
+          <PhoneInput label={t('phone')} value={form.phone} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
           <Input
             label={t('oab')}
             placeholder={t('oabPlaceholder')}
@@ -120,7 +116,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
             label={t('role')}
             selectedKeys={[form.role]}
             onSelectionChange={(keys) => {
-              const value = Array.from(keys)[0] as string;
+              const value = Array.from(keys)[0] as 'lawyer' | 'owner' | 'admin';
               if (value) setForm((f) => ({ ...f, role: value }));
             }}
           >

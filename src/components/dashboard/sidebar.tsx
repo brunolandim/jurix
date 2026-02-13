@@ -30,7 +30,6 @@ export function Sidebar() {
   const { isOwner, isAdmin } = useSubscription();
 
   const visibleItems = menuItems.filter((item) => {
-    if (item.minRole === 'owner') return isOwner;
     if (item.minRole === 'admin') return isAdmin;
     return true;
   });
@@ -38,7 +37,6 @@ export function Sidebar() {
   useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
     if (stored !== null) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCollapsed(stored === 'true');
     } else {
       setCollapsed(window.innerWidth < 768);
