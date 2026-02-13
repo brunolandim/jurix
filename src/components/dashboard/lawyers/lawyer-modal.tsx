@@ -134,6 +134,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
           </Button>
         </ModalFooter>
       </ModalContent>
+      <div></div>
     </Modal>
   );
 }
