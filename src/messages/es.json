@@ -132,7 +132,7 @@
     "downgradeLimitsExceeded": "No es posible cambiar al plan {plan}. Reduzca el uso antes de cambiar.",
     "ownerOnly": "Solo el propietario de la organización puede gestionar la suscripción",
     "emailNotifications": "Notificaciones por correo electrónico",
-    "whatsappNotifications": "Notificaciones por WhatsApp"
+    "whatsappShare": "Compartición automatizada vía WhatsApp"
   },
   "errors": {
     "planLimitReached": "Límite del plan alcanzado",
@@ -291,6 +291,23 @@
       "title": "Eliminar Documento",
       "message": "¿Está seguro de que desea eliminar esta solicitud de documento? Esta acción no se puede deshacer."
     }
+  },
+  "shareLink": {
+    "button": "Compartir con Cliente",
+    "title": "Enlace de Compartir",
+    "description": "Envíe este enlace al cliente para subir los documentos solicitados.",
+    "copy": "Copiar Enlace",
+    "copied": "¡Copiado!",
+    "close": "Cerrar",
+    "generating": "Generando enlace...",
+    "noPendingDocuments": "Agregue documentos pendientes para compartir el enlace.",
+    "linkReady": "Enlace listo para compartir",
+    "sendWhatsApp": "Enviar por WhatsApp",
+    "clientPhone": "Teléfono del cliente",
+    "clientPhonePlaceholder": "+55 11 99999-9999",
+    "savePhone": "Guardar",
+    "noLawyerAssigned": "Asigne un abogado responsable al caso para enviar por WhatsApp",
+    "whatsAppMessage": "¡Hola, {clientName}!\n\nEl/la abogado/a responsable de su caso *{caseTitle}* ha puesto a disposición este enlace para que pueda enviar la documentación necesaria.\n\nPara acceder de forma segura, utilice el enlace a continuación:\n\n{url}\n\nEn caso de dudas, nuestro equipo queda a su disposición.\n\nAtentamente,\nEquipo {orgName}"
   },
   "publicUpload": {
     "rejectionReason": "Motivo del rechazo"

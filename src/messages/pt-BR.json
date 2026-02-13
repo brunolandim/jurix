@@ -132,7 +132,7 @@
     "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar.",
     "ownerOnly": "Apenas o proprietário da organização pode gerenciar a assinatura",
     "emailNotifications": "Notificações por e-mail",
-    "whatsappNotifications": "Notificações via WhatsApp"
+    "whatsappShare": "Compartilhamento automatizado via WhatsApp"
   },
   "errors": {
     "planLimitReached": "Limite do plano atingido",
@@ -327,7 +327,13 @@
     "close": "Fechar",
     "generating": "Gerando link...",
     "noPendingDocuments": "Adicione documentos pendentes para compartilhar o link.",
-    "linkReady": "Link pronto para compartilhar"
+    "linkReady": "Link pronto para compartilhar",
+    "sendWhatsApp": "Enviar via WhatsApp",
+    "clientPhone": "Telefone do cliente",
+    "clientPhonePlaceholder": "(11) 99999-9999",
+    "savePhone": "Salvar",
+    "noLawyerAssigned": "Atribua um advogado responsável ao caso para enviar via WhatsApp",
+    "whatsAppMessage": "Olá, {clientName}!\n\nO(a) advogado(a) responsável pelo seu caso *{caseTitle}* disponibilizou este link para que você possa enviar a documentação necessária.\n\nPara acessá-los com segurança, utilize o link abaixo:\n\n{url}\n\nEm caso de dúvidas, nossa equipe permanece à disposição.\n\nAtenciosamente,\nEquipe {orgName}"
   },
   "publicUpload": {
     "title": "Envio de Documentos",

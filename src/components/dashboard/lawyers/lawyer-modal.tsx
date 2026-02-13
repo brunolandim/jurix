@@ -13,6 +13,7 @@ import {
   Button,
   Select,
   SelectItem,
+  PhoneInput,
 } from '@/components/ui';
 import { lawyerService } from '@/services/lawyer-service';
 import { handleApiError } from '@/lib/handle-api-error';
@@ -97,11 +98,10 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
             onValueChange={(v) => setForm((f) => ({ ...f, email: v }))}
             isRequired
           />
-          <Input
+          <PhoneInput
             label={t('phone')}
-            placeholder={t('phonePlaceholder')}
             value={form.phone}
-            onValueChange={(v) => setForm((f) => ({ ...f, phone: v }))}
+            onChange={(v) => setForm((f) => ({ ...f, phone: v }))}
           />
           <Input
             label={t('oab')}

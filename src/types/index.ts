@@ -106,6 +106,8 @@ export type KanbanColumn = Column & {
 };
 
 // Lawyer
+export type AvatarColor = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+
 export type Lawyer = {
   id: string;
   name: string;
@@ -116,7 +118,8 @@ export type Lawyer = {
   specialty?: string;
   active: boolean;
   role?: 'owner' | 'admin' | 'lawyer';
-  avatarColor?: string;
+  avatarColor: AvatarColor;
+  organizationName?: string;
 };
 
 export type ShareableLink = {
@@ -152,7 +155,6 @@ export type PlanLimits = {
 
 export type PlanFeatures = {
   emailNotifications: boolean;
-  whatsappNotifications: boolean;
 };
 
 export type Plan = {

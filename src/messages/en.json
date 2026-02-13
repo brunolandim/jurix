@@ -132,7 +132,7 @@
     "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing.",
     "ownerOnly": "Only the organization owner can manage the subscription",
     "emailNotifications": "Email notifications",
-    "whatsappNotifications": "WhatsApp notifications"
+    "whatsappShare": "Automated sharing via WhatsApp"
   },
   "errors": {
     "planLimitReached": "Plan limit reached",
@@ -327,7 +327,13 @@
     "close": "Close",
     "generating": "Generating link...",
     "noPendingDocuments": "Add pending documents to share the link.",
-    "linkReady": "Link ready to share"
+    "linkReady": "Link ready to share",
+    "sendWhatsApp": "Send via WhatsApp",
+    "clientPhone": "Client phone",
+    "clientPhonePlaceholder": "+55 11 99999-9999",
+    "savePhone": "Save",
+    "noLawyerAssigned": "Assign a lawyer to the case to send via WhatsApp",
+    "whatsAppMessage": "Hello, {clientName}!\n\nThe lawyer responsible for your case *{caseTitle}* has provided this link so you can submit the required documentation.\n\nTo access it securely, use the link below:\n\n{url}\n\nIf you have any questions, our team is at your disposal.\n\nBest regards,\n{orgName} Team"
   },
   "publicUpload": {
     "title": "Document Upload",

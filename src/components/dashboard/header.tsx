@@ -24,7 +24,7 @@ export function Header() {
               size="sm"
               className="cursor-pointer"
               isBordered
-              style={!user.photo ? { backgroundColor: user.avatarColor ?? '#3b82f6' } : undefined}
+              color={user.avatarColor}
             />
           </Link>
         )}

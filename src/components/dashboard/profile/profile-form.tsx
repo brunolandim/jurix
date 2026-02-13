@@ -6,18 +6,17 @@ import { toast } from 'sonner';
 import { Camera, Check } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { profileService } from '@/services';
-import { Avatar, Button, Input, Divider } from '@/components/ui';
+import { Avatar, Button, Input, PhoneInput, Divider } from '@/components/ui';
 import { getInitials } from '@/lib/utils';
+import type { AvatarColor } from '@/types';
 
-const AVATAR_COLORS = [
-  '#3b82f6',
-  '#ef4444',
-  '#22c55e',
-  '#f59e0b',
-  '#8b5cf6',
-  '#ec4899',
-  '#06b6d4',
-  '#f97316',
+const AVATAR_COLORS: { value: AvatarColor; bg: string }[] = [
+  { value: 'default', bg: 'bg-default' },
+  { value: 'primary', bg: 'bg-primary' },
+  { value: 'secondary', bg: 'bg-secondary' },
+  { value: 'success', bg: 'bg-success' },
+  { value: 'warning', bg: 'bg-warning' },
+  { value: 'danger', bg: 'bg-danger' },
 ];
 
 export function ProfileForm() {
@@ -31,7 +30,7 @@ export function ProfileForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [avatarColor, setAvatarColor] = useState(user?.avatarColor ?? '#3b82f6');
+  const [avatarColor, setAvatarColor] = useState(user?.avatarColor ?? 'default');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -113,7 +112,7 @@ export function ProfileForm() {
             src={currentPhoto}
             className="w-24 h-24 text-2xl"
             isBordered
-            style={!currentPhoto ? { backgroundColor: avatarColor } : undefined}
+            color={avatarColor}
           />
           <button
             type="button"
@@ -140,67 +139,35 @@ export function ProfileForm() {
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm text-default-500">{t('avatarColor')}</span>
           <div className="flex gap-2">
-            {AVATAR_COLORS.map((color) => (
+            {AVATAR_COLORS.map(({ value, bg }) => (
               <button
-                key={color}
+                key={value}
                 type="button"
-                onClick={() => setAvatarColor(color)}
-                className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-110 ring-offset-2 ring-offset-background"
-                style={{
-                  backgroundColor: color,
-                  boxShadow: avatarColor === color ? `0 0 0 2px var(--color-background), 0 0 0 4px ${color}` : undefined,
-                }}
+                onClick={() => setAvatarColor(value)}
+                className={`w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-110 ${bg} ${avatarColor === value ? 'ring-2 ring-offset-2 ring-offset-background ring-current scale-110' : ''}`}
               >
-                {avatarColor === color && <Check size={16} className="text-white" />}
+                {avatarColor === value && <Check size={16} className="text-white" />}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <Input
-        label={t('name')}
-        value={name}
-        onValueChange={setName}
-        isRequired
-      />
+      <Input label={t('name')} value={name} onValueChange={setName} isRequired />
 
-      <Input
-        label={t('phone')}
-        value={phone}
-        onValueChange={setPhone}
-      />
+      <PhoneInput label={t('phone')} value={phone} onChange={setPhone} />
 
-      <Input
-        label={t('specialty')}
-        value={specialty}
-        onValueChange={setSpecialty}
-      />
+      <Input label={t('specialty')} value={specialty} onValueChange={setSpecialty} />
 
       <Divider />
 
       <h2 className="text-lg font-semibold">{t('changePassword')}</h2>
 
-      <Input
-        type="password"
-        label={t('newPassword')}
-        value={newPassword}
-        onValueChange={setNewPassword}
-      />
+      <Input type="password" label={t('newPassword')} value={newPassword} onValueChange={setNewPassword} />
 
-      <Input
-        type="password"
-        label={t('confirmPassword')}
-        value={confirmPassword}
-        onValueChange={setConfirmPassword}
-      />
+      <Input type="password" label={t('confirmPassword')} value={confirmPassword} onValueChange={setConfirmPassword} />
 
-      <Button
-        type="submit"
-        color="primary"
-        isLoading={isSaving}
-        className="w-full"
-      >
+      <Button type="submit" color="primary" isLoading={isSaving} className="w-full">
         {tCommon('save')}
       </Button>
     </form>

@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { Plus, Trash2, Bell } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
-import { ZonedDateTime } from '@internationalized/date';
+import { ZonedDateTime, now, getLocalTimeZone } from '@internationalized/date';
 import {
   Button,
   Input,
@@ -138,6 +138,7 @@ export function CaseNotifications({ notifications, onAdd, onDelete }: CaseNotifi
               labelPlacement="outside"
               value={dateValue}
               onChange={setDateValue}
+              minValue={now(getLocalTimeZone())}
               className="flex-1"
               isDisabled={isSubmitting}
               hideTimeZone

@@ -76,7 +76,7 @@ export function LawyerList() {
                   src={lawyer.photo || undefined}
                   size="lg"
                   isBordered
-                  style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined}
+                  color={lawyer.avatarColor}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">

@@ -112,6 +112,7 @@ export function useKanban(isAuthenticated: boolean) {
       title: string;
       description?: string;
       client: string;
+      clientPhone?: string;
       priority: LegalCase['priority'];
       assignedTo?: string;
       createdBy: string;
@@ -125,6 +126,7 @@ export function useKanban(isAuthenticated: boolean) {
           title: params.title,
           description: params.description,
           client: params.client,
+          clientPhone: params.clientPhone,
           priority: params.priority,
           columnId: firstColumn.id,
           assignedTo: params.assignedTo,
@@ -171,11 +173,11 @@ export function useKanban(isAuthenticated: boolean) {
       setColumns((prev) =>
         prev.map((col) => ({
           ...col,
-          cases: col.cases.map((c) => (c.id === caseId ? { ...c, assignee: lawyerFound } : c)),
+          cases: col.cases.map((c) => (c.id === caseId ? { ...c, assignedTo: lawyerId, assignee: lawyerFound } : c)),
         }))
       );
 
-      setSelectedCase((prev) => (prev?.id === caseId ? { ...prev, assignee: lawyerFound } : prev));
+      setSelectedCase((prev) => (prev?.id === caseId ? { ...prev, assignedTo: lawyerId, assignee: lawyerFound } : prev));
 
       const result = await legalCaseService.assignLawyer(caseId, lawyerId);
       if (!result) {

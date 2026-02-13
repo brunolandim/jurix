@@ -13,6 +13,7 @@ export type CreateCaseParams = {
   title: string;
   description?: string;
   client: string;
+  clientPhone?: string;
   priority: LegalCase['priority'];
   columnId: string;
   assignedTo?: string;

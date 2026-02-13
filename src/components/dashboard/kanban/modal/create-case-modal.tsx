@@ -34,6 +34,7 @@ type CreateCaseModalProps = {
     title: string;
     description?: string;
     client: string;
+    clientPhone: string;
     priority: CasePriority;
     assignedTo?: string;
     createdBy: string;
@@ -80,7 +81,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
       title: title.trim(),
       description: description.trim() || undefined,
       client: client.trim(),
-      clientPhone: clientPhone.trim() || undefined,
+      clientPhone: clientPhone.trim(),
       priority,
       assignedTo: selectedLawyer?.id,
       createdBy: currentUser.id,
@@ -91,7 +92,18 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
     if (result) {
       handleClose();
     }
-  }, [number, title, description, client, priority, selectedLawyer, currentUser, onCreateCase, handleClose]);
+  }, [
+    number,
+    title,
+    description,
+    client,
+    clientPhone,
+    priority,
+    selectedLawyer,
+    currentUser,
+    onCreateCase,
+    handleClose,
+  ]);
 
   const handleLawyerChange = useCallback(
     (lawyerId: string | null) => {
@@ -148,6 +160,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
             <PhoneInput
               label={t('clientPhone')}
               value={clientPhone}
+              isRequired
               onChange={setClientPhone}
               isDisabled={isSubmitting}
             />
@@ -182,7 +195,7 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
                           name={getInitials(selectedLawyer.name)}
                           src={selectedLawyer.photo || undefined}
                           className="w-6 h-6"
-                          style={!selectedLawyer.photo ? { backgroundColor: selectedLawyer.avatarColor ?? '#3b82f6' } : undefined}
+                          color={selectedLawyer.avatarColor}
                         />
                         <span>{selectedLawyer.name}</span>
                       </div>
@@ -208,7 +221,12 @@ export function CreateCaseModal({ isOpen, onClose, lawyers, currentUser, onCreat
                     <DropdownItem
                       key={lawyer.id}
                       startContent={
-                        <Avatar name={getInitials(lawyer.name)} src={lawyer.photo || undefined} className="w-6 h-6" style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined} />
+                        <Avatar
+                          name={getInitials(lawyer.name)}
+                          src={lawyer.photo || undefined}
+                          className="w-6 h-6"
+                          color={lawyer.avatarColor}
+                        />
                       }
                     >
                       {lawyer.name}

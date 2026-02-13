@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { ChevronDown, User, Share2, Copy, Check } from 'lucide-react';
+import { ChevronDown, User, Share2, Copy, Check, MessageCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import {
@@ -67,6 +67,7 @@ type CaseDetailModalProps = {
   onApproveDocument?: (caseId: string, documentId: string) => Promise<boolean>;
   onRejectDocument?: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
   onGenerateShareLink?: (caseId: string, lawyerId: string, documentIds: string[]) => Promise<{ url: string } | null>;
+  onClientPhoneChange?: (caseId: string, phone: string) => Promise<boolean>;
 };
 
 export function CaseDetailModal({
@@ -87,6 +88,7 @@ export function CaseDetailModal({
   onApproveDocument,
   onRejectDocument,
   onGenerateShareLink,
+  onClientPhoneChange,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
@@ -107,6 +109,8 @@ export function CaseDetailModal({
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [editingPhone, setEditingPhone] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
 
   const handleDescriptionClick = useCallback(() => {
     if (!legalCase) return;
@@ -190,6 +194,7 @@ export function CaseDetailModal({
     setShareUrl(null);
     setIsGeneratingLink(true);
     setIsCopied(false);
+    setEditingPhone(legalCase.clientPhone || '');
 
     const documentIds = shareableDocuments.map((d) => d.id);
     const result = await onGenerateShareLink(legalCase.id, user.id, documentIds);
@@ -225,6 +230,36 @@ export function CaseDetailModal({
       setTimeout(() => setIsCopied(false), 2000);
     }
   }, [shareUrl]);
+
+  const handleSavePhone = useCallback(async () => {
+    if (!legalCase || !onClientPhoneChange) return;
+    setIsSavingPhone(true);
+    await onClientPhoneChange(legalCase.id, editingPhone);
+    setIsSavingPhone(false);
+  }, [legalCase, editingPhone, onClientPhoneChange]);
+
+  const handleSendWhatsApp = useCallback(() => {
+    if (!shareUrl || !legalCase) return;
+
+    const message = tShare('whatsAppMessage', {
+      clientName: legalCase.client,
+      caseTitle: legalCase.title,
+      url: shareUrl,
+      orgName: user?.organizationName ?? '',
+    });
+    const encoded = encodeURIComponent(message);
+
+    const phone = editingPhone.replace(/\D/g, '');
+    const normalizedPhone = phone
+      ? phone.startsWith('55') ? phone : `55${phone}`
+      : '';
+
+    const waUrl = normalizedPhone
+      ? `https://wa.me/${normalizedPhone}?text=${encoded}`
+      : `https://wa.me/?text=${encoded}`;
+
+    window.open(waUrl, '_blank');
+  }, [shareUrl, editingPhone, tShare, legalCase, user]);
 
   if (!legalCase) return null;
 
@@ -406,7 +441,7 @@ export function CaseDetailModal({
                                 src={legalCase.assignee.photo || undefined}
                                 isBordered
                                 className="w-6 h-6"
-                                style={!legalCase.assignee.photo ? { backgroundColor: legalCase.assignee.avatarColor ?? '#3b82f6' } : undefined}
+                                color={legalCase.assignee.avatarColor}
                               />
                               <span className="text-sm">{legalCase.assignee.name}</span>
                             </>
@@ -442,7 +477,7 @@ export function CaseDetailModal({
                                 name={getInitials(lawyer.name)}
                                 src={lawyer.photo || undefined}
                                 className="w-6 h-6"
-                                style={!lawyer.photo ? { backgroundColor: lawyer.avatarColor ?? '#3b82f6' } : undefined}
+                                color={lawyer.avatarColor}
                               />
                             }
                           >
@@ -464,7 +499,7 @@ export function CaseDetailModal({
                         src={legalCase.creator.photo || undefined}
                         isBordered
                         className="w-6 h-6"
-                        style={!legalCase.creator.photo ? { backgroundColor: legalCase.creator.avatarColor ?? '#3b82f6' } : undefined}
+                        color={legalCase.creator.avatarColor}
                       />
                       <span className="text-sm">{legalCase.creator.name}</span>
                     </div>
@@ -551,6 +586,42 @@ export function CaseDetailModal({
                   </Button>
                 </div>
                 {isCopied && <p className="text-sm text-success text-center">{tShare('copied')}</p>}
+                <Divider />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-default-700">{tShare('clientPhone')}</label>
+                  <div className="flex gap-2">
+                    <Input
+                      size="sm"
+                      placeholder={tShare('clientPhonePlaceholder')}
+                      value={editingPhone}
+                      onChange={(e) => setEditingPhone(e.target.value)}
+                    />
+                    {onClientPhoneChange && editingPhone !== (legalCase?.clientPhone || '') && (
+                      <Button
+                        size="sm"
+                        color="primary"
+                        variant="flat"
+                        isLoading={isSavingPhone}
+                        onPress={handleSavePhone}
+                      >
+                        {tShare('savePhone')}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  className="w-full"
+                  color="success"
+                  variant="flat"
+                  startContent={<MessageCircle className="w-4 h-4" />}
+                  onPress={handleSendWhatsApp}
+                  isDisabled={!legalCase?.assignedTo}
+                >
+                  {tShare('sendWhatsApp')}
+                </Button>
+                {!legalCase?.assignedTo && (
+                  <p className="text-xs text-warning text-center">{tShare('noLawyerAssigned')}</p>
+                )}
                 <div className="bg-default-100 rounded-lg p-3">
                   <p className="text-xs text-default-500">{tShare('linkReady')}</p>
                 </div>

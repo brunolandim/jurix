@@ -120,7 +120,7 @@ export function KanbanCardContent({ legalCase, isDragging }: KanbanCardContentPr
                 src={legalCase.assignee.photo ? legalCase.assignee.photo : undefined}
                 isBordered
                 className="cursor-pointer w-6 h-6 text-sm"
-                style={!legalCase.assignee.photo ? { backgroundColor: legalCase.assignee.avatarColor ?? '#3b82f6' } : undefined}
+                color={legalCase.assignee.avatarColor}
               />
               <span>{legalCase.assignee.name}</span>
             </div>
