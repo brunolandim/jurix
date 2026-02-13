@@ -28,14 +28,14 @@ export function PhoneInput({
 }: PhoneInputProps) {
   const { locale } = useLocale();
   const defaultCountry = getCountryByLocale(locale);
-  
+
   const [countryCode, setCountryCode] = useState(defaultCountry.code);
   const [phoneNumber, setPhoneNumber] = useState('');
 
   useEffect(() => {
     if (value) {
       const digits = value.replace(/\D/g, '');
-      
+
       for (const [, country] of Object.entries(COUNTRY_CODES)) {
         const code = country.code.replace('+', '');
         if (digits.startsWith(code)) {
@@ -44,23 +44,23 @@ export function PhoneInput({
           return;
         }
       }
-      
+
       setPhoneNumber(digits);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePhoneChange = (newPhone: string) => {
     const digits = parsePhoneNumber(newPhone);
     setPhoneNumber(digits);
-    
+
     const code = countryCode.replace('+', '');
     const fullNumber = digits ? `${code}${digits}` : '';
     onChange(fullNumber);
   };
 
-  const handleCountryChange = (newCode: string) => {
+  const handleCountryChange = (newCode: typeof countryCode) => {
     setCountryCode(newCode);
-    
+
     const code = newCode.replace('+', '');
     const fullNumber = phoneNumber ? `${code}${phoneNumber}` : '';
     onChange(fullNumber);
@@ -73,11 +73,11 @@ export function PhoneInput({
     <div className="flex flex-col gap-2">
       {label && <label className="text-sm text-default-700">{label}</label>}
       <div className="flex gap-2">
-        <div className="w-32 flex-shrink-0">
+        <div className="w-32 shrink-0">
           <Select
             selectedKeys={[countryCode]}
             onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0] as string;
+              const selected = Array.from(keys)[0] as typeof countryCode;
               if (selected) handleCountryChange(selected);
             }}
             aria-label="Código do país"
@@ -85,13 +85,13 @@ export function PhoneInput({
             disallowEmptySelection
           >
             {Object.entries(COUNTRY_CODES).map(([, country]) => (
-              <SelectItem key={country.code} value={country.code} textValue={`${country.flag} ${country.code}`}>
+              <SelectItem key={country.code} textValue={`${country.flag} ${country.code}`}>
                 {country.flag} {country.code}
               </SelectItem>
             ))}
           </Select>
         </div>
-        
+
         <Input
           value={formattedValue}
           onChange={(e) => handlePhoneChange(e.target.value)}
