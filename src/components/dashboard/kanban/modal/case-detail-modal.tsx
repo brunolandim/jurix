@@ -32,7 +32,7 @@ import {
   DocumentStatus,
   RejectionReason,
 } from '@/types';
-import { getInitials } from '@/lib/utils';
+import { getInitials, abbreviateName } from '@/lib/utils';
 import { CaseNotifications } from '../case-notifications';
 import { CaseDocuments } from '../case-documents';
 
@@ -96,7 +96,7 @@ export function CaseDetailModal({
   const tShare = useTranslations('shareLink');
   const { locale } = useLocale();
 
-  const getColumnTitle = (column: KanbanColumn) => (column.key ? tColumns(column.key) : column.title);
+  const getColumnTitle = (column: KanbanColumn) => (column.isDefault ? tColumns(column.key ?? column.title) : column.title);
 
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isSavingDescription, setIsSavingDescription] = useState(false);
@@ -305,7 +305,7 @@ export function CaseDetailModal({
 
         <ModalBody>
           <div className="flex flex-col md:flex-row gap-6 h-full">
-            <div className="flex-1 min-w-0 h-full">
+            <div className="flex-1 min-w-0 h-full order-2 md:order-1">
               <div>
                 <h3 className="text-sm font-semibold text-default-700 mb-3">{tKanban('modal.description')}:</h3>
                 {isEditingDescription ? (
@@ -412,7 +412,7 @@ export function CaseDetailModal({
               />
             </div>
 
-            <div className=" w-full md:w-72 min-h-72 shrink-0">
+            <div className="w-full md:w-72 min-h-72 shrink-0 order-1 md:order-2">
               <div className="border border-default-200 rounded-lg p-4">
                 <h3 className="text-sm font-semibold text-default-700 mb-4">{tKanban('modal.details')}</h3>
 
@@ -443,7 +443,7 @@ export function CaseDetailModal({
                                 className="w-6 h-6"
                                 color={legalCase.assignee.avatarColor}
                               />
-                              <span className="text-sm">{legalCase.assignee.name}</span>
+                              <span className="text-sm truncate max-w-[120px]">{abbreviateName(legalCase.assignee.name)}</span>
                             </>
                           ) : (
                             <>
@@ -501,7 +501,7 @@ export function CaseDetailModal({
                         className="w-6 h-6"
                         color={legalCase.creator.avatarColor}
                       />
-                      <span className="text-sm">{legalCase.creator.name}</span>
+                      <span className="text-sm truncate max-w-[120px]">{abbreviateName(legalCase.creator.name)}</span>
                     </div>
                   </div>
 

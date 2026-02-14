@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, RefObject } from 'react';
+import { useCallback, useRef, RefObject } from 'react';
 import {
   KeyboardSensor,
   PointerSensor,
@@ -41,6 +41,8 @@ export function useDndKanban({
   reorderCase,
   persistMoveCase,
 }: UseDndKanbanParams) {
+  const originColumnIdRef = useRef<string | null>(null);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -70,10 +72,12 @@ export function useDndKanban({
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
-      const legalCase = findCase(event.active.id as string);
+      const activeId = event.active.id as string;
+      const legalCase = findCase(activeId);
       setActiveCase(legalCase || null);
+      originColumnIdRef.current = findColumn(activeId)?.id ?? null;
     },
-    [findCase, setActiveCase]
+    [findCase, findColumn, setActiveCase]
   );
 
   const handleDragOver = useCallback(
@@ -108,6 +112,9 @@ export function useDndKanban({
       const { active, over } = event;
       setActiveCase(null);
 
+      const originColumnId = originColumnIdRef.current;
+      originColumnIdRef.current = null;
+
       if (!over) return;
 
       const activeId = active.id as string;
@@ -139,6 +146,10 @@ export function useDndKanban({
           const targetIndex = newIndex;
           newOrder = calculateNewOrder(cases, targetIndex);
           reorderCase(activeColumn.id, oldIndex, newIndex);
+        } else if (activeColumn.id !== originColumnId) {
+          // Card was moved cross-column by handleDragOver but over.id is the card itself
+          // (happens when dropping at first position)
+          newOrder = cases.length <= 1 ? 1 : calculateNewOrder(cases, oldIndex);
         } else {
           return; // No change
         }
