@@ -241,7 +241,8 @@
     "title": "Notificaciones",
     "noNotifications": "Sin notificaciones pendientes",
     "markAsRead": "Marcar como leída",
-    "markAllAsRead": "Marcar todas"
+    "markAllAsRead": "Marcar todas",
+    "delete": "Eliminar"
   },
   "document": {
     "title": "Documentos",

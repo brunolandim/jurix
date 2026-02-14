@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { KanbanColumn, LegalCase, Lawyer, NotificationType, DocumentStatus, RejectionReason } from '@/types';
 import { columnService, legalCaseService, lawyerService, shareableLinkService } from '@/services';
 import { handleApiError } from '@/lib/handle-api-error';
+import { onNotificationDeleted, onNotificationRead, onAllNotificationsRead, emitNotificationCreated } from '@/lib/notification-events';
 
 function calculateNewOrder(cases: LegalCase[], currentIndex: number): number {
   const previous = currentIndex > 0 ? cases[currentIndex - 1] : null;
@@ -54,6 +55,42 @@ export function useKanban(isAuthenticated: boolean) {
 
     loadData();
   }, [isAuthenticated]);
+
+  // Sincronizar notificações vindas do header
+  useEffect(() => {
+    const updateNotifications = (updater: (notifications: any[]) => any[]) => {
+      setColumns((prev) =>
+        prev.map((col) => ({
+          ...col,
+          cases: col.cases.map((c) => ({
+            ...c,
+            notifications: updater(c.notifications || []),
+          })),
+        }))
+      );
+      setSelectedCase((prev) =>
+        prev ? { ...prev, notifications: updater(prev.notifications || []) } : prev
+      );
+    };
+
+    const unsubDelete = onNotificationDeleted((id) => {
+      updateNotifications((notifications) => notifications.filter((n) => n.id !== id));
+    });
+
+    const unsubRead = onNotificationRead((id) => {
+      updateNotifications((notifications) =>
+        notifications.map((n) => (n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
+      );
+    });
+
+    const unsubAllRead = onAllNotificationsRead(() => {
+      updateNotifications((notifications) =>
+        notifications.map((n) => ({ ...n, isRead: true, readAt: new Date().toISOString() }))
+      );
+    });
+
+    return () => { unsubDelete(); unsubRead(); unsubAllRead(); };
+  }, []);
 
   // Colunas filtradas
   const filteredColumns = useMemo(() => {
@@ -231,7 +268,13 @@ export function useKanban(isAuthenticated: boolean) {
   const createColumn = useCallback(async (title: string) => {
     const newColumn = await columnService.createColumn(title);
     if (newColumn) {
-      setColumns((prev) => [...prev, newColumn]);
+      setColumns((prev) => {
+        const completedIndex = prev.findIndex((col) => col.isDefault && col.title === 'completed');
+        if (completedIndex === -1) return [...prev, newColumn];
+        const updated = [...prev];
+        updated.splice(completedIndex, 0, newColumn);
+        return updated;
+      });
       return true;
     }
     return false;
@@ -290,6 +333,8 @@ export function useKanban(isAuthenticated: boolean) {
         setSelectedCase((prev) =>
           prev?.id === caseId ? { ...prev, notifications: [...(prev.notifications || []), newNotification] } : prev
         );
+
+        emitNotificationCreated();
       }
 
       return newNotification;

@@ -241,7 +241,8 @@
     "title": "Notifications",
     "noNotifications": "No pending notifications",
     "markAsRead": "Mark as read",
-    "markAllAsRead": "Mark all"
+    "markAllAsRead": "Mark all",
+    "delete": "Delete"
   },
   "document": {
     "title": "Documents",
