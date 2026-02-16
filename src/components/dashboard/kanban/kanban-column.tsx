@@ -98,8 +98,8 @@ export function KanbanColumn({
 
   return (
     <div className="group shrink-0 w-72 rounded-md bg-default-100 flex flex-col max-h-full">
-      <div className="p-3 border-b border-default-200">
-        <div className="flex items-center justify-between gap-2">
+      <div className="p-3 border-b border-default-200 min-h-13.25">
+        <div className="flex items-center justify-between gap-2 ">
           {isEditing ? (
             <>
               <Input

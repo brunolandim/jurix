@@ -175,7 +175,8 @@
       "close": "Cerrar",
       "save": "Guardar",
       "cancel": "Cancelar",
-      "selectLawyer": "Seleccionar responsable"
+      "selectLawyer": "Seleccionar responsable",
+      "clickToEditTitle": "Clic para editar el título"
     },
     "column": {
       "add": "Agregar Columna",
@@ -311,6 +312,29 @@
     "whatsAppMessage": "¡Hola, {clientName}!\n\nEl/la abogado/a responsable de su caso *{caseTitle}* ha puesto a disposición este enlace para que pueda enviar la documentación necesaria.\n\nPara acceder de forma segura, utilice el enlace a continuación:\n\n{url}\n\nEn caso de dudas, nuestro equipo queda a su disposición.\n\nAtentamente,\nEquipo {orgName}"
   },
   "publicUpload": {
-    "rejectionReason": "Motivo del rechazo"
+    "title": "Envío de Documentos",
+    "subtitle": "Envíe los documentos solicitados por su abogado",
+    "loading": "Cargando...",
+    "errorTitle": "Enlace inválido",
+    "errorDescription": "Este enlace no existe o ha expirado. Contacte a su abogado para obtener un nuevo enlace.",
+    "successTitle": "¡Documentos enviados!",
+    "successDescription": "Todos los documentos fueron recibidos con éxito. Puede cerrar esta página.",
+    "caseNumber": "Expediente",
+    "caseTitle": "Título",
+    "lawyer": "Abogado",
+    "description": "Descripción",
+    "progress": "Progreso",
+    "documentsTitle": "Documentos Solicitados",
+    "statusReceived": "Aprobado",
+    "statusPending": "Pendiente",
+    "statusPendingApproval": "Pendiente de Aprobación",
+    "statusRejected": "Rechazado",
+    "upload": "Enviar",
+    "reupload": "Reenviar",
+    "uploading": "Enviando...",
+    "uploadError": "Error al enviar. Intente nuevamente.",
+    "uploadSuccess": "¡Documento enviado! Esperando aprobación del abogado.",
+    "rejectionReason": "Motivo del rechazo",
+    "infoMessage": "Después del envío, los documentos serán revisados por el abogado antes de la aprobación."
   }
 }

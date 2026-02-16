@@ -76,39 +76,41 @@ export function KanbanBoard() {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <KanbanFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          lawyers={lawyers}
-          selectedLawyerIds={selectedLawyerIds}
-          onToggleLawyer={toggleLawyer}
-          onClearFilters={clearFilters}
-          showUnassigned={showUnassigned}
-          onToggleUnassigned={toggleUnassigned}
-        />
-        <Button color="primary" startContent={<Plus size={18} />} onPress={() => setIsCreateModalOpen(true)}>
-          {t('createCase.button')}
-        </Button>
-      </div>
+      <div className="flex flex-col h-full min-h-0">
+        <div className="mb-4 flex items-center justify-between gap-4 shrink-0">
+          <KanbanFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            lawyers={lawyers}
+            selectedLawyerIds={selectedLawyerIds}
+            onToggleLawyer={toggleLawyer}
+            onClearFilters={clearFilters}
+            showUnassigned={showUnassigned}
+            onToggleUnassigned={toggleUnassigned}
+          />
+          <Button color="primary" startContent={<Plus size={18} />} onPress={() => setIsCreateModalOpen(true)}>
+            {t('createCase.button')}
+          </Button>
+        </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-15rem)]">
-        {filteredColumns.map((column) => {
-          const originalColumn = columns.find((c) => c.id === column.id);
-          const totalCount = originalColumn?.cases?.length ?? 0;
+        <div className="flex gap-4 overflow-x-auto  flex-1 min-h-0">
+          {filteredColumns.map((column) => {
+            const originalColumn = columns.find((c) => c.id === column.id);
+            const totalCount = originalColumn?.cases?.length ?? 0;
 
-          return (
-            <KanbanColumn
-              key={column.id}
-              column={column}
-              totalCount={totalCount}
-              onCardClick={selectCase}
-              onColumnTitleUpdate={updateColumnTitle}
-              onColumnDelete={deleteColumn}
-            />
-          );
-        })}
-        <AddColumn onCreateColumn={createColumn} />
+            return (
+              <KanbanColumn
+                key={column.id}
+                column={column}
+                totalCount={totalCount}
+                onCardClick={selectCase}
+                onColumnTitleUpdate={updateColumnTitle}
+                onColumnDelete={deleteColumn}
+              />
+            );
+          })}
+          <AddColumn onCreateColumn={createColumn} />
+        </div>
       </div>
 
       <DragOverlay>
@@ -131,6 +133,7 @@ export function KanbanBoard() {
             moveCaseToColumn(caseId, newColumnId);
             updateCaseData(caseId, { columnId: newColumnId });
           }}
+          onTitleChange={(caseId, newTitle) => updateCaseData(caseId, { title: newTitle })}
           onDescriptionChange={(caseId, newDescription) => updateCaseData(caseId, { description: newDescription })}
           onLawyerChange={(caseId, newLawyer) => updateAssignLawyer(caseId, newLawyer)}
           onAddNotification={addNotification}

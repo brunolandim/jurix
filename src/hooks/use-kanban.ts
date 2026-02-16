@@ -268,6 +268,7 @@ export function useKanban(isAuthenticated: boolean) {
   const createColumn = useCallback(async (title: string) => {
     const newColumn = await columnService.createColumn(title);
     if (newColumn) {
+      if (!newColumn.cases) newColumn.cases = [];
       setColumns((prev) => {
         const completedIndex = prev.findIndex((col) => col.isDefault && col.title === 'completed');
         if (completedIndex === -1) return [...prev, newColumn];
@@ -300,7 +301,7 @@ export function useKanban(isAuthenticated: boolean) {
       const column = columnsRef.current.find((c) => c.id === columnId);
       if (!column) return { success: false };
       if (column.isDefault) return { success: false, error: 'default' };
-      if (column.cases.length > 0) return { success: false, error: 'has_cases' };
+      if ((column.cases?.length ?? 0) > 0) return { success: false, error: 'has_cases' };
 
       const previousColumns = columnsRef.current;
       setColumns((prev) => prev.filter((c) => c.id !== columnId));
