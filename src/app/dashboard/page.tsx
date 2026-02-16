@@ -20,7 +20,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-4 h-full">
+    <div className="px-4 pt-4 h-full flex flex-col overflow-hidden">
       <KanbanBoard />
     </div>
   );

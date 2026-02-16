@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { ChevronDown, User, Share2, Copy, Check, MessageCircle } from 'lucide-react';
+import { ChevronDown, User, Share2, Copy, Check, X, MessageCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/components/i18n-provider';
 import {
@@ -51,6 +51,7 @@ type CaseDetailModalProps = {
   lawyers: Lawyer[];
   user: Lawyer | null;
   onColumnChange?: (caseId: string, newColumnId: string) => void;
+  onTitleChange?: (caseId: string, newTitle: string) => Promise<boolean>;
   onDescriptionChange?: (caseId: string, newDescription: string) => Promise<boolean>;
   onLawyerChange?: (caseId: string, lawyer: string) => Promise<boolean>;
   onAddNotification?: (
@@ -78,6 +79,7 @@ export function CaseDetailModal({
   lawyers,
   user,
   onColumnChange,
+  onTitleChange,
   onDescriptionChange,
   onLawyerChange,
   onAddNotification,
@@ -98,6 +100,10 @@ export function CaseDetailModal({
 
   const getColumnTitle = (column: KanbanColumn) => (column.isDefault ? tColumns(column.key ?? column.title) : column.title);
 
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [isSavingDescription, setIsSavingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState('');
@@ -111,6 +117,42 @@ export function CaseDetailModal({
   const [isCopied, setIsCopied] = useState(false);
   const [editingPhone, setEditingPhone] = useState('');
   const [isSavingPhone, setIsSavingPhone] = useState(false);
+
+  const handleTitleClick = useCallback(() => {
+    if (!legalCase) return;
+    setEditedTitle(legalCase.title);
+    setIsEditingTitle(true);
+  }, [legalCase]);
+
+  const handleTitleSave = useCallback(async () => {
+    if (!legalCase) return;
+    const trimmed = editedTitle.trim();
+    if (!trimmed || trimmed === legalCase.title) {
+      setIsEditingTitle(false);
+      return;
+    }
+    setIsSavingTitle(true);
+    const success = await onTitleChange?.(legalCase.id, trimmed);
+    setIsSavingTitle(false);
+    if (success) {
+      setIsEditingTitle(false);
+    }
+  }, [legalCase, editedTitle, onTitleChange]);
+
+  const handleTitleCancel = useCallback(() => {
+    setIsEditingTitle(false);
+  }, []);
+
+  const handleTitleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleTitleSave();
+      } else if (e.key === 'Escape') {
+        handleTitleCancel();
+      }
+    },
+    [handleTitleSave, handleTitleCancel]
+  );
 
   const handleDescriptionClick = useCallback(() => {
     if (!legalCase) return;
@@ -278,8 +320,53 @@ export function CaseDetailModal({
           <div className="flex items-center justify-between">
             <span className="text-sm text-default-500 font-mono">{legalCase.number}</span>
           </div>
-          <div className="flex justify-between">
-            <h2 className="text-xl font-semibold">{legalCase.title}</h2>
+          <div className="flex justify-between items-center gap-2">
+            {isEditingTitle ? (
+              <div className="flex items-center gap-2 flex-1">
+                <Input
+                  autoFocus
+                  size="sm"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  onKeyDown={handleTitleKeyDown}
+                  isDisabled={isSavingTitle}
+                  classNames={{
+                    input: 'text-xl font-semibold',
+                    inputWrapper: 'h-10 min-h-10',
+                  }}
+                />
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="flat"
+                  color="success"
+                  onPress={handleTitleSave}
+                  isLoading={isSavingTitle}
+                  className="h-8 w-8 min-w-8"
+                >
+                  {!isSavingTitle && <Check className="w-4 h-4" />}
+                </Button>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="flat"
+                  color="danger"
+                  onPress={handleTitleCancel}
+                  isDisabled={isSavingTitle}
+                  className="h-8 w-8 min-w-8"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <h2
+                className="text-xl font-semibold cursor-pointer hover:text-primary transition-colors"
+                onClick={handleTitleClick}
+                title={tKanban('modal.clickToEditTitle')}
+              >
+                {legalCase.title}
+              </h2>
+            )}
             <Dropdown>
               <DropdownTrigger>
                 <Button color="primary" variant="solid" size="sm" endContent={<ChevronDown className="w-4 h-4" />}>

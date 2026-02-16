@@ -175,7 +175,8 @@
       "close": "Close",
       "save": "Save",
       "cancel": "Cancel",
-      "selectLawyer": "Select assignee"
+      "selectLawyer": "Select assignee",
+      "clickToEditTitle": "Click to edit title"
     },
     "column": {
       "add": "Add Column",
