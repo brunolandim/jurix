@@ -27,7 +27,7 @@ type KanbanFiltersProps = {
   onToggleUnassigned?: () => void;
 };
 
-const MAX_VISIBLE_AVATARS = 1;
+const MAX_VISIBLE_AVATARS = 5;
 
 export function KanbanFilters({
   searchTerm,
