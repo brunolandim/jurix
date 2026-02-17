@@ -27,7 +27,7 @@ type KanbanFiltersProps = {
   onToggleUnassigned?: () => void;
 };
 
-const MAX_VISIBLE_AVATARS = 5;
+const MAX_VISIBLE_AVATARS = 1;
 
 export function KanbanFilters({
   searchTerm,
@@ -75,7 +75,13 @@ export function KanbanFilters({
                         onValueChange={() => onToggleLawyer(lawyer.id)}
                         size="sm"
                       />
-                      <Avatar name={getInitials(lawyer.name)} src={lawyer.photo} size="sm" className="shrink-0" color={lawyer.avatarColor} />
+                      <Avatar
+                        name={getInitials(lawyer.name)}
+                        src={lawyer.photo}
+                        size="sm"
+                        className="shrink-0"
+                        color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
+                      />
                       <span className="text-sm">{lawyer.name}</span>
                     </div>
                   ))}
@@ -89,6 +95,7 @@ export function KanbanFilters({
                         icon={<User className="w-4 h-4" />}
                         size="sm"
                         className="shrink-0"
+                        color={showUnassigned ? 'primary' : 'default'}
                         classNames={{ icon: 'text-default-500' }}
                       />
                       <span className="text-sm">{t('unassigned')}</span>
@@ -108,7 +115,7 @@ export function KanbanFilters({
                 className="cursor-pointer"
                 isBordered
                 onClick={() => onToggleLawyer(lawyer.id)}
-                color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : lawyer.avatarColor}
+                color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
               />
             </Tooltip>
           ))}
