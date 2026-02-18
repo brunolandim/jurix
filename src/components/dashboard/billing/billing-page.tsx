@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle, Mail } from 'lucide-react';
+import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle, Bell } from 'lucide-react';
 
 function WhatsAppIcon({ size = 16, className }: { size?: number; className?: string }) {
   return (
@@ -369,6 +369,13 @@ export function BillingPage() {
                   </div>
                 </CardHeader>
                 <CardBody>
+                  <div className="mb-3 rounded-lg bg-primary/10 p-3">
+                    <div className="flex items-center gap-2">
+                      <Bell size={18} className="text-primary shrink-0" />
+                      <span className="text-sm font-semibold text-primary">{t('notificationHighlight')}</span>
+                    </div>
+                    <p className="mt-1 ml-[26px] text-xs text-foreground/60">{t('notificationHighlightDesc')}</p>
+                  </div>
                   <ul className="space-y-2">
                     <li className="flex items-center gap-2 text-sm">
                       <Check size={16} className="text-success shrink-0" />
@@ -401,10 +408,6 @@ export function BillingPage() {
                           ? `${limits.shareLinks} ${t('shareLinks')}`
                           : `${t('shareLinks')} ${t('unlimited').toLowerCase()}`}
                       </span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Mail size={16} className="text-success shrink-0" />
-                      <span>{t('emailNotifications')}</span>
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <WhatsAppIcon size={16} className="text-success shrink-0" />
