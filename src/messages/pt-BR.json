@@ -132,7 +132,9 @@
     "downgradeLimitsExceeded": "Não é possível mudar para o plano {plan}. Reduza o uso antes de alterar.",
     "ownerOnly": "Apenas o proprietário da organização pode gerenciar a assinatura",
     "emailNotifications": "Notificações por e-mail",
-    "whatsappShare": "Compartilhamento automatizado via WhatsApp"
+    "whatsappShare": "Compartilhamento via WhatsApp",
+    "notificationHighlight": "Nunca mais perca um prazo",
+    "notificationHighlightDesc": "Receba alertas por e-mail sobre audiências, prazos e reuniões"
   },
   "errors": {
     "planLimitReached": "Limite do plano atingido",

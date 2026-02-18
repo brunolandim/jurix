@@ -132,7 +132,9 @@
     "downgradeLimitsExceeded": "Cannot switch to {plan} plan. Reduce your usage before changing.",
     "ownerOnly": "Only the organization owner can manage the subscription",
     "emailNotifications": "Email notifications",
-    "whatsappShare": "Automated sharing via WhatsApp"
+    "whatsappShare": "Sharing via WhatsApp",
+    "notificationHighlight": "Never miss a deadline again",
+    "notificationHighlightDesc": "Get email alerts for hearings, deadlines, and meetings"
   },
   "errors": {
     "planLimitReached": "Plan limit reached",
