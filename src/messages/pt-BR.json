@@ -25,8 +25,18 @@
     "resetSuccess": "Senha redefinida com sucesso!",
     "resetLinkSent": "Link de recuperação enviado para seu e-mail",
     "passwordMismatch": "As senhas não coincidem",
-    "passwordMinLength": "A senha deve ter no mínimo 6 caracteres",
-    "invalidToken": "Token inválido ou expirado"
+    "passwordMinLength": "A senha deve ter no mínimo 8 caracteres",
+    "invalidToken": "Token inválido ou expirado",
+    "forgotPasswordDescription": "Digite seu email e enviaremos um código para redefinir sua senha.",
+    "sendCode": "Enviar código",
+    "sendCodeError": "Erro ao enviar código. Tente novamente.",
+    "verificationCode": "Código de verificação",
+    "verificationCodeDescription": "Digite o código de 6 dígitos enviado para {email}.",
+    "resendCode": "Reenviar código",
+    "sessionExpired": "Sessão expirada",
+    "sessionExpiredDescription": "Solicite um novo código de redefinição de senha.",
+    "requestNewCode": "Solicitar novo código",
+    "invalidCode": "Código inválido ou expirado"
   },
   "profile": {
     "title": "Meu Perfil",

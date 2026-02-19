@@ -25,8 +25,18 @@
     "resetSuccess": "¡Contraseña restablecida con éxito!",
     "resetLinkSent": "Enlace de recuperación enviado a tu correo",
     "passwordMismatch": "Las contraseñas no coinciden",
-    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
-    "invalidToken": "Token inválido o expirado"
+    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+    "invalidToken": "Token inválido o expirado",
+    "forgotPasswordDescription": "Ingresa tu correo y te enviaremos un código para restablecer tu contraseña.",
+    "sendCode": "Enviar código",
+    "sendCodeError": "Error al enviar el código. Inténtalo de nuevo.",
+    "verificationCode": "Código de verificación",
+    "verificationCodeDescription": "Ingresa el código de 6 dígitos enviado a {email}.",
+    "resendCode": "Reenviar código",
+    "sessionExpired": "Sesión expirada",
+    "sessionExpiredDescription": "Solicita un nuevo código de restablecimiento de contraseña.",
+    "requestNewCode": "Solicitar nuevo código",
+    "invalidCode": "Código inválido o expirado"
   },
   "profile": {
     "title": "Mi Perfil",

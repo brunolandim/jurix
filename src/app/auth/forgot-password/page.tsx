@@ -2,50 +2,45 @@
 
 import { Button, Input, Link, Card, CardBody } from '@/components/ui';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { authService } from '@/services/auth-service';
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations('auth');
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
 
-    // TODO: Implementar lógica de envio de email
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setIsLoading(false);
-    setSubmitted(true);
+    try {
+      await authService.forgotPassword(email);
+      sessionStorage.setItem('reset_email', email);
+      router.push('/auth/reset-password');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('sendCodeError'));
+      setIsLoading(false);
+    }
   };
-
-  if (submitted) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        <Card className="w-full max-w-md">
-          <CardBody className="text-center gap-4">
-            <h1 className="text-2xl font-bold">Email enviado</h1>
-            <p className="text-default-500">
-              Se o email estiver cadastrado, você receberá um link para redefinir sua senha.
-            </p>
-            <Link href="/auth/login">Voltar para o login</Link>
-          </CardBody>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh]">
       <Card className="w-full max-w-md">
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <h1 className="text-2xl font-bold">Esqueceu a senha?</h1>
-            <p className="text-default-500">Digite seu email e enviaremos um link para redefinir sua senha.</p>
+            <h1 className="text-2xl font-bold">{t('forgotPassword')}</h1>
+            <p className="text-default-500">{t('forgotPasswordDescription')}</p>
+
+            {error && <div className="p-3 bg-danger-50 text-danger rounded-md text-sm">{error}</div>}
 
             <Input
               type="email"
-              label="Email"
+              label={t('email')}
               placeholder="seu@email.com"
               value={email}
               onValueChange={setEmail}
@@ -53,11 +48,11 @@ export default function ForgotPasswordPage() {
             />
 
             <Button type="submit" color="primary" isLoading={isLoading} fullWidth>
-              Enviar link
+              {t('sendCode')}
             </Button>
 
             <Link href="/auth/login" size="sm" className="text-center">
-              Voltar para o login
+              {t('backToLogin')}
             </Link>
           </form>
         </CardBody>
