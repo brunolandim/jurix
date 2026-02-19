@@ -34,4 +34,18 @@ export const authService = {
 
     return res.data;
   },
+
+  async forgotPassword(email: string): Promise<void> {
+    const res = await api.post('/auth/forgot-password', { email });
+    if (!res.success) {
+      throw new Error(res.message || 'Erro ao solicitar redefinição de senha');
+    }
+  },
+
+  async resetPassword(email: string, code: string, password: string): Promise<void> {
+    const res = await api.post('/auth/reset-password', { email, code, password });
+    if (!res.success) {
+      throw new Error(res.message || 'Código inválido ou expirado');
+    }
+  },
 };

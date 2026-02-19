@@ -25,8 +25,18 @@
     "resetSuccess": "Password reset successfully!",
     "resetLinkSent": "Reset link sent to your email",
     "passwordMismatch": "Passwords do not match",
-    "passwordMinLength": "Password must be at least 6 characters",
-    "invalidToken": "Invalid or expired token"
+    "passwordMinLength": "Password must be at least 8 characters",
+    "invalidToken": "Invalid or expired token",
+    "forgotPasswordDescription": "Enter your email and we'll send you a code to reset your password.",
+    "sendCode": "Send code",
+    "sendCodeError": "Error sending code. Please try again.",
+    "verificationCode": "Verification code",
+    "verificationCodeDescription": "Enter the 6-digit code sent to {email}.",
+    "resendCode": "Resend code",
+    "sessionExpired": "Session expired",
+    "sessionExpiredDescription": "Request a new password reset code.",
+    "requestNewCode": "Request new code",
+    "invalidCode": "Invalid or expired code"
   },
   "profile": {
     "title": "My Profile",

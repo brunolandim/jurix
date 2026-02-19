@@ -19,4 +19,5 @@ export { Listbox, ListboxItem } from '@heroui/listbox';
 export { Textarea } from '@heroui/input';
 export { Select, SelectItem } from '@heroui/select';
 export { DatePicker } from '@heroui/date-picker';
+export { InputOtp } from '@heroui/input-otp';
 export { PhoneInput } from './phone-input';
