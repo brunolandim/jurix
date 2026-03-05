@@ -12,7 +12,7 @@ import { Tooltip } from '@/components/ui';
 import { useAuth } from '@/contexts';
 import { useSubscription } from '@/contexts';
 
-const SIDEBAR_COLLAPSED_KEY = 'jurix-sidebar-collapsed';
+const SIDEBAR_COLLAPSED_KEY = 'kronolex-sidebar-collapsed';
 
 const menuItems = [
   { key: 'cases', href: '/dashboard', icon: Scale, minRole: 'lawyer' },

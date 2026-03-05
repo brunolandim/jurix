@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Jurix",
+    "appName": "Kronolex",
     "loading": "Cargando...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -131,7 +131,7 @@
     "documents": "Documentos",
     "shareLinks": "Enlaces Compartidos",
     "noSubscription": "Aún no tienes una suscripción",
-    "noSubscriptionDesc": "Elige un plan para comenzar a usar Jurix con todas las funcionalidades.",
+    "noSubscriptionDesc": "Elige un plan para comenzar a usar Kronolex con todas las funcionalidades.",
     "trialInfo": "Todos los planes incluyen 14 días de prueba gratis",
     "loadError": "Error al cargar información",
     "checkoutSuccess": "¡Suscripción realizada con éxito!",

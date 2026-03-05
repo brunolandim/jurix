@@ -4,7 +4,7 @@ import { useState, useEffect, createContext, useContext, useCallback } from 'rea
 import { NextIntlClientProvider } from 'next-intl';
 import { locales, defaultLocale, type Locale } from '@/i18n/routing';
 
-const LOCALE_STORAGE_KEY = 'jurix-locale';
+const LOCALE_STORAGE_KEY = 'kronolex-locale';
 
 type I18nContextType = {
   locale: Locale;
