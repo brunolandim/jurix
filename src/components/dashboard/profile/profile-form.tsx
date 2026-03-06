@@ -103,7 +103,7 @@ export function ProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex flex-col gap-6 py-6">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
+      <h1 className="text-2xl font-bold text-center">{t('title')}</h1>
 
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
