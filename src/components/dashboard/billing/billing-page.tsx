@@ -64,9 +64,9 @@ function UsageBar({ current, limit, label }: { current: number; limit: number | 
 
   return (
     <div className="space-y-1.5">
-      <div className="flex justify-between text-sm">
-        <span className="text-foreground/70">{label}</span>
-        <span className={cn('font-medium', isNearLimit && 'text-warning')}>
+      <div className="flex justify-between text-sm gap-2">
+        <span className="text-foreground/70 truncate">{label}</span>
+        <span className={cn('font-medium shrink-0', isNearLimit && 'text-warning')}>
           {current} {limit !== null ? `${t('usageOf')} ${limit}` : `(${t('unlimited')})`}
         </span>
       </div>
@@ -223,7 +223,7 @@ export function BillingPage() {
       {info && status && (
         <Card>
           <CardBody className="gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Chip
                   color={
@@ -242,18 +242,17 @@ export function BillingPage() {
                 </Chip>
                 {currentPlan && <span className="text-lg font-semibold capitalize">{currentPlan}</span>}
               </div>
-              <div className="flex gap-2">
-                {hasActiveSubscription && isOwner && (
-                  <Button
-                    variant="flat"
-                    startContent={<CreditCard size={16} />}
-                    onPress={handlePortal}
-                    isLoading={actionLoading === 'portal'}
-                  >
-                    {t('managePayment')}
-                  </Button>
-                )}
-              </div>
+              {hasActiveSubscription && isOwner && (
+                <Button
+                  variant="flat"
+                  startContent={<CreditCard size={16} />}
+                  onPress={handlePortal}
+                  isLoading={actionLoading === 'portal'}
+                  size="sm"
+                >
+                  {t('managePayment')}
+                </Button>
+              )}
             </div>
 
             {/* Trial / Period info */}
