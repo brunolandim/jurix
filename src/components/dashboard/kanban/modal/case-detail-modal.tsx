@@ -69,6 +69,7 @@ type CaseDetailModalProps = {
   onRejectDocument?: (caseId: string, documentId: string, reason: RejectionReason, note?: string) => Promise<boolean>;
   onGenerateShareLink?: (caseId: string, lawyerId: string, documentIds: string[]) => Promise<{ url: string } | null>;
   onClientPhoneChange?: (caseId: string, phone: string) => Promise<boolean>;
+  onLawyerUpload?: (caseId: string, name: string, file: File) => Promise<boolean>;
 };
 
 export function CaseDetailModal({
@@ -91,6 +92,7 @@ export function CaseDetailModal({
   onRejectDocument,
   onGenerateShareLink,
   onClientPhoneChange,
+  onLawyerUpload,
 }: CaseDetailModalProps) {
   const t = useTranslations('priority');
   const tKanban = useTranslations('kanban');
@@ -493,6 +495,12 @@ export function CaseDetailModal({
                 onReject={async (documentId, reason, note) => {
                   if (onRejectDocument) {
                     return await onRejectDocument(legalCase.id, documentId, reason, note);
+                  }
+                  return false;
+                }}
+                onLawyerUpload={async (name, file) => {
+                  if (onLawyerUpload) {
+                    return await onLawyerUpload(legalCase.id, name, file);
                   }
                   return false;
                 }}

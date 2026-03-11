@@ -511,6 +511,26 @@ export function useKanban(isAuthenticated: boolean) {
     []
   );
 
+  const lawyerUploadDocument = useCallback(async (caseId: string, name: string, file: File) => {
+    const result = await legalCaseService.lawyerUploadDocument(caseId, name, file);
+
+    if (result) {
+      setColumns((prev) =>
+        prev.map((col) => ({
+          ...col,
+          cases: col.cases.map((c) =>
+            c.id === caseId ? { ...c, documents: [...(c.documents || []), result] } : c
+          ),
+        }))
+      );
+      setSelectedCase((prev) =>
+        prev?.id === caseId ? { ...prev, documents: [...(prev.documents || []), result] } : prev
+      );
+      return true;
+    }
+    return false;
+  }, []);
+
   // Link compartilhável
   const generateShareLink = useCallback(async (caseId: string, lawyerId: string, documentIds: string[]) => {
     try {
@@ -621,6 +641,7 @@ export function useKanban(isAuthenticated: boolean) {
     updateDocumentStatus,
     approveDocument,
     rejectDocument,
+    lawyerUploadDocument,
 
     // Link compartilhável
     generateShareLink,

@@ -1,4 +1,5 @@
 import { api } from './api';
+import { uploadWithPresignedUrl } from '@/lib/upload';
 import {
   LegalCase,
   CaseNotification,
@@ -119,5 +120,34 @@ export const legalCaseService = {
   async rejectDocument(documentId: string, caseId: string, reason: RejectionReason, note?: string): Promise<DocumentRequest | null> {
     const res = await api.patch<DocumentRequest>(`/documents/${documentId}/reject?caseId=${caseId}`, { rejectionReason: reason, rejectionNote: note });
     return res.success && res.data ? res.data : null;
+  },
+
+  async lawyerUploadDocument(
+    caseId: string,
+    name: string,
+    file: File,
+    description?: string
+  ): Promise<DocumentRequest | null> {
+    try {
+      const fileUrl = await uploadWithPresignedUrl(file, async () => {
+        const res = await api.post<{ uploadUrl: string; fileUrl: string }>('/uploads/presigned-url', {
+          folder: 'documents',
+          contentType: file.type,
+          fileName: file.name,
+        });
+        if (!res.success || !res.data) throw new Error('Failed to get presigned URL');
+        return res.data;
+      });
+
+      const res = await api.post<DocumentRequest>('/documents/lawyer-upload', {
+        caseId,
+        name,
+        description,
+        fileUrl,
+      });
+      return res.success && res.data ? res.data : null;
+    } catch {
+      return null;
+    }
   },
 };

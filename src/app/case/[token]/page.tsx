@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { useTranslations } from 'next-intl';
-import { Upload, CheckCircle, FileText, AlertCircle, Clock, AlertTriangle, Eye } from 'lucide-react';
+import { Upload, CheckCircle, FileText, AlertCircle, Clock, AlertTriangle, Eye, ExternalLink, RefreshCw } from 'lucide-react';
 import { Card, CardBody, CardHeader, Button, Spinner, Chip } from '@/components/ui';
 import { shareableLinkService, PublicLinkData } from '@/services';
 import { PublicDocument, DocumentStatus } from '@/types';
@@ -14,6 +14,7 @@ type DocumentWithUpload = PublicDocument & {
   isUploading?: boolean;
   uploadError?: string;
   file?: File;
+  previewUrl?: string;
 };
 
 export default function PublicUploadPage({ params }: { params: Promise<{ token: string }> }) {
@@ -57,10 +58,30 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
     fetchData();
   }, [token]);
 
+  // Polling: enquanto houver documentos em pending_approval, verifica o status do link
+  // a cada 10s para detectar quando o advogado aprovar tudo (link expira → tela de sucesso)
+  useEffect(() => {
+    if (pageState !== 'ready') return;
+
+    const hasPendingApproval = documents.some((d) => d.status === 'pending_approval');
+    if (!hasPendingApproval) return;
+
+    const interval = setInterval(async () => {
+      const data = await shareableLinkService.getLinkByToken(token).catch(() => null);
+      if (!data || data.isExpired) {
+        setPageState('expired');
+        clearInterval(interval);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [pageState, documents, token]);
+
   const handleFileSelect = useCallback(
     async (documentId: string, file: File) => {
+      const previewUrl = URL.createObjectURL(file);
       setDocuments((prev) =>
-        prev.map((doc) => (doc.id === documentId ? { ...doc, isUploading: true, uploadError: undefined, file } : doc))
+        prev.map((doc) => (doc.id === documentId ? { ...doc, isUploading: true, uploadError: undefined, file, previewUrl } : doc))
       );
 
       try {
@@ -261,9 +282,29 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                             {t('statusReceived')}
                           </Chip>
                         ) : isPendingApproval ? (
-                          <Chip size="sm" color="secondary" variant="flat">
-                            {t('statusPendingApproval')}
-                          </Chip>
+                          <>
+                            <Chip size="sm" color="secondary" variant="flat">
+                              {t('statusPendingApproval')}
+                            </Chip>
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleInputChange(doc.id)}
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4,.mov,.webm,.avi"
+                              />
+                              <Button
+                                as="span"
+                                size="sm"
+                                variant="light"
+                                color="default"
+                                isIconOnly
+                                title={t('replace')}
+                              >
+                                <RefreshCw className="w-4 h-4" />
+                              </Button>
+                            </label>
+                          </>
                         ) : isRejected ? (
                           <Chip size="sm" color="danger" variant="flat">
                             {t('statusRejected')}
@@ -279,7 +320,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                               type="file"
                               className="hidden"
                               onChange={handleInputChange(doc.id)}
-                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4,.mov,.webm,.avi"
                             />
                             <Button
                               as="span"
@@ -312,7 +353,7 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                               type="file"
                               className="hidden"
                               onChange={handleInputChange(doc.id)}
-                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4,.mov,.webm,.avi"
                             />
                             <Button
                               as="span"
@@ -325,6 +366,39 @@ export default function PublicUploadPage({ params }: { params: Promise<{ token: 
                             </Button>
                           </label>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Preview do arquivo enviado */}
+                    {doc.previewUrl && !doc.isUploading && (
+                      <div className="mt-3">
+                        {doc.file?.type.startsWith('image/') ? (
+                          <img
+                            src={doc.previewUrl}
+                            alt={doc.file?.name}
+                            className="max-h-32 rounded-md object-contain border border-default-200"
+                          />
+                        ) : doc.file?.type.startsWith('video/') ? (
+                          <video
+                            src={doc.previewUrl}
+                            controls
+                            className="max-h-48 rounded-md border border-default-200 w-full"
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 p-2 rounded-md bg-default-100 border border-default-200">
+                            <FileText className="w-5 h-5 text-default-400 shrink-0" />
+                            <span className="text-xs text-default-600 truncate flex-1">{doc.file?.name}</span>
+                            <a
+                              href={doc.previewUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs text-primary hover:underline shrink-0"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              {t('viewFile')}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     )}
 

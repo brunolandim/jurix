@@ -54,72 +54,88 @@ export function KanbanFilters({
       />
 
       {(lawyers?.length ?? 0) > 0 && (
-        <AvatarGroup
-          isBordered
-          max={MAX_VISIBLE_AVATARS}
-          renderCount={() => (
-            <Popover placement="bottom">
-              <PopoverTrigger>
-                <Avatar name={`+`} size="sm" className="cursor-pointer translate-x-0!" color="default" />
-              </PopoverTrigger>
-              <PopoverContent className="p-2">
-                <div className="flex flex-col gap-1 max-h-64 overflow-auto min-w-56">
-                  {lawyers.map((lawyer) => (
-                    <div
-                      key={lawyer.id}
-                      className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-default-100 cursor-pointer"
-                      onClick={() => onToggleLawyer(lawyer.id)}
-                    >
-                      <Checkbox
-                        isSelected={selectedLawyerIds?.includes(lawyer.id) ?? false}
-                        onValueChange={() => onToggleLawyer(lawyer.id)}
-                        size="sm"
-                      />
-                      <Avatar
-                        name={getInitials(lawyer.name)}
-                        src={lawyer.photo}
-                        size="sm"
-                        className="shrink-0"
-                        color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
-                      />
-                      <span className="text-sm">{lawyer.name}</span>
-                    </div>
-                  ))}
-                  {onToggleUnassigned && (
-                    <div
-                      className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-default-100 cursor-pointer"
-                      onClick={onToggleUnassigned}
-                    >
-                      <Checkbox isSelected={showUnassigned} onValueChange={onToggleUnassigned} size="sm" />
-                      <Avatar
-                        icon={<User className="w-4 h-4" />}
-                        size="sm"
-                        className="shrink-0"
-                        color={showUnassigned ? 'primary' : 'default'}
-                        classNames={{ icon: 'text-default-500' }}
-                      />
-                      <span className="text-sm">{t('unassigned')}</span>
-                    </div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-        >
-          {lawyers.map((lawyer) => (
-            <Tooltip key={lawyer.id} content={lawyer.name}>
+        <div className="flex items-center gap-1">
+          <AvatarGroup
+            isBordered
+            max={MAX_VISIBLE_AVATARS}
+            renderCount={() => (
+              <Popover placement="bottom">
+                <PopoverTrigger>
+                  <Avatar name={`+`} size="sm" className="cursor-pointer translate-x-0!" color="default" />
+                </PopoverTrigger>
+                <PopoverContent className="p-2">
+                  <div className="flex flex-col gap-1 max-h-64 overflow-auto min-w-56">
+                    {lawyers.map((lawyer) => (
+                      <div
+                        key={lawyer.id}
+                        className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-default-100 cursor-pointer"
+                        onClick={() => onToggleLawyer(lawyer.id)}
+                      >
+                        <Checkbox
+                          isSelected={selectedLawyerIds?.includes(lawyer.id) ?? false}
+                          onValueChange={() => onToggleLawyer(lawyer.id)}
+                          size="sm"
+                        />
+                        <Avatar
+                          name={getInitials(lawyer.name)}
+                          src={lawyer.photo}
+                          size="sm"
+                          className="shrink-0"
+                          color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
+                        />
+                        <span className="text-sm">{lawyer.name}</span>
+                      </div>
+                    ))}
+                    {onToggleUnassigned && (
+                      <div
+                        className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-default-100 cursor-pointer"
+                        onClick={onToggleUnassigned}
+                      >
+                        <Checkbox isSelected={showUnassigned} onValueChange={onToggleUnassigned} size="sm" />
+                        <Avatar
+                          icon={<User className="w-4 h-4" />}
+                          size="sm"
+                          className="shrink-0"
+                          color={showUnassigned ? 'primary' : 'default'}
+                          classNames={{ icon: 'text-default-500' }}
+                        />
+                        <span className="text-sm">{t('unassigned')}</span>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+          >
+            {lawyers.map((lawyer) => (
+              <Tooltip key={lawyer.id} content={lawyer.name}>
+                <Avatar
+                  name={getInitials(lawyer.name)}
+                  src={lawyer.photo}
+                  size="sm"
+                  className="cursor-pointer"
+                  isBordered
+                  onClick={() => onToggleLawyer(lawyer.id)}
+                  color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
+                />
+              </Tooltip>
+            ))}
+          </AvatarGroup>
+
+          {onToggleUnassigned && (lawyers?.length ?? 0) < MAX_VISIBLE_AVATARS && (
+            <Tooltip content={t('unassigned')}>
               <Avatar
-                name={getInitials(lawyer.name)}
-                src={lawyer.photo}
+                icon={<User className="w-4 h-4" />}
                 size="sm"
-                className="cursor-pointer"
+                className="cursor-pointer ml-1"
                 isBordered
-                onClick={() => onToggleLawyer(lawyer.id)}
-                color={selectedLawyerIds?.includes(lawyer.id) ? 'primary' : 'default'}
+                onClick={onToggleUnassigned}
+                color={showUnassigned ? 'primary' : 'default'}
+                classNames={{ icon: 'text-default-500' }}
               />
             </Tooltip>
-          ))}
-        </AvatarGroup>
+          )}
+        </div>
       )}
 
       <Button onPress={onClearFilters} variant="faded" isDisabled={!hasActiveFilters}>

@@ -268,6 +268,14 @@
     "delete": "Eliminar",
     "markAsReceived": "Marcar como recibido",
     "markAsPending": "Marcar como pendiente",
+    "tabClient": "Solicitados al Cliente",
+    "tabLawyer": "Documentos del Abogado",
+    "addLawyerDocument": "Agregar documento",
+    "noLawyerDocuments": "Ningún documento agregado",
+    "confirmUpload": "Confirmar",
+    "uploadError": "Error al enviar. Intente nuevamente.",
+    "openInNewTab": "Abrir en nueva pestaña",
+    "fileCannotPreview": "Este archivo no se puede visualizar directamente. Haga clic para abrir en nueva pestaña.",
     "status": {
       "pending": "Pendiente",
       "received": "Recibido"
@@ -343,10 +351,12 @@
     "statusRejected": "Rechazado",
     "upload": "Enviar",
     "reupload": "Reenviar",
+    "replace": "Reemplazar archivo",
     "uploading": "Enviando...",
     "uploadError": "Error al enviar. Intente nuevamente.",
     "uploadSuccess": "¡Documento enviado! Esperando aprobación del abogado.",
     "rejectionReason": "Motivo del rechazo",
-    "infoMessage": "Después del envío, los documentos serán revisados por el abogado antes de la aprobación."
+    "infoMessage": "Después del envío, los documentos serán revisados por el abogado antes de la aprobación.",
+    "viewFile": "Abrir"
   }
 }
