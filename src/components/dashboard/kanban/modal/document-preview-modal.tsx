@@ -16,7 +16,7 @@ import {
 } from '@/components/ui';
 import { Image } from '@heroui/react';
 import { DocumentRequest, RejectionReason } from '@/types';
-import { Check, X, AlertTriangle } from 'lucide-react';
+import { Check, X, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
 
 type DocumentPreviewModalProps = {
   document: DocumentRequest | null;
@@ -92,6 +92,24 @@ export function DocumentPreviewModal({
   const isRejected = document.status === 'rejected';
   const isReceived = document.status === 'received';
 
+  const isImage = (() => {
+    if (!document.fileUrl) return false;
+    const urlWithoutParams = document.fileUrl.split('?')[0].toLowerCase();
+    return /\.(jpg|jpeg|png|gif|webp)$/.test(urlWithoutParams);
+  })();
+
+  const isVideo = (() => {
+    if (!document.fileUrl) return false;
+    const urlWithoutParams = document.fileUrl.split('?')[0].toLowerCase();
+    return /\.(mp4|mov|webm|avi)$/.test(urlWithoutParams);
+  })();
+
+  const fileExtension = (() => {
+    if (!document.fileUrl) return '';
+    const urlWithoutParams = document.fileUrl.split('?')[0];
+    return urlWithoutParams.split('.').pop()?.toUpperCase() ?? '';
+  })();
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="2xl" scrollBehavior="inside">
       <ModalContent>
@@ -114,16 +132,50 @@ export function DocumentPreviewModal({
         </ModalHeader>
 
         <ModalBody>
-          {/* Preview da imagem */}
+          {/* Preview do arquivo */}
           {document.fileUrl ? (
-            <div className="flex justify-center bg-default-100 rounded-lg p-4">
-              <Image
-                src={document.fileUrl}
-                alt={document.name}
-                className="max-h-[400px] object-contain rounded-lg"
-                fallbackSrc="https://placehold.co/800x600/png?text=Documento"
-              />
-            </div>
+            isVideo ? (
+              <div className="flex justify-center bg-default-100 rounded-lg p-4">
+                <video
+                  src={document.fileUrl}
+                  controls
+                  className="max-h-[400px] rounded-lg w-full"
+                />
+              </div>
+            ) : !isImage ? (
+              <div className="flex flex-col items-center justify-center bg-default-100 rounded-lg p-8 gap-3">
+                <FileText className="w-16 h-16 text-default-400" />
+                {fileExtension && <p className="text-sm font-medium text-default-700">{fileExtension}</p>}
+                <p className="text-sm text-default-500 text-center">{t('fileCannotPreview')}</p>
+                <Button
+                  color="primary"
+                  variant="flat"
+                  startContent={<ExternalLink size={16} />}
+                  onPress={() => window.open(document.fileUrl!, '_blank')}
+                >
+                  {t('openInNewTab')}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex justify-center bg-default-100 rounded-lg p-4 w-full">
+                  <Image
+                    src={document.fileUrl}
+                    alt={document.name}
+                    className="max-h-[400px] object-contain rounded-lg"
+                    fallbackSrc="https://placehold.co/800x600/png?text=Documento"
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  variant="light"
+                  startContent={<ExternalLink size={14} />}
+                  onPress={() => window.open(document.fileUrl!, '_blank')}
+                >
+                  {t('openInNewTab')}
+                </Button>
+              </div>
+            )
           ) : (
             <div className="flex items-center justify-center bg-default-100 rounded-lg p-8 text-default-400">
               {t('noPreview')}

@@ -272,6 +272,14 @@
     "rejected": "rejected",
     "clickToReview": "Click to review",
     "viewDocument": "View document",
+    "tabClient": "Requested from Client",
+    "tabLawyer": "Lawyer Documents",
+    "addLawyerDocument": "Add document",
+    "noLawyerDocuments": "No documents added",
+    "confirmUpload": "Confirm",
+    "uploadError": "Upload failed. Try again.",
+    "openInNewTab": "Open in new tab",
+    "fileCannotPreview": "This file cannot be previewed directly. Click to open in a new tab.",
     "noPreview": "No preview available",
     "rejectedDocument": "Rejected Document",
     "reason": "Reason",
@@ -369,10 +377,12 @@
     "statusRejected": "Rejected",
     "upload": "Upload",
     "reupload": "Reupload",
+    "replace": "Replace file",
     "uploading": "Uploading...",
     "uploadError": "Upload failed. Try again.",
     "uploadSuccess": "Document sent! Awaiting lawyer approval.",
     "rejectionReason": "Rejection reason",
-    "infoMessage": "After submission, documents will be reviewed by your lawyer before approval."
+    "infoMessage": "After submission, documents will be reviewed by your lawyer before approval.",
+    "viewFile": "Open"
   }
 }

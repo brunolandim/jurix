@@ -48,6 +48,7 @@ export function KanbanBoard() {
     updateDocumentStatus,
     approveDocument,
     rejectDocument,
+    lawyerUploadDocument,
     generateShareLink,
     setActiveCase,
     moveCase,
@@ -143,6 +144,7 @@ export function KanbanBoard() {
           onDocumentStatusChange={updateDocumentStatus}
           onApproveDocument={approveDocument}
           onRejectDocument={rejectDocument}
+          onLawyerUpload={lawyerUploadDocument}
           onGenerateShareLink={generateShareLink}
           onClientPhoneChange={async (caseId, phone) => {
             const result = await updateCaseData(caseId, { clientPhone: phone });

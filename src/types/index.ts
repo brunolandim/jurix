@@ -37,6 +37,7 @@ export type NotificationType = 'hearing' | 'deadline' | 'meeting' | 'task' | 'ot
 
 // Document Request Types
 export type DocumentStatus = 'pending' | 'pending_approval' | 'rejected' | 'received';
+export type DocumentSource = 'client_request' | 'lawyer_upload';
 
 export type RejectionReason = 'low_quality' | 'wrong_document' | 'incomplete' | 'illegible' | 'other';
 
@@ -45,6 +46,7 @@ export type DocumentRequest = {
   name: string;
   description?: string;
   status: DocumentStatus;
+  source: DocumentSource;
   caseId: string;
   requestedAt: string;
   receivedAt?: string;

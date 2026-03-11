@@ -272,6 +272,14 @@
     "rejected": "rejeitados",
     "clickToReview": "Clique para revisar",
     "viewDocument": "Visualizar documento",
+    "tabClient": "Solicitados ao Cliente",
+    "tabLawyer": "Documentos do Advogado",
+    "addLawyerDocument": "Adicionar documento",
+    "noLawyerDocuments": "Nenhum documento adicionado",
+    "confirmUpload": "Confirmar",
+    "uploadError": "Erro ao enviar. Tente novamente.",
+    "openInNewTab": "Abrir em nova aba",
+    "fileCannotPreview": "Este arquivo nao pode ser visualizado diretamente. Clique para abrir em nova aba.",
     "noPreview": "Nenhuma visualizacao disponivel",
     "rejectedDocument": "Documento Rejeitado",
     "reason": "Motivo",
@@ -369,10 +377,12 @@
     "statusRejected": "Rejeitado",
     "upload": "Enviar",
     "reupload": "Reenviar",
+    "replace": "Substituir arquivo",
     "uploading": "Enviando...",
     "uploadError": "Erro ao enviar. Tente novamente.",
     "uploadSuccess": "Documento enviado! Aguardando aprovacao do advogado.",
     "rejectionReason": "Motivo da rejeicao",
-    "infoMessage": "Apos o envio, os documentos serao analisados pelo advogado antes da aprovacao."
+    "infoMessage": "Apos o envio, os documentos serao analisados pelo advogado antes da aprovacao.",
+    "viewFile": "Abrir"
   }
 }
