@@ -25,6 +25,7 @@ export function ProfileForm() {
   const { user, updateUser } = useAuth();
 
   const [name, setName] = useState(user?.name ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [specialty, setSpecialty] = useState(user?.specialty ?? '');
   const [newPassword, setNewPassword] = useState('');
@@ -74,6 +75,7 @@ export function ProfileForm() {
 
       const data: Record<string, unknown> = {
         name,
+        email,
         phone: phone || undefined,
         specialty: specialty || undefined,
         avatarColor,
@@ -154,6 +156,8 @@ export function ProfileForm() {
       </div>
 
       <Input label={t('name')} value={name} onValueChange={setName} isRequired />
+
+      <Input type="email" label={t('email')} value={email} onValueChange={setEmail} isRequired />
 
       <PhoneInput label={t('phone')} value={phone} onChange={setPhone} />
 
