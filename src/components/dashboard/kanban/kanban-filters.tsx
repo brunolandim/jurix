@@ -120,21 +120,20 @@ export function KanbanFilters({
                 />
               </Tooltip>
             ))}
+            {onToggleUnassigned && (
+              <Tooltip content={t('unassigned')}>
+                <Avatar
+                  icon={<User className="w-4 h-4" />}
+                  size="sm"
+                  className="cursor-pointer"
+                  isBordered
+                  onClick={onToggleUnassigned}
+                  color={showUnassigned ? 'primary' : 'default'}
+                  classNames={{ icon: 'text-default-500' }}
+                />
+              </Tooltip>
+            )}
           </AvatarGroup>
-
-          {onToggleUnassigned && (lawyers?.length ?? 0) < MAX_VISIBLE_AVATARS && (
-            <Tooltip content={t('unassigned')}>
-              <Avatar
-                icon={<User className="w-4 h-4" />}
-                size="sm"
-                className="cursor-pointer ml-1"
-                isBordered
-                onClick={onToggleUnassigned}
-                color={showUnassigned ? 'primary' : 'default'}
-                classNames={{ icon: 'text-default-500' }}
-              />
-            </Tooltip>
-          )}
         </div>
       )}
 
