@@ -44,6 +44,7 @@
     "changePhoto": "Change photo",
     "removePhoto": "Remove photo",
     "name": "Name",
+    "email": "Email",
     "phone": "Phone",
     "specialty": "Specialty",
     "changePassword": "Change Password",
