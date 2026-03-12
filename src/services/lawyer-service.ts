@@ -24,6 +24,7 @@ export const lawyerService = {
       const error = new Error(res.message || 'Failed to create lawyer');
       (error as any).code = res.code;
       (error as any).status = res.status;
+      (error as any).messageKey = res.messageKey;
       throw error;
     }
     return res.data;
@@ -35,6 +36,7 @@ export const lawyerService = {
       const error = new Error(res.message || 'Failed to update lawyer');
       (error as any).code = res.code;
       (error as any).status = res.status;
+      (error as any).messageKey = res.messageKey;
       throw error;
     }
     return res.data;
