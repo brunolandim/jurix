@@ -61,7 +61,13 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
     setLoading(true);
     try {
       if (lawyer) {
-        await lawyerService.updateLawyer(lawyer.id, form);
+        const changes: Partial<typeof form> = {};
+        for (const key of Object.keys(form) as (keyof typeof form)[]) {
+          if (form[key] !== (lawyer[key as keyof typeof lawyer] ?? '')) {
+            (changes as Record<string, unknown>)[key] = form[key];
+          }
+        }
+        await lawyerService.updateLawyer(lawyer.id, changes);
         toast.success(t('updateSuccess'));
       } else {
         await lawyerService.createLawyer({ ...form, active: true, avatarColor: 'default' });
