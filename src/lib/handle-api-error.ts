@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 type ApiError = {
   code?: string;
   message?: string;
+  messageKey?: string;
 };
 
 export function handleApiError(
@@ -32,6 +33,12 @@ export function handleApiError(
     });
   } else if (code === 'READ_ONLY_MODE') {
     toast.error(t('errors.readOnlyMode'));
+  } else if (apiError?.messageKey) {
+    try {
+      toast.error(t(apiError.messageKey));
+    } catch {
+      toast.error(apiError?.message || t('errors.generic'));
+    }
   } else {
     toast.error(apiError?.message || t('errors.generic'));
   }

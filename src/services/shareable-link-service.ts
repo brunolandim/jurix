@@ -31,6 +31,7 @@ export const shareableLinkService = {
       const error = new Error(res.message || 'Failed to create link');
       (error as any).code = res.code;
       (error as any).status = res.status;
+      (error as any).messageKey = res.messageKey;
       throw error;
     }
 

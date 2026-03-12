@@ -53,6 +53,8 @@ export function ProfileForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!user) return;
+
     if (newPassword && newPassword !== confirmPassword) {
       toast.error(t('passwordMismatch'));
       return;
@@ -73,13 +75,12 @@ export function ProfileForm() {
         }
       }
 
-      const data: Record<string, unknown> = {
-        name,
-        email,
-        phone: phone || undefined,
-        specialty: specialty || undefined,
-        avatarColor,
-      };
+      const data: Record<string, unknown> = {};
+      if (name !== user.name) data.name = name;
+      if (email !== user.email) data.email = email;
+      if (phone !== (user.phone ?? '')) data.phone = phone || undefined;
+      if (specialty !== (user.specialty ?? '')) data.specialty = specialty || undefined;
+      if (avatarColor !== user.avatarColor) data.avatarColor = avatarColor;
 
       if (photoUrl) {
         data.photo = photoUrl;

@@ -4,6 +4,7 @@ export type ApiResponse<T> = {
   message?: string;
   status?: number;
   code?: string;
+  messageKey?: string;
 };
 
 export type AuthUser = {

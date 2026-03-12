@@ -39,6 +39,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<ApiR
       message: errorData?.error?.message || errorData?.message || `Error: ${response.status}`,
       status: response.status,
       code: errorData?.error?.code,
+      messageKey: errorData?.error?.messageKey,
     };
   }
 
