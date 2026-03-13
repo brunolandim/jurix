@@ -17,6 +17,7 @@ import {
 } from '@/components/ui';
 import { lawyerService } from '@/services/lawyer-service';
 import { handleApiError } from '@/lib/handle-api-error';
+import { useSubscription } from '@/contexts';
 import type { Lawyer } from '@/types';
 
 type LawyerModalProps = {
@@ -30,6 +31,7 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
   const t = useTranslations('lawyers');
   const te = useTranslations();
   const tc = useTranslations('common');
+  const { isOwner } = useSubscription();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '',
@@ -40,7 +42,8 @@ export function LawyerModal({ isOpen, onClose, onSuccess, lawyer }: LawyerModalP
     role: 'lawyer' as 'lawyer' | 'owner' | 'admin',
   });
 
-  const roleOptions = ['owner', 'admin', 'lawyer'] as const;
+  const allRoles = ['owner', 'admin', 'lawyer'] as const;
+  const roleOptions = isOwner ? allRoles : allRoles.filter((r) => r !== 'owner');
 
   useEffect(() => {
     if (lawyer) {
