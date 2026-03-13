@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { Plus, Trash2, FileText, Check, Eye, AlertTriangle, Clock, X, FileCheck, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Tabs, Tab } from '@heroui/react';
-import { Button, Chip, Select, SelectItem, Tooltip } from '@/components/ui';
+import { Button, Chip, Input, Select, SelectItem, Tooltip } from '@/components/ui';
 import { DocumentRequest, DocumentStatus, RejectionReason } from '@/types';
 import { DeleteDocumentModal } from './modal/delete-document-modal';
 import { DocumentPreviewModal } from './modal/document-preview-modal';
@@ -66,6 +66,7 @@ export function CaseDocuments({ documents, onAdd, onDelete, onStatusChange, onAp
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [previewDocument, setPreviewDocument] = useState<DocumentRequest | null>(null);
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
+  const [outrosDescription, setOutrosDescription] = useState('');
   const [lawyerFiles, setLawyerFiles] = useState<LawyerFileItem[]>([]);
 
   const clientDocuments = useMemo(
@@ -79,11 +80,12 @@ export function CaseDocuments({ documents, onAdd, onDelete, onStatusChange, onAp
 
   const availableOptions = useMemo(() => {
     const existingNames = new Set(clientDocuments.map((d) => d.name));
-    return DOCUMENT_OPTIONS.filter((opt) => !existingNames.has(opt));
+    return DOCUMENT_OPTIONS.filter((opt) => opt === 'outros' || !existingNames.has(opt));
   }, [clientDocuments]);
 
   const resetForm = useCallback(() => {
     setSelectedDocs(new Set());
+    setOutrosDescription('');
     setIsAdding(false);
   }, []);
 
@@ -93,12 +95,13 @@ export function CaseDocuments({ documents, onAdd, onDelete, onStatusChange, onAp
     const docsToAdd = Array.from(selectedDocs);
     let allSuccess = true;
     for (const docName of docsToAdd) {
-      const success = await onAdd({ name: docName, status: 'pending', source: 'client_request' });
+      const description = docName === 'outros' && outrosDescription.trim() ? outrosDescription.trim() : undefined;
+      const success = await onAdd({ name: docName, status: 'pending', source: 'client_request', description });
       if (!success) allSuccess = false;
     }
     setIsSubmitting(false);
     if (allSuccess) resetForm();
-  }, [selectedDocs, onAdd, resetForm]);
+  }, [selectedDocs, outrosDescription, onAdd, resetForm]);
 
   const handleDeleteClick = useCallback((document: DocumentRequest) => {
     setDocumentToDelete(document);
@@ -242,6 +245,16 @@ export function CaseDocuments({ documents, onAdd, onDelete, onStatusChange, onAp
                     <SelectItem key={opt}>{t(`options.${opt}`)}</SelectItem>
                   ))}
                 </Select>
+                {selectedDocs.has('outros') && (
+                  <Input
+                    size="sm"
+                    label={t('outrosDescription')}
+                    placeholder={t('outrosDescriptionPlaceholder')}
+                    value={outrosDescription}
+                    onValueChange={setOutrosDescription}
+                    isDisabled={isSubmitting}
+                  />
+                )}
                 <div className="flex justify-end gap-2">
                   <Button size="sm" variant="flat" onPress={resetForm} isDisabled={isSubmitting}>
                     {t('cancel')}
@@ -291,9 +304,14 @@ export function CaseDocuments({ documents, onAdd, onDelete, onStatusChange, onAp
                             {updatingStatusId !== doc.id && <Check size={12} />}
                           </Button>
                         )}
-                        <span className={`text-sm ${isReceived ? 'line-through text-default-400' : 'text-default-700'}`}>
-                          {getDocLabel(doc.name)}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className={`text-sm ${isReceived ? 'line-through text-default-400' : 'text-default-700'}`}>
+                            {getDocLabel(doc.name)}
+                          </span>
+                          {doc.description && (
+                            <span className="text-xs text-default-400">{doc.description}</span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex gap-2 items-center">
