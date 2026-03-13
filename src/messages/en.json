@@ -290,6 +290,8 @@
     "noDocuments": "No documents requested",
     "selectDocuments": "Select documents",
     "selectPlaceholder": "Click to select...",
+    "outrosDescription": "Document description",
+    "outrosDescriptionPlaceholder": "Describe what document will be requested...",
     "addSelected": "Add",
     "cancel": "Cancel",
     "delete": "Delete",
