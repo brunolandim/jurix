@@ -1,5 +1,6 @@
 import { User, LoginCredentials } from '@/types';
 import { api, setToken, removeToken, getToken } from './api';
+import type { RegisterInput } from '@/components/auth/register-form';
 
 type LoginResponse = {
   token: string;
@@ -47,5 +48,16 @@ export const authService = {
     if (!res.success) {
       throw new Error(res.message || 'Código inválido ou expirado');
     }
+  },
+
+  async register(data: RegisterInput): Promise<User> {
+    const res = await api.post<LoginResponse>('/auth/register', data);
+
+    if (!res.success || !res.data) {
+      throw new Error(res.message || 'Erro ao cadastrar escritório');
+    }
+
+    setToken(res.data.token);
+    return res.data.lawyer;
   },
 };
