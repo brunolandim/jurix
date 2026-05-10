@@ -7,7 +7,7 @@ import { RegisterCard } from '@/components/landing/register-card';
 export const metadata: Metadata = {
   title: 'Kronolex — Gestão Jurídica Inteligente para Escritórios de Advocacia',
   description:
-    'Kronolex é a plataforma de gestão jurídica que centraliza casos, documentos, prazos e notificações para advogados e escritórios de advocacia. Teste grátis por 14 dias.',
+    'Kronolex é a plataforma de gestão jurídica que centraliza casos, documentos, prazos e notificações para advogados e escritórios de advocacia. Teste grátis por 7 dias.',
   keywords: [
     'gestão jurídica',
     'software para advogados',
@@ -245,7 +245,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-3 gap-4">
               {[
                 { value: '100%', label: 'Dados seguros na nuvem' },
-                { value: '14 dias', label: 'Teste grátis sem cartão' },
+                { value: '7 dias', label: 'Teste grátis sem cartão' },
                 { value: '24/7', label: 'Notificações automáticas' },
               ].map((stat) => (
                 <div key={stat.label}>
@@ -264,7 +264,7 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold mb-4">Planos</h2>
             <p className="text-white/50 text-lg mb-16">
               Escolha o plano ideal para o seu escritório. Todos os planos incluem{' '}
-              <span className="text-amber-500 font-medium">14 dias grátis</span>, sem cartão de crédito.
+              <span className="text-amber-500 font-medium">7 dias grátis</span>, sem cartão de crédito.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -276,7 +276,7 @@ export default function LandingPage() {
                     <span className="text-4xl font-bold">R$ 147</span>
                     <span className="text-white/40 text-sm mb-1">/mês</span>
                   </div>
-                  <p className="text-xs text-white/40 mt-2">14 dias grátis para começar</p>
+                  <p className="text-xs text-white/40 mt-2">7 dias grátis para começar</p>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 3 advogados</li>
@@ -301,7 +301,7 @@ export default function LandingPage() {
                     <span className="text-4xl font-bold">R$ 297</span>
                     <span className="text-white/40 text-sm mb-1">/mês</span>
                   </div>
-                  <p className="text-xs text-white/40 mt-2">14 dias grátis para começar</p>
+                  <p className="text-xs text-white/40 mt-2">7 dias grátis para começar</p>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 10 advogados</li>
@@ -323,7 +323,7 @@ export default function LandingPage() {
                     <span className="text-4xl font-bold">R$ 497</span>
                     <span className="text-white/40 text-sm mb-1">/mês</span>
                   </div>
-                  <p className="text-xs text-white/40 mt-2">14 dias grátis para começar</p>
+                  <p className="text-xs text-white/40 mt-2">7 dias grátis para começar</p>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Advogados ilimitados</li>
