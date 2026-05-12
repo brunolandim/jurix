@@ -123,6 +123,9 @@ export function BillingPage() {
     if (success === 'true') {
       toast.success(t('checkoutSuccess'));
       refreshSubscription();
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', { send_to: 'AW-18136720691/LABEL_ASSINATURA' });
+      }
       // Clean URL
       window.history.replaceState({}, '', window.location.pathname);
     } else if (canceled === 'true') {
