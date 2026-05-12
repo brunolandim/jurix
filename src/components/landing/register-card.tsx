@@ -16,6 +16,9 @@ export function RegisterCard() {
     setError(null);
     try {
       await authService.register(data);
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', { send_to: 'AW-18136720691/LABEL_CADASTRO' });
+      }
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao cadastrar escritório');
