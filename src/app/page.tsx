@@ -267,7 +267,7 @@ export default function LandingPage() {
               <span className="text-amber-500 font-medium">7 dias grátis</span>, sem cartão de crédito.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 md:items-center">
               {/* Pro */}
               <article className="border border-white/10 rounded-xl p-8 flex flex-col gap-6 hover:border-amber-500/40 transition-colors">
                 <div>
@@ -291,9 +291,9 @@ export default function LandingPage() {
               </article>
 
               {/* Business */}
-              <article className="border border-amber-500/60 rounded-xl p-8 flex flex-col gap-6 relative">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  Mais popular
+              <article className="border-2 border-amber-500 bg-amber-500/5 shadow-lg shadow-amber-500/20 rounded-xl p-8 md:py-12 flex flex-col gap-6 relative md:scale-105">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide whitespace-nowrap">
+                  Mais escolhido
                 </span>
                 <div>
                   <p className="text-amber-500 text-sm font-semibold uppercase tracking-widest mb-2">Business</p>
