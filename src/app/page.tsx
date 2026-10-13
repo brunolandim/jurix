@@ -280,8 +280,8 @@ export default function LandingPage() {
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 3 advogados</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 50 casos ativos</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 50 links de compartilhamento</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 casos ativos</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 links de compartilhamento</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Documentos ilimitados</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Notificações por email</li>
                 </ul>
@@ -305,8 +305,8 @@ export default function LandingPage() {
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 10 advogados</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 300 casos ativos</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 300 links de compartilhamento</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 150 casos ativos</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 150 links de compartilhamento</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Documentos ilimitados</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Notificações por email</li>
                 </ul>
