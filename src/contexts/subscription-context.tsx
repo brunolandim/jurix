@@ -27,6 +27,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const isOwner = user?.role === 'owner';
   const isAdmin = user?.role === 'admin' || isOwner;
   const canWrite =
+    subscription?.exempt === true ||
     subscription?.status === 'active' ||
     subscription?.status === 'trialing';
 
