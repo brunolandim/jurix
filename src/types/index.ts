@@ -121,6 +121,7 @@ export type Lawyer = {
   specialty?: string;
   active: boolean;
   role?: 'owner' | 'admin' | 'lawyer';
+  isSuperAdmin?: boolean;
   avatarColor: AvatarColor;
   organizationName?: string;
 };
@@ -194,4 +195,5 @@ export type SubscriptionInfo = {
   };
   trialEndsAt: string | null;
   cancelAtPeriodEnd: boolean;
+  exempt?: boolean;
 };

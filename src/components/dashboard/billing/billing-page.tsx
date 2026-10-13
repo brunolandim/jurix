@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle, Bell } from 'lucide-react';
+import { Check, Crown, Zap, Building2, CreditCard, AlertTriangle, Bell, ShieldCheck } from 'lucide-react';
 
 function WhatsAppIcon({ size = 16, className }: { size?: number; className?: string }) {
   return (
@@ -217,6 +217,35 @@ export function BillingPage() {
   const currentPlan = info?.plan;
   const status = info?.status;
   const hasActiveSubscription = status === 'active' || status === 'trialing';
+
+  if (info?.exempt) {
+    return (
+      <div className="space-y-8">
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <Card>
+          <CardBody className="gap-4">
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={24} className="text-primary shrink-0" />
+              <div>
+                <p className="text-lg font-semibold">{t('exemptTitle')}</p>
+                <p className="text-sm text-foreground/60">{t('exemptDesc')}</p>
+              </div>
+            </div>
+            <Divider />
+            <div>
+              <h3 className="text-sm font-semibold mb-3">{t('usage')}</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <UsageBar current={info.usage.lawyers.current} limit={null} label={t('lawyers')} />
+                <UsageBar current={info.usage.activeCases.current} limit={null} label={t('activeCases')} />
+                <UsageBar current={info.usage.documents.current} limit={null} label={t('documents')} />
+                <UsageBar current={info.usage.shareLinks.current} limit={null} label={t('shareLinks')} />
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
