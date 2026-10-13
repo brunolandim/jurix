@@ -167,6 +167,8 @@
     "superAdminExempt": "Las cuentas de administrador del sistema están exentas de plan",
     "ownerAdminOnlyCreate": "Solo el propietario o administrador puede agregar abogados",
     "ownerAdminOnlyStatus": "Solo el propietario o administrador puede cambiar el estado",
+    "ownerAdminOnlyEdit": "Solo el propietario o un administrador puede editar a otros abogados",
+    "ownerOnlyEditOwner": "Solo el propietario puede editar los datos del propietario",
     "ownerOnlyRoles": "Solo el propietario puede cambiar los roles",
     "cannotChangeOwnerRole": "No se puede cambiar el rol del propietario",
     "cannotDeleteOwner": "No se puede eliminar al propietario de la organización",
