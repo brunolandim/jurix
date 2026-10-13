@@ -21,7 +21,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh]">
-      <LoginForm onSubmit={login} isLoading={isLoading} error={error} />
+      {/* The auth context already stores the error for the form to display */}
+      <LoginForm onSubmit={(credentials) => login(credentials).catch(() => {})} isLoading={isLoading} error={error} />
     </div>
   );
 }

@@ -12,7 +12,11 @@ export const authService = {
     const res = await api.post<LoginResponse>('/auth/login', credentials);
 
     if (!res.success || !res.data) {
-      throw new Error(res.message || 'Email ou senha inválidos');
+      // The message is an `auth.*` translation key shown by the login form
+      if (res.status === 400 || res.status === 401) {
+        throw new Error(res.messageKey === 'errors.accountInactive' ? 'accountInactive' : 'loginError');
+      }
+      throw new Error('loginUnavailable');
     }
 
     setToken(res.data.token);
