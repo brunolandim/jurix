@@ -31,6 +31,14 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<ApiR
     headers,
   });
 
+  // Session no longer valid (expired token or deactivated account)
+  if (response.status === 401 && token && !endpoint.startsWith('/auth')) {
+    removeToken();
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
+      window.location.href = '/auth/login';
+    }
+  }
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
     return {

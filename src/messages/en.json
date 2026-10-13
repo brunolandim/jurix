@@ -169,6 +169,8 @@
     "ownerAdminOnlyStatus": "Only the owner or admin can change status",
     "ownerAdminOnlyEdit": "Only the owner or an administrator can edit other lawyers",
     "ownerOnlyEditOwner": "Only the owner can edit the owner's data",
+    "ownerAdminOnlyOrganization": "Only the owner or an administrator can edit the organization",
+    "invalidFile": "Invalid file",
     "ownerOnlyRoles": "Only the owner can change roles",
     "cannotChangeOwnerRole": "Cannot change the owner's role",
     "cannotDeleteOwner": "Cannot delete the organization owner",

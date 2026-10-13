@@ -169,6 +169,8 @@
     "ownerAdminOnlyStatus": "Apenas o proprietário ou administrador pode alterar o status",
     "ownerAdminOnlyEdit": "Apenas o proprietário ou administrador pode editar outros advogados",
     "ownerOnlyEditOwner": "Apenas o proprietário pode editar os dados do proprietário",
+    "ownerAdminOnlyOrganization": "Apenas o proprietário ou administrador pode editar os dados do escritório",
+    "invalidFile": "Arquivo inválido",
     "ownerOnlyRoles": "Apenas o proprietário pode alterar funções",
     "cannotChangeOwnerRole": "Não é possível alterar a função do proprietário",
     "cannotDeleteOwner": "Não é possível excluir o proprietário da organização",
