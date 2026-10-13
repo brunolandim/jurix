@@ -279,7 +279,7 @@ export default function LandingPage() {
                   <p className="text-xs text-white/40 mt-2">7 dias grátis para começar</p>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 3 advogados</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 1 advogado</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 casos ativos</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 links de compartilhamento</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Documentos ilimitados</li>
