@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Button, Input, Form } from '@/components/ui';
 import { LoginCredentials } from '@/types';
 
+const LOGIN_ERROR_KEYS = ['loginError', 'accountInactive', 'loginUnavailable'];
+
 type LoginFormProps = {
   onSubmit: (credentials: LoginCredentials) => void;
   isLoading: boolean;
@@ -44,7 +46,11 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
         isRequired
       />
 
-      {error && <p className="text-danger text-sm text-center">{t('loginError')}</p>}
+      {error && (
+        <p className="text-danger text-sm text-center">
+          {t(LOGIN_ERROR_KEYS.includes(error) ? error : 'loginUnavailable')}
+        </p>
+      )}
 
       <Button type="submit" color="primary" isLoading={isLoading} className="w-full">
         {t('login')}

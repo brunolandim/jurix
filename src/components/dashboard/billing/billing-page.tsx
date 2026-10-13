@@ -381,7 +381,14 @@ export function BillingPage() {
             const limits = plan.limits;
 
             return (
-              <Card key={plan.type} className={cn('relative', isCurrent && 'border-2 border-primary')}>
+              <Card
+                key={plan.type}
+                className={cn(
+                  'relative',
+                  isPopular && 'border-2 border-warning shadow-lg shadow-warning/20 sm:scale-[1.03]',
+                  isCurrent && 'border-2 border-primary'
+                )}
+              >
                 {isPopular && (
                   <div className="absolute top-3 right-3">
                     <Chip color="warning" size="sm" variant="flat">
@@ -412,7 +419,7 @@ export function BillingPage() {
                       <Check size={16} className="text-success shrink-0" />
                       <span>
                         {limits.lawyers !== null
-                          ? `${limits.lawyers} ${t('lawyers')}`
+                          ? `${limits.lawyers} ${limits.lawyers === 1 ? t('lawyer') : t('lawyers')}`
                           : `${t('lawyers')} ${t('unlimited').toLowerCase()}`}
                       </span>
                     </li>

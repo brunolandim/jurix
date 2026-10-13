@@ -267,7 +267,7 @@ export default function LandingPage() {
               <span className="text-amber-500 font-medium">7 dias grátis</span>, sem cartão de crédito.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 md:items-center">
               {/* Pro */}
               <article className="border border-white/10 rounded-xl p-8 flex flex-col gap-6 hover:border-amber-500/40 transition-colors">
                 <div>
@@ -279,9 +279,9 @@ export default function LandingPage() {
                   <p className="text-xs text-white/40 mt-2">7 dias grátis para começar</p>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 3 advogados</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 50 casos ativos</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 50 links de compartilhamento</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 1 advogado</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 casos ativos</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 30 links de compartilhamento</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Documentos ilimitados</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Notificações por email</li>
                 </ul>
@@ -291,9 +291,9 @@ export default function LandingPage() {
               </article>
 
               {/* Business */}
-              <article className="border border-amber-500/60 rounded-xl p-8 flex flex-col gap-6 relative">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  Mais popular
+              <article className="border-2 border-amber-500 bg-amber-500/5 shadow-lg shadow-amber-500/20 rounded-xl p-8 md:py-12 flex flex-col gap-6 relative md:scale-105">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide whitespace-nowrap">
+                  Mais escolhido
                 </span>
                 <div>
                   <p className="text-amber-500 text-sm font-semibold uppercase tracking-widest mb-2">Business</p>
@@ -305,8 +305,8 @@ export default function LandingPage() {
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-white/60">
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Até 10 advogados</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 300 casos ativos</li>
-                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 300 links de compartilhamento</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 150 casos ativos</li>
+                  <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> 150 links de compartilhamento</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Documentos ilimitados</li>
                   <li className="flex items-center gap-2"><span className="text-amber-500" aria-hidden="true">✓</span> Notificações por email</li>
                 </ul>
