@@ -7,11 +7,16 @@ import { Button, Card, CardBody, Chip } from '@/components/ui';
 import { lawyerService } from '@/services/lawyer-service';
 import { getInitials } from '@/lib/utils';
 import { Avatar } from '@/components/ui';
+import { useAuth, useSubscription } from '@/contexts';
+import { handleApiError } from '@/lib/handle-api-error';
 import type { Lawyer } from '@/types';
 import { LawyerModal } from './lawyer-modal';
 
 export function LawyerList() {
   const t = useTranslations('lawyers');
+  const te = useTranslations();
+  const { user } = useAuth();
+  const { isOwner, isAdmin } = useSubscription();
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -28,8 +33,15 @@ export function LawyerList() {
     fetchLawyers();
   }, [fetchLawyers]);
 
+  // Mirrors the API rules: owner/admin manage lawyers, only the owner manages the owner
+  const canManage = (lawyer: Lawyer) => isAdmin && (lawyer.role !== 'owner' || isOwner);
+
   const handleToggleActive = async (lawyer: Lawyer) => {
-    await lawyerService.updateLawyer(lawyer.id, { active: !lawyer.active });
+    try {
+      await lawyerService.updateLawyer(lawyer.id, { active: !lawyer.active });
+    } catch (error) {
+      handleApiError(error, te);
+    }
     fetchLawyers();
   };
 
@@ -47,9 +59,11 @@ export function LawyerList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <Button color="primary" startContent={<Plus size={18} />} onPress={handleCreate}>
-          {t('newLawyer')}
-        </Button>
+        {isAdmin && (
+          <Button color="primary" startContent={<Plus size={18} />} onPress={handleCreate}>
+            {t('newLawyer')}
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -84,14 +98,16 @@ export function LawyerList() {
                       <p className="font-semibold truncate">{lawyer.name}</p>
                       <p className="text-sm text-foreground/60 truncate">{lawyer.email}</p>
                     </div>
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      onPress={() => handleEdit(lawyer)}
-                    >
-                      <Pencil size={16} />
-                    </Button>
+                    {canManage(lawyer) && (
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        onPress={() => handleEdit(lawyer)}
+                      >
+                        <Pencil size={16} />
+                      </Button>
+                    )}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <Chip size="sm" variant="flat">{lawyer.oab}</Chip>
@@ -110,14 +126,16 @@ export function LawyerList() {
                     >
                       {lawyer.active ? t('active') : t('inactive')}
                     </Chip>
-                    <Button
-                      size="sm"
-                      variant="flat"
-                      color={lawyer.active ? 'warning' : 'success'}
-                      onPress={() => handleToggleActive(lawyer)}
-                    >
-                      {lawyer.active ? t('deactivate') : t('activate')}
-                    </Button>
+                    {canManage(lawyer) && lawyer.id !== user?.id && (
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color={lawyer.active ? 'warning' : 'success'}
+                        onPress={() => handleToggleActive(lawyer)}
+                      >
+                        {lawyer.active ? t('deactivate') : t('activate')}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardBody>
